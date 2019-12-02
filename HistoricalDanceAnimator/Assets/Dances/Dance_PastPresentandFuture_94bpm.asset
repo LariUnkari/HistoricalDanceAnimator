@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14934988a269a2f41a504e94aeb0def4, type: 3}
+  m_Name: Dance_PastPresentandFuture_94bpm
+  m_EditorClassIdentifier: 
+  songAudioClip: {fileID: 8300000, guid: c45240c874410db47a1584e0a7558e77, type: 3}
+  songBPM: 95
+  silenceInBeginning: 0.5
+  animatorController: {fileID: 9100000, guid: 052b8ab8bd3bee146be28ed58e5be93f, type: 2}
+  animationBPS: 4

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14934988a269a2f41a504e94aeb0def4, type: 3}
+  m_Name: Dance_SashesAreGreenAndRibbonsAreBlue
+  m_EditorClassIdentifier: 
+  songAudioClip: {fileID: 8300000, guid: 550e5cc2e969ede41b461dca9aa3af7b, type: 3}
+  songBPM: 100.2
+  silenceInBeginning: 0.05
+  animatorController: {fileID: 9100000, guid: 167b7292dbcd1eb4ba6abefb0ec3abad, type: 2}
+  animationBPS: 4
