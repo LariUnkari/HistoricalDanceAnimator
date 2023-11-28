@@ -1,0 +1,25 @@
+{
+    "danceName": "TestDance",
+    "musicPath": "Heralds in Love (Ensemble Rigodon) (as).mp3",
+    "musicBPM": 124,
+    "musicFirstBeatTime": 4100,
+
+    "choreography": [
+        {
+            "time": 0,
+            "action": "double",
+            "startFacing": "uphall",
+            "endFacing": "uphall",
+            "moveDirection": "uphall",
+            "moveDistance": 1.0
+        },
+        {
+            "time": 4,
+            "action": "double",
+            "startFacing": "uphall",
+            "endFacing": "uphall",
+            "moveDirection": "downhall",
+            "moveDistance": 1.0
+        }
+    ]
+}
