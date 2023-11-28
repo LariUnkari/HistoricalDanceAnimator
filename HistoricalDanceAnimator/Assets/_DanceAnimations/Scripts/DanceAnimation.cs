@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class SynchronizeToMusic : MonoBehaviour
+public class DanceAnimation : MonoBehaviour
 {
     public DancePreset m_dancePreset;
 
