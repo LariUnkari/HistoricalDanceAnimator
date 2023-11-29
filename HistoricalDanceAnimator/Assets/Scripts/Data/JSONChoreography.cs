@@ -1,11 +1,14 @@
 [System.Serializable]
-public class DanceJSON
+public class JSONChoreography
 {
     public string danceName;
+    public string danceType;
     public string musicPath;
     public int musicBPM;
     public int musicFirstBeatTime;
-    public ChoreographyAction[] choreography;
+    public JSONDancerGroup[] groups;
+    public JSONDancerPosition[] formation;
+    public JSONDanceAction[] choreography;
 
     public string GetDebugString()
     {

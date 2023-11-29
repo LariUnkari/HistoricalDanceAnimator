@@ -7,7 +7,8 @@ public class DanceScene : MonoBehaviour
     public AudioSource _audioSource;
 
     public string _debugDanceName;
-    private DanceData _danceData;
+
+    public DanceData _danceData;
 
     private void Awake()
     {
@@ -24,6 +25,11 @@ public class DanceScene : MonoBehaviour
     {
         if (_audioSource != null && _audioSource.playOnAwake)
             _audioSource.Stop();
+
+        if (_danceData != null && _danceData.danceName != null && _danceData.danceName.Length > 0)
+        {
+            CreateFormation();
+        }
     }
 
     private void Update()
@@ -36,6 +42,26 @@ public class DanceScene : MonoBehaviour
                 Play();
             }
         }
+    }
+
+    private void CreateFormation()
+    {
+        foreach (DancerPosition dancerPosition in _danceData.formation.dancerPositions)
+            CreateDancer(dancerPosition);
+    }
+
+    private void CreateDancer(DancerPosition dancerPosition)
+    {
+        GameObject dancer = new GameObject($"Dancer_{dancerPosition.role}{dancerPosition.group}");
+        GameObject model = Instantiate(GetPawnModelPreset(dancerPosition).model);
+        model.transform.parent = dancer.transform;
+
+        dancer.transform.position = dancerPosition.position;
+    }
+
+    private PawnModelPreset GetPawnModelPreset(DancerPosition dancerPosition)
+    {
+        return PawnModelDatabase.GetInstance().GetPreset(PawnModelDatabase.GetPresetKey(dancerPosition.role, dancerPosition.group, dancerPosition.variant));
     }
 
     private void Play()

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89f2a68e1beb671468de023db9577060, type: 3}
+  m_Name: PawnModelDatabase
+  m_EditorClassIdentifier: 
+  presets:
+  - {fileID: 11400000, guid: 8cd6840c1bf9f914e80e7df57e47502b, type: 2}
+  - {fileID: 11400000, guid: ee3d73eb232488f43b760f7b97b843cf, type: 2}
+  - {fileID: 11400000, guid: 80ffaa6310f5d1a49b44120ef84d7966, type: 2}
+  - {fileID: 11400000, guid: f9f92de86e70b2544bcde292421b0a0c, type: 2}
+  - {fileID: 11400000, guid: edb58cb186927ee439704064c29d42d4, type: 2}
+  - {fileID: 11400000, guid: 340848298ada69f4b8cf72ba3a7ad50d, type: 2}
+  - {fileID: 11400000, guid: c7575025cbbe0ff4d814cfe931d2d813, type: 2}
+  - {fileID: 11400000, guid: 66048a8610094654a82d59beb4f445b5, type: 2}

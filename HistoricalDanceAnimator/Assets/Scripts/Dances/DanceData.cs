@@ -1,27 +1,43 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public class DanceData
 {
     public string danceName;
+    public string danceType;
 
     public AudioClip music;
     public int bpm;
     public int firstBeatTime;
 
-    public Action[] actions;
+    public DancerGroup[] groups;
+    public DanceFormation formation;
+    public DanceAction[] actions;
 
-    public static DanceData Create(DanceJSON json, AudioClip musicClip)
+    private Dictionary<string, DancerGroup> groupDictionary;
+    private Dictionary<string, DancerRole> roleDictionary;
+
+    public void SetGroups(DancerGroup[] groups)
     {
-        DanceData danceData = new DanceData();
+        this.groups = groups;
 
-        danceData.danceName = json.danceName;
-        danceData.bpm = json.musicBPM;
-        danceData.firstBeatTime = json.musicFirstBeatTime;
-        danceData.music = musicClip;
+        groupDictionary = new Dictionary<string, DancerGroup>();
+        roleDictionary = new Dictionary<string, DancerRole>();
 
-        // TODO: Build action data from choreography
+        foreach (DancerGroup group in groups)
+        {
+            groupDictionary.Add(group.id, group);
 
-        return danceData;
+            foreach (DancerRole role in group.roles)
+            {
+                roleDictionary.Add(role.key, role);
+            }
+        }
+    }
+
+    public DancerGroup GetGroup(string groupID)
+    {
+        return groupDictionary[groupID];
     }
 }

@@ -1,25 +1,57 @@
 {
     "danceName": "TestDance",
+    "danceType": "line",
     "musicPath": "Heralds in Love (Ensemble Rigodon) (as).mp3",
     "musicBPM": 124,
     "musicFirstBeatTime": 4100,
-
+    "groups": [
+        { "group": "A", "roles": ["Lord", "Lady"] },
+        { "group": "B", "roles": ["Lord", "Lady"] }
+    ],
+    "formation": [
+        { "group": "A", "role": "Lord", "variant": "1", "groupPosition": 1.5, "rolePosition": -0.5 },
+        { "group": "A", "role": "Lady", "variant": "1", "groupPosition": 1.5, "rolePosition": 0.5 },
+        { "group": "B", "role": "Lord", "variant": "1", "groupPosition": 0.5, "rolePosition": -0.5 },
+        { "group": "B", "role": "Lady", "variant": "1", "groupPosition": 0.5, "rolePosition": 0.5 },
+        { "group": "A", "role": "Lord", "variant": "2", "groupPosition": -0.5, "rolePosition": -0.5 },
+        { "group": "A", "role": "Lady", "variant": "2", "groupPosition": -0.5, "rolePosition": 0.5 },
+        { "group": "B", "role": "Lord", "variant": "2", "groupPosition": -1.5, "rolePosition": -0.5 },
+        { "group": "B", "role": "Lady", "variant": "2", "groupPosition": -1.5, "rolePosition": 0.5 }
+    ],
     "choreography": [
         {
             "time": 0,
+            "dancers": [
+                { "group": "A", "role": "Lord" },
+                { "group": "A", "role": "Lady" },
+                { "group": "B", "role": "Lord" },
+                { "group": "B", "role": "Lady" }
+            ],
             "action": "double",
+            "variant": "default",
+            "duration": 4,
             "startFacing": "uphall",
             "endFacing": "uphall",
-            "moveDirection": "uphall",
-            "moveDistance": 1.0
+            "movements": [
+                { "axis": "uphall", "distance": 1.0 }
+            ]
         },
         {
             "time": 4,
+            "dancers": [
+                { "group": "A", "role": "Lord" },
+                { "group": "A", "role": "Lady" },
+                { "group": "B", "role": "Lord" },
+                { "group": "B", "role": "Lady" }
+            ],
             "action": "double",
+            "variant": "default",
+            "duration": 4,
             "startFacing": "uphall",
             "endFacing": "uphall",
-            "moveDirection": "downhall",
-            "moveDistance": 1.0
+            "movements": [
+                { "axis": "downhall", "distance": 1.0 }
+            ]
         }
     ]
 }
