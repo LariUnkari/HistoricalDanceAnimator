@@ -6,6 +6,7 @@ public class DanceAction
     public string actionName;
     public string variantName;
 
+    public int time;
     public int duration;
 
     public DanceDirection startFacing;
@@ -17,11 +18,12 @@ public class DanceAction
 
     public string key;
 
-    public DanceAction(string actionName, string variantName, int duration, DanceDirection startFacing,
-        DanceDirection endFacing, DanceMovement movement, AnimationClip animationClip)
+    public DanceAction(string actionName, string variantName, int time, int duration,
+        DanceDirection startFacing, DanceDirection endFacing, DanceMovement movement, AnimationClip animationClip)
     {
         this.actionName = actionName;
         this.variantName = variantName;
+        this.time = time;
         this.duration = duration;
         this.startFacing = startFacing;
         this.endFacing = endFacing;

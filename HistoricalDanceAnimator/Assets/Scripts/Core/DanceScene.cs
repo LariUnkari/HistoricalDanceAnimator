@@ -5,6 +5,7 @@ using UnityEngine;
 public class DanceScene : MonoBehaviour
 {
     public AudioSource _audioSource;
+    public DanceFormation _formation;
 
     public string _debugDanceName;
 
@@ -12,6 +13,9 @@ public class DanceScene : MonoBehaviour
 
     private void Awake()
     {
+        GameObject go = new GameObject("Formation");
+        _formation = go.AddComponent<DanceFormation>();
+
         DanceDatabase database = DanceDatabase.GetInstance();
 
         if (database.TryGetDance(_debugDanceName, out DanceData danceData))
@@ -26,9 +30,10 @@ public class DanceScene : MonoBehaviour
         if (_audioSource != null && _audioSource.playOnAwake)
             _audioSource.Stop();
 
+        // Check dance data is valid before setting up formation (Unity Inspector can create invalid data if valid data was not set)
         if (_danceData != null && _danceData.danceName != null && _danceData.danceName.Length > 0)
         {
-            CreateFormation();
+            _formation.SetFormation(_danceData);
         }
     }
 
@@ -44,29 +49,39 @@ public class DanceScene : MonoBehaviour
         }
     }
 
-    private void CreateFormation()
-    {
-        foreach (DancerPosition dancerPosition in _danceData.formation.dancerPositions)
-            CreateDancer(dancerPosition);
-    }
-
-    private void CreateDancer(DancerPosition dancerPosition)
-    {
-        GameObject dancer = new GameObject($"Dancer_{dancerPosition.role}{dancerPosition.group}");
-        GameObject model = Instantiate(GetPawnModelPreset(dancerPosition).model);
-        model.transform.parent = dancer.transform;
-
-        dancer.transform.position = dancerPosition.position;
-    }
-
-    private PawnModelPreset GetPawnModelPreset(DancerPosition dancerPosition)
-    {
-        return PawnModelDatabase.GetInstance().GetPreset(PawnModelDatabase.GetPresetKey(dancerPosition.role, dancerPosition.group, dancerPosition.variant));
-    }
-
     private void Play()
     {
         _audioSource.clip = _danceData.music;
         _audioSource.Play();
+
+        StartCoroutine(DanceRoutine());
+    }
+
+    private IEnumerator DanceRoutine()
+    {
+        Debug.Log("DanceRoutine begins!");
+
+        float startTime = Time.time + _danceData.firstBeatTime;
+        float beatDuration = 60f / _danceData.bpm;
+
+        yield return new WaitForSeconds(_danceData.firstBeatTime);
+
+        float danceTime = Time.time - startTime;
+        float beatTime = 0;
+        int beatIndex = 0;
+
+        Debug.Log($"First beat time is now ({startTime:F3}s)! Beat duration is {beatDuration:F3} DanceTime {danceTime:F3}s");
+        _formation.BeginDance();
+
+        while (_audioSource.isPlaying)
+        {
+            _formation.DanceUpdate(danceTime, beatTime, beatDuration, beatIndex);
+
+            yield return null;
+
+            danceTime = Time.time - startTime;
+            beatTime = danceTime % beatDuration;
+            beatIndex = Mathf.FloorToInt(danceTime / beatDuration);
+        }
     }
 }

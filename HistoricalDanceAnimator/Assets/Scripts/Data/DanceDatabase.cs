@@ -21,20 +21,20 @@ public class DanceDatabase : MonoBehaviour
         return s_instance;
     }
 
-    private Dictionary<string, DanceData> danceDictionary;
+    private Dictionary<string, DanceData> _danceDictionary;
 
     private void Awake()
     {
-        danceDictionary = new Dictionary<string, DanceData>();
+        _danceDictionary = new Dictionary<string, DanceData>();
     }
 
     public void AddDance(DanceData danceData)
     {
-        danceDictionary.Add(danceData.danceName, danceData);
+        _danceDictionary.Add(danceData.danceName, danceData);
     }
 
     public bool TryGetDance(string danceName, out DanceData danceData)
     {
-        return danceDictionary.TryGetValue(danceName, out danceData);
+        return _danceDictionary.TryGetValue(danceName, out danceData);
     }
 }

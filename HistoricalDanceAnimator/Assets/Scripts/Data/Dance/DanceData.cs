@@ -8,11 +8,11 @@ public class DanceData
     public string danceType;
 
     public AudioClip music;
-    public int bpm;
-    public int firstBeatTime;
+    public float bpm;
+    public float firstBeatTime;
 
     public DancerGroup[] groups;
-    public DanceFormation formation;
+    public DancerPlacement[] placements;
     public DanceAction[] actions;
 
     private Dictionary<string, DancerGroup> groupDictionary;
@@ -36,8 +36,13 @@ public class DanceData
         }
     }
 
-    public DancerGroup GetGroup(string groupID)
+    public bool TryGetGroup(string groupID, out DancerGroup dancerGroup)
     {
-        return groupDictionary[groupID];
+        return groupDictionary.TryGetValue(groupID, out dancerGroup);
+    }
+
+    public bool TryGetRole(string key, out DancerRole dancerRole)
+    {
+        return roleDictionary.TryGetValue(key, out dancerRole);
     }
 }

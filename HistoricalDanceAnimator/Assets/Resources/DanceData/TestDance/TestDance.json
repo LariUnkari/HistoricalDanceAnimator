@@ -3,7 +3,7 @@
     "danceType": "line",
     "musicPath": "Heralds in Love (Ensemble Rigodon) (as).mp3",
     "musicBPM": 124,
-    "musicFirstBeatTime": 4100,
+    "musicFirstBeatTime": 4.1,
     "groups": [
         { "group": "A", "roles": ["Lord", "Lady"] },
         { "group": "B", "roles": ["Lord", "Lady"] }
@@ -27,8 +27,8 @@
                 { "group": "B", "role": "Lord" },
                 { "group": "B", "role": "Lady" }
             ],
-            "action": "double",
-            "variant": "default",
+            "action": "Double",
+            "variant": "ECD",
             "duration": 4,
             "startFacing": "uphall",
             "endFacing": "uphall",
@@ -44,8 +44,8 @@
                 { "group": "B", "role": "Lord" },
                 { "group": "B", "role": "Lady" }
             ],
-            "action": "double",
-            "variant": "default",
+            "action": "Double",
+            "variant": "ECD",
             "duration": 4,
             "startFacing": "uphall",
             "endFacing": "uphall",

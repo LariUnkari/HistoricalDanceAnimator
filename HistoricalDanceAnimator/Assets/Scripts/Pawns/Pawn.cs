@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Pawn : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public DancerPosition _dancerPosition;
 
-    // Update is called once per frame
-    void Update()
+    private Vector3 _dancerAnimationPosition;
+
+    private void LateUpdate()
     {
-        
+        if (!Application.isPlaying || _dancerPosition == null) { return; }
+
+        _dancerAnimationPosition = _dancerPosition.GetPosition();
+        transform.position = _dancerAnimationPosition;
     }
 }

@@ -10,12 +10,15 @@ public class DataLoader : MonoBehaviour
 
     public OnCompletionDelegate OnCompletionCallback;
 
-    public PawnModelDatabase pawnModelDatabase;
+    public ActionPresetDatabase _actionPresetDatabase;
+    public PawnModelDatabase _pawnModelDatabase;
 
     private void Awake()
     {
-        if (pawnModelDatabase)
-            pawnModelDatabase.Init();
+        if (_actionPresetDatabase)
+            _actionPresetDatabase.Init();
+        if (_pawnModelDatabase)
+            _pawnModelDatabase.Init();
     }
 
     // *************************
@@ -185,8 +188,8 @@ public class DataLoader : MonoBehaviour
         danceData.firstBeatTime = json.musicFirstBeatTime;
 
         danceData.SetGroups(ParseGroups(json.groups));
-        danceData.formation = ParseFormation(json.formation, danceData.danceType);
-        danceData.actions = ParseChoreography(json.choreography);
+        danceData.placements = ParseFormation(json.formation, danceData.danceType);
+        danceData.actions = ParseChoreography(json.choreography, danceData);
 
         return danceData;
     }
@@ -222,19 +225,19 @@ public class DataLoader : MonoBehaviour
         return dancerGroup;
     }
 
-    private DanceFormation ParseFormation(JSONDancerPosition[] jsonFormation, string formationType)
+    private DancerPlacement[] ParseFormation(JSONDancerPosition[] jsonFormation, string formationType)
     {
-        DancerPosition[] dancerPositions = new DancerPosition[jsonFormation.Length];
+        DancerPlacement[] dancerPlacements = new DancerPlacement[jsonFormation.Length];
 
         JSONDancerPosition position;
         for (int i = 0; i < jsonFormation.Length; i++)
         {
             position = jsonFormation[i];
-            dancerPositions[i] = new DancerPosition(position.role, position.group, position.variant,
+            dancerPlacements[i] = new DancerPlacement(position.role, position.group, position.variant,
                 GetDancerPositionInFormation(position.groupPosition, position.rolePosition, formationType));
         }
 
-        return new DanceFormation(dancerPositions);
+        return dancerPlacements;
     }
 
     private Vector2 GetDancerPositionInFormation(float groupPosition, float rolePosition, string formationType)
@@ -247,41 +250,62 @@ public class DataLoader : MonoBehaviour
         }
     }
 
-    private DanceAction[] ParseChoreography(JSONDanceAction[] jsonActions)
+    private DanceAction[] ParseChoreography(JSONDanceAction[] jsonActions, DanceData danceData)
     {
         DanceAction[] danceActions = new DanceAction[jsonActions.Length];
 
+        JSONDanceAction jsonAction;
+        JSONDancerRole jsonRole;
+        DanceAction danceAction;
+        ActionPreset actionPreset;
+        DancerRole dancerRole;
+
         for (int i = 0; i < jsonActions.Length; i++)
         {
-            danceActions[i] = ParseDanceAction(jsonActions[i]);
+            jsonAction = jsonActions[i];
+
+            if (!_actionPresetDatabase.TryGetPreset(ActionPresetDatabase.GetPresetKey(jsonAction.action, jsonAction.variant), out actionPreset))
+                continue;
+
+            danceAction = ParseDanceAction(jsonAction, actionPreset.animation);
+            danceActions[i] = danceAction;
+
+            for (int j = 0; j < jsonAction.dancers.Length; j++)
+            {
+                jsonRole = jsonAction.dancers[j];
+
+                if (danceData.TryGetRole(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
+                    dancerRole.AddAction(danceAction.time, danceAction);
+            }
         }
 
         return danceActions;
     }
 
-    private DanceAction ParseDanceAction(JSONDanceAction json)
+    private DanceAction ParseDanceAction(JSONDanceAction json, AnimationClip animationClip)
     {
         DanceAction danceAction = new DanceAction(
             json.action,
             json.variant,
+            json.time,
             json.duration,
             ParseDirection(json.startFacing),
             ParseDirection(json.endFacing),
             ParseMovement(json.movements),
-            null);
+            animationClip);
 
         return danceAction;
     }
 
     private DanceMovement ParseMovement(JSONDanceMovement[] jsonMovements)
     {
-        DanceMoveDirection[] directions = new DanceMoveDirection[jsonMovements.Length];
+        DanceVector[] directions = new DanceVector[jsonMovements.Length];
 
         JSONDanceMovement movement;
         for (int i = 0; i < jsonMovements.Length; i++)
         {
             movement = jsonMovements[i];
-            directions[i] = new DanceMoveDirection(ParseDirection(movement.axis), movement.distance);
+            directions[i] = new DanceVector(ParseDirection(movement.axis), movement.distance);
         }
 
         return new DanceMovement(directions);
