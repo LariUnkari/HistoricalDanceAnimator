@@ -6,6 +6,7 @@ public class DanceData
 {
     public string danceName;
     public string danceType;
+    public string danceFamily;
 
     public AudioClip music;
     public float bpm;

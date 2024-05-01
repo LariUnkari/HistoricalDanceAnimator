@@ -3,14 +3,15 @@ using UnityEngine;
 [System.Serializable]
 public class DanceAction
 {
+    public string familyName;
     public string actionName;
     public string variantName;
 
+    public string part;
     public int time;
     public int duration;
 
     public DanceDirection startFacing;
-    public DanceDirection endFacing;
 
     public DanceMovement movement;
 
@@ -19,30 +20,30 @@ public class DanceAction
 
     public string key;
 
-    public DanceAction(string actionName, string variantName, int time, int duration,
-        DanceDirection startFacing, DanceDirection endFacing, DanceMovement movement,
-        AnimationClip animationClip, float animationDuration)
+    public DanceAction(string familyName, string actionName, string variantName, string part, int time, int duration,
+        DanceDirection startFacing, DanceMovement movement, AnimationClip animationClip, float animationDuration)
     {
+        this.familyName = familyName;
         this.actionName = actionName;
         this.variantName = variantName;
+        this.part = part;
         this.time = time;
         this.duration = duration;
         this.startFacing = startFacing;
-        this.endFacing = endFacing;
         this.movement = movement;
         this.animationClip = animationClip;
         this.animationDuration = animationDuration;
 
-        key = GetActionKey(actionName, variantName);
+        key = GetActionKey(familyName, actionName, variantName);
     }
 
-    public string GetKey()
+    public static string GetActionKey(string family, string name, string variant)
     {
-        return GetActionKey(this.actionName, this.variantName);
-    }
+        string key = name;
 
-    public static string GetActionKey(string name, string variant)
-    {
-        return string.Format("{0}-{1}", name, variant);
+        if (variant.Length > 0) key = $"{key}-{variant}";
+        if (family.Length > 0) key = $"{family}-{key}";
+
+        return key;
     }
 }

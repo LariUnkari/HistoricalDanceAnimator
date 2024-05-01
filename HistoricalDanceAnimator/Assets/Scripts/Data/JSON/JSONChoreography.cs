@@ -3,6 +3,7 @@ public class JSONChoreography
 {
     public string danceName;
     public string danceType;
+    public string danceFamily;
     public string musicPath;
     public float musicBPM;
     public float musicFirstBeatTime;

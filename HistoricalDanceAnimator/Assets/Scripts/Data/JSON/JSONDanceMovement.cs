@@ -1,6 +1,6 @@
 [System.Serializable]
 public struct JSONDanceMovement
 {
-    public string axis;
+    public string direction;
     public float distance;
 }

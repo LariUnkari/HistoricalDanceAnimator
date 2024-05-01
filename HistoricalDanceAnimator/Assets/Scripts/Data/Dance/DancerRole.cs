@@ -36,8 +36,8 @@ public class DancerRole
     {
         actionsOnBeat.Add(beatIndex, danceAction);
 
-        if (!actionsPerId.ContainsKey(danceAction.GetKey()))
-            actionsPerId.Add(danceAction.GetKey(), danceAction);
+        if (!actionsPerId.ContainsKey(danceAction.key))
+            actionsPerId.Add(danceAction.key, danceAction);
     }
 
     public bool TryGetAction(int beatIndex, out DanceAction danceAction)

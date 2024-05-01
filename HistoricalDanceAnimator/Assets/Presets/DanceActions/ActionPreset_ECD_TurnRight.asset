@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
-  m_Name: ActionPreset_DoubleECD
+  m_Name: ActionPreset_ECD_TurnRight
   m_EditorClassIdentifier: 
-  action: Double
-  variant: ECD
-  animation: {fileID: 7400000, guid: b5a23954717f8eb4682e57da9e25cf06, type: 2}
+  action: TurnRight
+  variant: 
+  family: ECD
+  duration: 4
+  animation: {fileID: 7400000, guid: b7310fb81bad1d04bb86e0278cde8dbd, type: 2}

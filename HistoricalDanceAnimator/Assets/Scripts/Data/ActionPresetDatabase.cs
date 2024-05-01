@@ -27,20 +27,22 @@ public class ActionPresetDatabase : ScriptableObject
         Debug.Log(GetType() + ": Init!");
 
         presetDictionary = new Dictionary<string, ActionPreset>();
-        presetDictionary.Add(GetPresetKey(idle.action, idle.variant), idle);
+        presetDictionary.Add(GetPresetKey(idle.family, idle.action, idle.variant), idle);
 
         foreach (ActionPreset preset in presets)
         {
-            presetDictionary.Add(GetPresetKey(preset.action, preset.variant), preset);
+            presetDictionary.Add(GetPresetKey(preset.family, preset.action, preset.variant), preset);
         }
     }
 
-    public static string GetPresetKey(string action, string variant)
+    public static string GetPresetKey(string family, string action, string variant)
     {
-        if (variant.Length > 0)
-            return $"{action}-{variant}";
+        string key = action;
 
-        return action;
+        if (family.Length > 0) key = $"{family}-{key}";
+        if (variant.Length > 0) key = $"{key}-{variant}";
+
+        return key;
     }
 
     public bool TryGetPreset(string key, out ActionPreset actionPreset)

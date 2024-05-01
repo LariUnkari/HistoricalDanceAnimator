@@ -182,6 +182,7 @@ public class DataLoader : MonoBehaviour
 
         danceData.danceName = json.danceName;
         danceData.danceType = json.danceType;
+        danceData.danceFamily = json.danceFamily != null ? json.danceFamily : "";
 
         danceData.music = musicClip;
         danceData.bpm = json.musicBPM;
@@ -260,13 +261,23 @@ public class DataLoader : MonoBehaviour
         ActionPreset actionPreset;
         DancerRole dancerRole;
 
+        string key;
         for (int i = 0; i < jsonActions.Length; i++)
         {
             jsonAction = jsonActions[i];
 
-            if (!_actionPresetDatabase.TryGetPreset(ActionPresetDatabase.GetPresetKey(jsonAction.action, jsonAction.variant), out actionPreset))
+            // Make sure optional action fields are initialized
+            if (jsonAction.family == null || jsonAction.family.Length == 0)
+                jsonAction.family = danceData.danceFamily;
+            if (jsonAction.variant == null)
+                jsonAction.variant = "";
+            if (jsonAction.part == null)
+                jsonAction.part = "";
+
+            key = ActionPresetDatabase.GetPresetKey(jsonAction.family, jsonAction.action, jsonAction.variant);
+            if (!_actionPresetDatabase.TryGetPreset(key, out actionPreset))
             {
-                Debug.LogError($"Unhandled action type '{jsonAction.action}.{jsonAction.variant}' found");
+                Debug.LogError($"Unhandled action type '{key}' found");
                 continue;
             }
 
@@ -290,16 +301,17 @@ public class DataLoader : MonoBehaviour
 
     private DanceAction ParseDanceAction(JSONDanceAction json, ActionPreset actionPreset)
     {
-        Debug.Log($"Parsing dance action at time {json.time}: {json.action}.{json.variant}");
+        Debug.Log($"Parsing dance action at time {json.time}, part {json.part}: {DanceAction.GetActionKey(json.family, json.action, json.variant)}");
 
         DanceAction danceAction = new DanceAction(
+            json.family,
             json.action,
             json.variant,
+            json.part,
             json.time,
             json.duration,
             ParseDirection(json.startFacing),
-            ParseDirection(json.endFacing),
-            ParseMovement(json.movements),
+            json.movements != null && json.movements.Length > 0 ? ParseMovement(json.movements) : null,
             actionPreset.animation,
             actionPreset.duration);
 
@@ -315,7 +327,7 @@ public class DataLoader : MonoBehaviour
         for (int i = 0; i < jsonMovements.Length; i++)
         {
             movement = jsonMovements[i];
-            vector = new DanceVector(ParseDirection(movement.axis), movement.distance);
+            vector = new DanceVector(ParseDirection(movement.direction), movement.distance);
             directions[i] = vector;
             Debug.Log($"Parsed dance movement vector {vector.direction}, distance {vector.distance}");
         }
