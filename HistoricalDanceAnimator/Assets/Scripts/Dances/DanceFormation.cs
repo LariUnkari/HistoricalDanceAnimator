@@ -9,6 +9,9 @@ public class DanceFormation : MonoBehaviour
     public Transform _positionParent;
     public DancerPosition[] _dancerPositions;
 
+    private DancePart _currentPart;
+
+    private Dictionary<int, DancePart> _dancePartsOnBeat;
     private Dictionary<string, List<DancerPosition>> _dancersByRole;
 
     private int _beatIndex;
@@ -19,6 +22,15 @@ public class DanceFormation : MonoBehaviour
         _pawnParent.parent = transform;
         _positionParent = new GameObject("Positions").transform;
         _positionParent.parent = transform;
+
+        _dancePartsOnBeat = new Dictionary<int, DancePart>();
+
+        DancePart part;
+        for (int i = 0; i < danceData.parts.Length; i++)
+        {
+            part = danceData.parts[i];
+            _dancePartsOnBeat.Add(part.time, part);
+        }
 
         _dancersByRole = new Dictionary<string, List<DancerPosition>>();
 
@@ -100,8 +112,18 @@ public class DanceFormation : MonoBehaviour
         if (beatIndex > _beatIndex)
         {
             //Debug.Break();
-            Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3}, beat time {beatTime:F3}, beat duration {beatDuration:F3}");
             _beatIndex = beatIndex;
+
+            DancePart part;
+            if (_dancePartsOnBeat.TryGetValue(_beatIndex, out part))
+            {
+                _currentPart = part;
+                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3}, moving to part {_currentPart.name}. Current beat time {beatTime:F3}, beat duration {beatDuration:F3}");
+            }
+            else
+            {
+                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {_currentPart.name}. Current beat time {beatTime:F3}, beat duration {beatDuration:F3}");
+            }
         }
 
         foreach (DancerPosition dancerPosition in _dancerPositions)

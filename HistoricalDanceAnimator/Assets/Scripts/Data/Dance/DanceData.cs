@@ -14,7 +14,7 @@ public class DanceData
 
     public DancerGroup[] groups;
     public DancerPlacement[] placements;
-    public DanceAction[] actions;
+    public DancePart[] parts;
 
     private Dictionary<string, DancerGroup> groupDictionary;
     private Dictionary<string, DancerRole> roleDictionary;

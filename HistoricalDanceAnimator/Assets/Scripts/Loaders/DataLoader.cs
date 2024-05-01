@@ -190,7 +190,7 @@ public class DataLoader : MonoBehaviour
 
         danceData.SetGroups(ParseGroups(json.groups));
         danceData.placements = ParseFormation(json.formation, danceData.danceType);
-        danceData.actions = ParseChoreography(json.choreography, danceData);
+        danceData.parts = ParseChoreography(json.choreography, danceData);
 
         return danceData;
     }
@@ -251,7 +251,38 @@ public class DataLoader : MonoBehaviour
         }
     }
 
-    private DanceAction[] ParseChoreography(JSONDanceAction[] jsonActions, DanceData danceData)
+    private DancePart[] ParseChoreography(JSONDancePart[] jsonParts, DanceData danceData)
+    {
+        DancePart[] danceParts = new DancePart[jsonParts.Length];
+
+        JSONDancePart jsonPart;
+        DancePart dancePart;
+
+        for (int i = 0; i < jsonParts.Length; i++)
+        {
+            jsonPart = jsonParts[i];
+
+            // Make sure optional part fields are initialized
+            if (jsonPart.part == null) jsonPart.part = $"Part{i+1}";
+
+            dancePart = ParseDancePart(jsonPart, danceData);
+            danceParts[i] = dancePart;
+        }
+
+        return danceParts;
+    }
+
+    private DancePart ParseDancePart(JSONDancePart jsonPart, DanceData danceData)
+    {
+        Debug.Log($"Parsing dance part '{jsonPart.part}' at time {jsonPart.time}");
+
+        DancePart dancePart = new DancePart(jsonPart.part, jsonPart.time, null);
+        dancePart.actions = ParseDanceActions(jsonPart.actions, dancePart, danceData);
+
+        return dancePart;
+    }
+
+    private DanceAction[] ParseDanceActions(JSONDanceAction[] jsonActions, DancePart dancePart, DanceData danceData)
     {
         DanceAction[] danceActions = new DanceAction[jsonActions.Length];
 
@@ -260,8 +291,8 @@ public class DataLoader : MonoBehaviour
         DanceAction danceAction;
         ActionPreset actionPreset;
         DancerRole dancerRole;
-
         string key;
+
         for (int i = 0; i < jsonActions.Length; i++)
         {
             jsonAction = jsonActions[i];
@@ -281,7 +312,7 @@ public class DataLoader : MonoBehaviour
                 continue;
             }
 
-            danceAction = ParseDanceAction(jsonAction, actionPreset);
+            danceAction = ParseDanceAction(jsonAction, actionPreset, dancePart);
             danceActions[i] = danceAction;
 
             for (int j = 0; j < jsonAction.dancers.Length; j++)
@@ -299,19 +330,19 @@ public class DataLoader : MonoBehaviour
         return danceActions;
     }
 
-    private DanceAction ParseDanceAction(JSONDanceAction json, ActionPreset actionPreset)
+    private DanceAction ParseDanceAction(JSONDanceAction jsonAction, ActionPreset actionPreset, DancePart dancePart)
     {
-        Debug.Log($"Parsing dance action at time {json.time}, part {json.part}: {DanceAction.GetActionKey(json.family, json.action, json.variant)}");
+        Debug.Log($"Parsing dance action at time {jsonAction.time}, part {jsonAction.part}: {DanceAction.GetActionKey(jsonAction.family, jsonAction.action, jsonAction.variant)}");
 
         DanceAction danceAction = new DanceAction(
-            json.family,
-            json.action,
-            json.variant,
-            json.part,
-            json.time,
-            json.duration,
-            ParseDirection(json.startFacing),
-            json.movements != null && json.movements.Length > 0 ? ParseMovement(json.movements) : null,
+            jsonAction.family,
+            jsonAction.action,
+            jsonAction.variant,
+            jsonAction.part,
+            jsonAction.time + dancePart.time,
+            jsonAction.duration,
+            ParseDirection(jsonAction.startFacing),
+            jsonAction.movements != null && jsonAction.movements.Length > 0 ? ParseMovement(jsonAction.movements) : null,
             actionPreset.animation,
             actionPreset.duration);
 

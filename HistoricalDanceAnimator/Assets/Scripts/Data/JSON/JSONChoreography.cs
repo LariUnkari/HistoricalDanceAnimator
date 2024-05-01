@@ -9,10 +9,10 @@ public class JSONChoreography
     public float musicFirstBeatTime;
     public JSONDancerGroup[] groups;
     public JSONDancerPosition[] formation;
-    public JSONDanceAction[] choreography;
+    public JSONDancePart[] choreography;
 
     public string GetDebugString()
     {
-        return $"{danceName} - music:'{musicPath}', BPM:{musicBPM}, actions:{(choreography != null ? choreography.Length : -1)}";
+        return $"{danceName} - music:'{musicPath}', BPM:{musicBPM}, parts:{(choreography != null ? choreography.Length : -1)}";
     }
 }
