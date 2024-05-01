@@ -265,9 +265,12 @@ public class DataLoader : MonoBehaviour
             jsonAction = jsonActions[i];
 
             if (!_actionPresetDatabase.TryGetPreset(ActionPresetDatabase.GetPresetKey(jsonAction.action, jsonAction.variant), out actionPreset))
+            {
+                Debug.LogError($"Unhandled action type '{jsonAction.action}.{jsonAction.variant}' found");
                 continue;
+            }
 
-            danceAction = ParseDanceAction(jsonAction, actionPreset.animation);
+            danceAction = ParseDanceAction(jsonAction, actionPreset);
             danceActions[i] = danceAction;
 
             for (int j = 0; j < jsonAction.dancers.Length; j++)
@@ -275,15 +278,20 @@ public class DataLoader : MonoBehaviour
                 jsonRole = jsonAction.dancers[j];
 
                 if (danceData.TryGetRole(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
+                {
+                    Debug.Log($"Adding dance action to role {dancerRole.group.id}.{dancerRole.id}");
                     dancerRole.AddAction(danceAction.time, danceAction);
+                }
             }
         }
 
         return danceActions;
     }
 
-    private DanceAction ParseDanceAction(JSONDanceAction json, AnimationClip animationClip)
+    private DanceAction ParseDanceAction(JSONDanceAction json, ActionPreset actionPreset)
     {
+        Debug.Log($"Parsing dance action at time {json.time}: {json.action}.{json.variant}");
+
         DanceAction danceAction = new DanceAction(
             json.action,
             json.variant,
@@ -292,7 +300,8 @@ public class DataLoader : MonoBehaviour
             ParseDirection(json.startFacing),
             ParseDirection(json.endFacing),
             ParseMovement(json.movements),
-            animationClip);
+            actionPreset.animation,
+            actionPreset.duration);
 
         return danceAction;
     }
@@ -301,11 +310,14 @@ public class DataLoader : MonoBehaviour
     {
         DanceVector[] directions = new DanceVector[jsonMovements.Length];
 
+        DanceVector vector;
         JSONDanceMovement movement;
         for (int i = 0; i < jsonMovements.Length; i++)
         {
             movement = jsonMovements[i];
-            directions[i] = new DanceVector(ParseDirection(movement.axis), movement.distance);
+            vector = new DanceVector(ParseDirection(movement.axis), movement.distance);
+            directions[i] = vector;
+            Debug.Log($"Parsed dance movement vector {vector.direction}, distance {vector.distance}");
         }
 
         return new DanceMovement(directions);

@@ -7,5 +7,6 @@ public class ActionPreset : ScriptableObject
 {
     public string action;
     public string variant;
+    public float duration = 1f;
     public AnimationClip animation;
 }

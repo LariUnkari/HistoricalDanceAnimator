@@ -3,7 +3,7 @@
     "danceType": "line",
     "musicPath": "Heralds in Love (Ensemble Rigodon) (as).mp3",
     "musicBPM": 124,
-    "musicFirstBeatTime": 4.1,
+    "musicFirstBeatTime": 4.3,
     "groups": [
         { "group": "A", "roles": ["Lord", "Lady"] },
         { "group": "B", "roles": ["Lord", "Lady"] }
@@ -51,6 +51,66 @@
             "endFacing": "uphall",
             "movements": [
                 { "axis": "downhall", "distance": 1.0 }
+            ]
+        },
+        {
+            "time": 8,
+            "dancers": [
+                { "group": "A", "role": "Lady" },
+                { "group": "B", "role": "Lady" }
+            ],
+            "action": "Simple",
+            "variant": "ECD",
+            "duration": 2,
+            "startFacing": "left",
+            "endFacing": "left",
+            "movements": [
+                { "axis": "right", "distance": 0.3 }
+            ]
+        },
+        {
+            "time": 8,
+            "dancers": [
+                { "group": "A", "role": "Lord" },
+                { "group": "B", "role": "Lord" }
+            ],
+            "action": "Simple",
+            "variant": "ECD",
+            "duration": 2,
+            "startFacing": "right",
+            "endFacing": "right",
+            "movements": [
+                { "axis": "right", "distance": 0.3 }
+            ]
+        },
+        {
+            "time": 10,
+            "dancers": [
+                { "group": "A", "role": "Lady" },
+                { "group": "B", "role": "Lady" }
+            ],
+            "action": "Simple",
+            "variant": "ECD",
+            "duration": 2,
+            "startFacing": "left",
+            "endFacing": "left",
+            "movements": [
+                { "axis": "left", "distance": 0.3 }
+            ]
+        },
+        {
+            "time": 10,
+            "dancers": [
+                { "group": "A", "role": "Lord" },
+                { "group": "B", "role": "Lord" }
+            ],
+            "action": "Simple",
+            "variant": "ECD",
+            "duration": 2,
+            "startFacing": "right",
+            "endFacing": "right",
+            "movements": [
+                { "axis": "left", "distance": 0.3 }
             ]
         }
     ]

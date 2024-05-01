@@ -12,11 +12,13 @@ public class DancerRole
     public DancerGroup group;
 
     private Dictionary<int, DanceAction> actionsOnBeat;
+    private Dictionary<string, DanceAction> actionsPerId;
 
     public DancerRole(string id)
     {
         this.id = id;
         actionsOnBeat = new Dictionary<int, DanceAction>();
+        actionsPerId = new Dictionary<string, DanceAction>();
     }
 
     public void SetGroup(DancerGroup group)
@@ -25,9 +27,17 @@ public class DancerRole
         key = GetRoleKey(group.id, id);
     }
 
+    public ICollection<DanceAction> GetActionCollection()
+    {
+        return actionsPerId.Values;
+    }
+
     public void AddAction(int beatIndex, DanceAction danceAction)
     {
         actionsOnBeat.Add(beatIndex, danceAction);
+
+        if (!actionsPerId.ContainsKey(danceAction.GetKey()))
+            actionsPerId.Add(danceAction.GetKey(), danceAction);
     }
 
     public bool TryGetAction(int beatIndex, out DanceAction danceAction)

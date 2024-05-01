@@ -44,6 +44,9 @@ public class DancerPosition : MonoBehaviour
     public void SetRole(DancerRole role)
     {
         _role = role;
+
+        foreach (DanceAction action in role.GetActionCollection())
+            _animation.AddClip(action.animationClip, action.animationClip.name);
     }
 
     public void BeginDance()
@@ -64,7 +67,7 @@ public class DancerPosition : MonoBehaviour
                 OnDanceActionCompleted(_currentDanceAction);
 
             _currentDanceAction = _nextDanceAction;
-            PlayDanceAction(_currentDanceAction, beatDuration);
+            PlayDanceAction(_currentDanceAction, beatTime, beatDuration);
         }
         //else
         //{
@@ -72,9 +75,9 @@ public class DancerPosition : MonoBehaviour
         //}
     }
 
-    public void PlayDanceAction(DanceAction danceAction, float beatDuration)
+    public void PlayDanceAction(DanceAction danceAction, float beatTime, float beatDuration)
     {
-        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
+        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] time={beatTime:F3}: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
             $", movement: {danceAction.movement}, action.duration={danceAction.duration:F3} at beatDuration={beatDuration:F3}");
 
         if (_danceActionRoutine != null)
@@ -83,19 +86,26 @@ public class DancerPosition : MonoBehaviour
             StopCoroutine(_danceActionRoutine);
         }
 
-        _danceActionRoutine = DanceActionRoutine(danceAction, beatDuration);
+        transform.rotation = Quaternion.FromToRotation(Vector3.up, GetVectorFromDirection(danceAction.startFacing));
+
+        _danceActionRoutine = DanceActionRoutine(danceAction, beatTime, beatDuration);
         StartCoroutine(_danceActionRoutine);
     }
 
-    private IEnumerator DanceActionRoutine(DanceAction danceAction, float beatDuration)
+    private IEnumerator DanceActionRoutine(DanceAction danceAction, float beatTime, float beatDuration)
     {
-        float timeScale = danceAction.duration * beatDuration;
-        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}'" +
-            $", movement: {danceAction.movement}, action.duration={danceAction.duration:F3} at beatDuration={beatDuration:F3}, timeScale={timeScale:F3}");
+        float timeScale = (danceAction.animationDuration / beatDuration) / danceAction.duration;
 
-        _animation.AddClip(danceAction.animationClip, danceAction.animationClip.name);
+        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] time={beatTime:F3}: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}', movement: {danceAction.movement}, animation: '{danceAction.animationClip.name}'\n"+
+            $"action.duration={danceAction.duration}, action.animationDuration={danceAction.animationDuration} at beatDuration={beatDuration:F3}, timeScale={timeScale:F3}");
+
+        // Restart animation at correct time if it was already playing
+        if (_animation.IsPlaying(danceAction.animationClip.name))
+            _animation[danceAction.animationClip.name].time = beatTime; 
+        else
+            _animation.Play(danceAction.animationClip.name);
+
         foreach (AnimationState state in _animation) { state.speed = timeScale; }
-        _animation.Play(danceAction.animationClip.name);
 
         while (_animation.isPlaying)
             yield return null;
@@ -124,6 +134,11 @@ public class DancerPosition : MonoBehaviour
         }
 
         return transform.TransformPoint(_dancer.localPosition);
+    }
+
+    public Vector3 GetDirection()
+    {
+        return _dancer.up;
     }
 
     public Vector3 OrientateVector(Vector3 localVector, DanceVector danceVector)

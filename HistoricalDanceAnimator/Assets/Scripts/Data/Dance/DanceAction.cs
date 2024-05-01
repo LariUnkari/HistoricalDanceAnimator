@@ -15,11 +15,13 @@ public class DanceAction
     public DanceMovement movement;
 
     public AnimationClip animationClip;
+    public float animationDuration;
 
     public string key;
 
     public DanceAction(string actionName, string variantName, int time, int duration,
-        DanceDirection startFacing, DanceDirection endFacing, DanceMovement movement, AnimationClip animationClip)
+        DanceDirection startFacing, DanceDirection endFacing, DanceMovement movement,
+        AnimationClip animationClip, float animationDuration)
     {
         this.actionName = actionName;
         this.variantName = variantName;
@@ -29,8 +31,14 @@ public class DanceAction
         this.endFacing = endFacing;
         this.movement = movement;
         this.animationClip = animationClip;
+        this.animationDuration = animationDuration;
 
         key = GetActionKey(actionName, variantName);
+    }
+
+    public string GetKey()
+    {
+        return GetActionKey(this.actionName, this.variantName);
     }
 
     public static string GetActionKey(string name, string variant)
