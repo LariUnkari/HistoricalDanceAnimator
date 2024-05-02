@@ -10,4 +10,5 @@ public struct JSONDanceAction
     public int duration;
     public string startFacing;
     public JSONDanceMovement[] movements;
+    public JSONDanceActionTransition transition;
 }

@@ -67,7 +67,8 @@ public class DanceScene : MonoBehaviour
         yield return new WaitForSeconds(_danceData.firstBeatTime);
 
         float danceTime = Time.time - startTime;
-        float beatTime = 0;
+        float beatT = 0f;
+        float beatTime = 0f;
         int beatIndex = 0;
 
         Debug.Log($"First beat time is now ({startTime:F3}s)! Beat duration is {beatDuration:F3} DanceTime {danceTime:F3}s");
@@ -75,13 +76,14 @@ public class DanceScene : MonoBehaviour
 
         while (_audioSource.isPlaying)
         {
-            _formation.DanceUpdate(danceTime, beatTime, beatDuration, beatIndex);
+            _formation.DanceUpdate(danceTime, beatIndex, beatTime, beatT, beatDuration);
 
             yield return null;
 
             danceTime = Time.time - startTime;
-            beatTime = danceTime % beatDuration;
             beatIndex = Mathf.FloorToInt(danceTime / beatDuration);
+            beatTime = danceTime - beatIndex * beatDuration;
+            beatT = beatTime / beatDuration;
         }
     }
 }

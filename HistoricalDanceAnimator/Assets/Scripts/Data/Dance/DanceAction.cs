@@ -15,13 +15,15 @@ public class DanceAction
 
     public DanceMovement movement;
 
+    public DanceActionTransition transition;
+
     public AnimationClip animationClip;
     public float animationDuration;
 
     public string key;
 
     public DanceAction(string familyName, string actionName, string variantName, string part, int time, int duration,
-        DanceDirection startFacing, DanceMovement movement, AnimationClip animationClip, float animationDuration)
+        DanceDirection startFacing, DanceMovement movement, DanceActionTransition transition, AnimationClip animationClip, float animationDuration)
     {
         this.familyName = familyName;
         this.actionName = actionName;
@@ -31,6 +33,7 @@ public class DanceAction
         this.duration = duration;
         this.startFacing = startFacing;
         this.movement = movement;
+        this.transition = transition;
         this.animationClip = animationClip;
         this.animationDuration = animationDuration;
 

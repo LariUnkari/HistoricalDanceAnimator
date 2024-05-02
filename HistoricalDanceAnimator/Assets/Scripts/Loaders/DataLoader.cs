@@ -343,6 +343,7 @@ public class DataLoader : MonoBehaviour
             jsonAction.duration,
             ParseDirection(jsonAction.startFacing),
             jsonAction.movements != null && jsonAction.movements.Length > 0 ? ParseMovement(jsonAction.movements) : null,
+            jsonAction.transition.direction != null && jsonAction.transition.direction.Length > 0 ? ParseTransition(jsonAction.transition) : null,
             actionPreset.animation,
             actionPreset.duration);
 
@@ -364,6 +365,16 @@ public class DataLoader : MonoBehaviour
         }
 
         return new DanceMovement(directions);
+    }
+
+    private DanceActionTransition ParseTransition(JSONDanceActionTransition jsonTransition)
+    {
+        Debug.Log($"Parsing transition time={jsonTransition.time}, duration={jsonTransition.duration}, direction={jsonTransition.direction}, amount={jsonTransition.amount}");
+        return new DanceActionTransition(
+            jsonTransition.time,
+            jsonTransition.duration,
+            ParseDirection(jsonTransition.direction),
+            jsonTransition.amount);
     }
 
     private DanceDirection ParseDirection(string direction)

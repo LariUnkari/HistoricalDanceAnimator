@@ -74,7 +74,7 @@ public class DanceFormation : MonoBehaviour
         go.transform.localPosition = placement.position;
 
         DancerPosition position = go.AddComponent<DancerPosition>();
-        position.Init();
+        position.Init(this);
 
         return position;
     }
@@ -107,7 +107,7 @@ public class DanceFormation : MonoBehaviour
             dancerPosition.BeginDance();
     }
 
-    public void DanceUpdate(float danceTime, float beatTime, float beatDuration, int beatIndex)
+    public void DanceUpdate(float danceTime, int beatIndex, float beatTime, float beatT, float beatDuration)
     {
         if (beatIndex > _beatIndex)
         {
@@ -118,15 +118,15 @@ public class DanceFormation : MonoBehaviour
             if (_dancePartsOnBeat.TryGetValue(_beatIndex, out part))
             {
                 _currentPart = part;
-                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3}, moving to part {_currentPart.name}. Current beat time {beatTime:F3}, beat duration {beatDuration:F3}");
+                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3}, moving to part {_currentPart.name}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
             }
             else
             {
-                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {_currentPart.name}. Current beat time {beatTime:F3}, beat duration {beatDuration:F3}");
+                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {_currentPart.name}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
             }
         }
 
         foreach (DancerPosition dancerPosition in _dancerPositions)
-            dancerPosition.DanceUpdate(danceTime, beatTime, beatDuration, _beatIndex);
+            dancerPosition.DanceUpdate(danceTime, _beatIndex, beatTime, beatT, beatDuration);
     }
 }

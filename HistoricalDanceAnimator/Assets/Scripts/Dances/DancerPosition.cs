@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class DancerPosition : MonoBehaviour
 {
+    public bool _doDebug;
+
     /// <summary>
     /// Transform moved by dance action animations,
     /// used to calculate dancer pawn position.
@@ -14,16 +16,30 @@ public class DancerPosition : MonoBehaviour
     /// </summary>
     public Animation _animation;
 
+    private DanceFormation _formation;
     private DancerRole _role;
 
     private int _beatIndex;
-    private DanceAction _currentDanceAction;
-    private DanceAction _nextDanceAction;
+    private float _beatT;
+    private float _beatTime;
+    private float _danceTime;
+
+    private float _actionT;
+    private float _actionTime;
+
+    private bool _isTransitioning;
+    private float _transitionT;
+    private float _transitionAmount;
+
+    [HideInInspector] private DanceAction _currentDanceAction;
+    [HideInInspector] private DanceAction _nextDanceAction;
 
     private IEnumerator _danceActionRoutine;
 
-    public void Init()
+    public void Init(DanceFormation formation)
     {
+        _formation = formation;
+
         _dancer = new GameObject("Dancer").transform;
         _dancer.parent = transform;
 
@@ -54,50 +70,80 @@ public class DancerPosition : MonoBehaviour
         _beatIndex = -1;
     }
 
-    public void DanceUpdate(float danceTime, float beatTime, float beatDuration, int beatIndex)
+    public void DanceUpdate(float danceTime, int beatIndex, float beatTime, float beatT, float beatDuration)
     {
-        if (beatIndex == _beatIndex)
-            return;
+        _beatT = beatT;
+        _beatTime = beatTime;
+        _danceTime = danceTime;
 
-        _beatIndex = beatIndex;
-
-        if (_role.TryGetAction(_beatIndex, out _nextDanceAction))
+        if (beatIndex != _beatIndex)
         {
-            if (_currentDanceAction != null && _nextDanceAction != _currentDanceAction)
-                OnDanceActionCompleted(_currentDanceAction);
+            _beatIndex = beatIndex;
 
-            _currentDanceAction = _nextDanceAction;
-            PlayDanceAction(_currentDanceAction, beatTime, beatDuration);
+            if (_role.TryGetAction(_beatIndex, out _nextDanceAction))
+            {
+                if (_currentDanceAction != null && _nextDanceAction != _currentDanceAction)
+                    OnDanceActionCompleted(_currentDanceAction);
+
+                _currentDanceAction = _nextDanceAction;
+                PlayDanceAction(_currentDanceAction, beatTime, beatT, beatDuration);
+            }
+            //else
+            //{
+            //    Debug.LogError($"{name}: Unable to get DanceAction at beat {_beatIndex}");
+            //}
         }
-        //else
-        //{
-        //    Debug.LogError($"{name}: Unable to get DanceAction at beat {_beatIndex}");
-        //}
+
+        if (_currentDanceAction != null)
+        {
+            _actionTime = _danceTime - _currentDanceAction.time * beatDuration;
+            _actionT = _actionTime / (_currentDanceAction.duration * beatDuration);
+
+            if (_currentDanceAction.transition != null && _actionT > _currentDanceAction.transition.time)
+            {
+                _isTransitioning = true;
+                _transitionT = (_actionT - _currentDanceAction.transition.time) / _currentDanceAction.transition.duration;
+                _transitionAmount = _transitionT * _currentDanceAction.transition.amount;
+
+                if (_doDebug)
+                    Debug.Log($"Transitioning: actionT={_actionT} transitionT={_transitionT} amount={_transitionAmount}");
+            }
+        }
     }
 
-    public void PlayDanceAction(DanceAction danceAction, float beatTime, float beatDuration)
+    public void PlayDanceAction(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
     {
-        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] time={beatTime:F3}: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
-            $", movement: {danceAction.movement}, action.duration={danceAction.duration:F3} at beatDuration={beatDuration:F3}");
+        if (_doDebug)
+        {
+            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
+                $", movement: {danceAction.movement}, duration={danceAction.duration:F3}, beatDuration={beatDuration:F3}");
+        }
 
         if (_danceActionRoutine != null)
         {
-            Debug.LogWarning("Stopping old dance action routine");
+            if (_doDebug)
+                Debug.LogWarning("Stopping old dance action routine");
+
             StopCoroutine(_danceActionRoutine);
         }
 
+        _isTransitioning = false;
         transform.rotation = Quaternion.FromToRotation(Vector3.up, GetVectorFromDirection(danceAction.startFacing));
 
-        _danceActionRoutine = DanceActionRoutine(danceAction, beatTime, beatDuration);
+        _danceActionRoutine = DanceActionRoutine(danceAction, beatTime, beatT, beatDuration);
         StartCoroutine(_danceActionRoutine);
     }
 
-    private IEnumerator DanceActionRoutine(DanceAction danceAction, float beatTime, float beatDuration)
+    private IEnumerator DanceActionRoutine(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
     {
         float timeScale = (danceAction.animationDuration / beatDuration) / danceAction.duration;
 
-        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] time={beatTime:F3}: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}', movement: {danceAction.movement}, animation: '{danceAction.animationClip.name}'\n"+
-            $"action.duration={danceAction.duration}, action.animationDuration={danceAction.animationDuration} at beatDuration={beatDuration:F3}, timeScale={timeScale:F3}");
+        if (_doDebug)
+        {
+            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Starting to play dance action " +
+                $"{danceAction.actionName}.{danceAction.variantName}', movement: {danceAction.movement}, animation: '{danceAction.animationClip.name}'\n" +
+                $"Action duration={danceAction.duration}, animationDuration={danceAction.animationDuration}, beatDuration={beatDuration:F3}, timeScale={timeScale:F3}");
+        }
 
         // Restart animation at correct time if it was already playing
         if (_animation.IsPlaying(danceAction.animationClip.name))
@@ -116,7 +162,8 @@ public class DancerPosition : MonoBehaviour
 
     private void OnDanceActionCompleted(DanceAction danceAction)
     {
-        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: {danceAction.movement}");
+        if (_doDebug)
+            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: {danceAction.movement}");
 
         transform.position = GetPosition();
         _dancer.localPosition = Vector3.zero;
@@ -138,6 +185,15 @@ public class DancerPosition : MonoBehaviour
 
     public Vector3 GetDirection()
     {
+        if (_currentDanceAction != null && _currentDanceAction.transition != null && _actionT > _currentDanceAction.transition.time)
+        {
+            if (_currentDanceAction.transition.direction == DanceDirection.CW)
+                return Quaternion.AngleAxis(-_transitionAmount, Vector3.forward) * _dancer.up;
+
+            if (_currentDanceAction.transition.direction == DanceDirection.CCW)
+                return Quaternion.AngleAxis(_transitionAmount, Vector3.forward) * _dancer.up;
+        }
+
         return _dancer.up;
     }
 
