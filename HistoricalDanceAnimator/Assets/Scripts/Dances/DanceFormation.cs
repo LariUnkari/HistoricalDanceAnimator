@@ -69,7 +69,10 @@ public class DanceFormation : MonoBehaviour
 
     private DancerPosition CreatePosition(DancerPlacement placement)
     {
-        GameObject go = new GameObject($"Position_{placement.group}-{placement.role}");
+        string name = $"Position_{placement.group}-{placement.role}";
+        Debug.Log($"Creating position {name}");
+
+        GameObject go = new GameObject(name);
         go.transform.parent = _positionParent;
         go.transform.localPosition = placement.position;
 
@@ -81,7 +84,10 @@ public class DanceFormation : MonoBehaviour
 
     private Pawn CreateDancer(DancerPlacement placement, DancerPosition dancerPosition)
     {
-        GameObject dancer = new GameObject($"Dancer_{placement.role}{placement.group}");
+        string name = $"Dancer_{placement.group}-{placement.role}-{placement.variant}";
+        Debug.Log($"Creating dancer {name}");
+
+        GameObject dancer = new GameObject(name);
         Pawn pawn = dancer.AddComponent<Pawn>();
         pawn._dancerPosition = dancerPosition;
 
@@ -96,7 +102,7 @@ public class DanceFormation : MonoBehaviour
 
     private PawnModelPreset GetPawnModelPreset(DancerPlacement dancerPosition)
     {
-        return PawnModelDatabase.GetInstance().GetPreset(PawnModelDatabase.GetPresetKey(dancerPosition.role, dancerPosition.group, dancerPosition.variant));
+        return PawnModelDatabase.GetInstance().GetPreset(PawnModelDatabase.GetPresetKey(dancerPosition.role, "", dancerPosition.variant));
     }
 
     public void BeginDance()

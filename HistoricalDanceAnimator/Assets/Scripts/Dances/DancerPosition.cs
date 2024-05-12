@@ -28,6 +28,7 @@ public class DancerPosition : MonoBehaviour
     private float _actionTime;
 
     private bool _isTransitioning;
+    private bool _isTransitionComplete;
     private float _transitionT;
     private float _transitionAmount;
 
@@ -85,8 +86,7 @@ public class DancerPosition : MonoBehaviour
                 if (_currentDanceAction != null && _nextDanceAction != _currentDanceAction)
                     OnDanceActionCompleted(_currentDanceAction);
 
-                _currentDanceAction = _nextDanceAction;
-                PlayDanceAction(_currentDanceAction, beatTime, beatT, beatDuration);
+                PlayDanceAction(_nextDanceAction, beatTime, beatT, beatDuration);
             }
             //else
             //{
@@ -99,20 +99,53 @@ public class DancerPosition : MonoBehaviour
             _actionTime = _danceTime - _currentDanceAction.time * beatDuration;
             _actionT = _actionTime / (_currentDanceAction.duration * beatDuration);
 
-            if (_currentDanceAction.transition != null && _actionT > _currentDanceAction.transition.time)
+            if (_currentDanceAction.transition != null)
             {
-                _isTransitioning = true;
-                _transitionT = (_actionT - _currentDanceAction.transition.time) / _currentDanceAction.transition.duration;
-                _transitionAmount = _transitionT * _currentDanceAction.transition.amount;
+                if (_isTransitioning)
+                {
+                    if (_actionT >= _currentDanceAction.transition.time + _currentDanceAction.transition.duration)
+                    {
+                        _isTransitioning = false;
+                        _isTransitionComplete = true;
+                        _transitionT = 1f;
+                        _transitionAmount = _currentDanceAction.transition.amount;
 
-                if (_doDebug)
-                    Debug.Log($"Transitioning: actionT={_actionT} transitionT={_transitionT} amount={_transitionAmount}");
+                        if (_doDebug)
+                            Debug.Log($"Done Transitioning: amount={_transitionAmount}");
+                    }
+                    else
+                    {
+                        _transitionT = (_actionT - _currentDanceAction.transition.time) / _currentDanceAction.transition.duration;
+                        _transitionAmount = _transitionT * _currentDanceAction.transition.amount;
+
+                        if (_doDebug)
+                            Debug.Log($"Transitioning: actionT={_actionT} transitionT={_transitionT} amount={_transitionAmount}");
+                    }
+                }
+                else
+                {
+                    if (_actionT > _currentDanceAction.transition.time && _actionT < _currentDanceAction.transition.time + _currentDanceAction.transition.duration)
+                    {
+                        _isTransitioning = true;
+                        _transitionT = (_actionT - _currentDanceAction.transition.time) / _currentDanceAction.transition.duration;
+                        _transitionAmount = _transitionT * _currentDanceAction.transition.amount;
+
+                        if (_doDebug)
+                            Debug.Log($"Started transitioning: actionT={_actionT} transitionT={_transitionT} amount={_transitionAmount}");
+                    }
+                }
             }
         }
     }
 
     public void PlayDanceAction(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
     {
+        if (danceAction == null)
+        {
+            Debug.LogError($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Can't play NULL dance action");
+            return;
+        }
+
         if (_doDebug)
         {
             Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
@@ -127,8 +160,9 @@ public class DancerPosition : MonoBehaviour
             StopCoroutine(_danceActionRoutine);
         }
 
-        _isTransitioning = false;
-        transform.rotation = Quaternion.FromToRotation(Vector3.up, GetVectorFromDirection(danceAction.startFacing));
+        _currentDanceAction = danceAction;
+
+        transform.rotation = GetRotationFromDirection(danceAction.startFacing);
 
         _danceActionRoutine = DanceActionRoutine(danceAction, beatTime, beatT, beatDuration);
         StartCoroutine(_danceActionRoutine);
@@ -163,18 +197,24 @@ public class DancerPosition : MonoBehaviour
     private void OnDanceActionCompleted(DanceAction danceAction)
     {
         if (_doDebug)
-            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: {danceAction.movement}");
+            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: '{danceAction.movement}'");
 
         transform.position = GetPosition();
+        transform.rotation = GetRotation();
         _dancer.localPosition = Vector3.zero;
+        _dancer.localRotation = Quaternion.identity;
+
+        _isTransitioning = false;
+        _isTransitionComplete = false;
+        _currentDanceAction = null;
     }
 
     public Vector3 GetPosition()
     {
-        if (_dancer == null || _currentDanceAction == null || _currentDanceAction.movement == null || _currentDanceAction.movement.directions == null)
+        if (_dancer == null || _currentDanceAction == null)
             return transform.position;
 
-        if (_currentDanceAction.movement.directions.Length > 0)
+        if (_currentDanceAction.movement != null && _currentDanceAction.movement.directions != null && _currentDanceAction.movement.directions.Length > 0)
         {
             DanceVector vector = _currentDanceAction.movement.directions[0]; // TODO: Only first direction taken here, should take all as a compound and normalize it
             return transform.TransformPoint(OrientateVector(_dancer.localPosition, vector));
@@ -183,9 +223,14 @@ public class DancerPosition : MonoBehaviour
         return transform.TransformPoint(_dancer.localPosition);
     }
 
+    public Quaternion GetRotation()
+    {
+        return Quaternion.FromToRotation(Vector3.up, GetDirection());
+    }
+
     public Vector3 GetDirection()
     {
-        if (_currentDanceAction != null && _currentDanceAction.transition != null && _actionT > _currentDanceAction.transition.time)
+        if (_currentDanceAction != null && _currentDanceAction.transition != null && (_isTransitioning || _isTransitionComplete))
         {
             if (_currentDanceAction.transition.direction == DanceDirection.CW)
                 return Quaternion.AngleAxis(-_transitionAmount, Vector3.forward) * _dancer.up;
@@ -199,7 +244,7 @@ public class DancerPosition : MonoBehaviour
 
     public Vector3 OrientateVector(Vector3 localVector, DanceVector danceVector)
     {
-        return Quaternion.FromToRotation(Vector3.up, GetVectorFromDirection(danceVector.direction)) * localVector * danceVector.distance;
+        return GetRotationFromDirection(danceVector.direction) * localVector * danceVector.distance;
     }
 
     public Vector3 GetVectorFromDirection(DanceDirection danceDirection)
@@ -213,5 +258,18 @@ public class DancerPosition : MonoBehaviour
         }
 
         return Vector3.up;
+    }
+
+    public Quaternion GetRotationFromDirection(DanceDirection danceDirection)
+    {
+        switch (danceDirection)
+        {
+            case DanceDirection.Down: return Quaternion.AngleAxis(180, Vector3.forward);
+            case DanceDirection.Left: return Quaternion.AngleAxis(90, Vector3.forward);
+            case DanceDirection.Right: return Quaternion.AngleAxis(-90, Vector3.forward);
+            default: break;
+        }
+
+        return Quaternion.identity;
     }
 }

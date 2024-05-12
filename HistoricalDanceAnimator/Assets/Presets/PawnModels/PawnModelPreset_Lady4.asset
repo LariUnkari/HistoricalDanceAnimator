@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a08f3533b1be21b4ea86b0225b4124f8, type: 3}
-  m_Name: PawnModelPreset_LordB2
+  m_Name: PawnModelPreset_Lady4
   m_EditorClassIdentifier: 
-  role: Lord
-  group: B
-  variant: 2
-  model: {fileID: 5292622740673525764, guid: a74808f61bb7a854ab41ea1ae840a60f, type: 3}
+  role: Lady
+  group: 
+  variant: 4
+  model: {fileID: 1283479962093927027, guid: 987ec90879db922479245bef806c381e, type: 3}

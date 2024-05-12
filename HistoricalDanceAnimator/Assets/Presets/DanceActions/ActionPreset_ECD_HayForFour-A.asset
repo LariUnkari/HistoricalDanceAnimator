@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a08f3533b1be21b4ea86b0225b4124f8, type: 3}
-  m_Name: PawnModelPreset_LordB1
+  m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
+  m_Name: ActionPreset_ECD_HayForFour-A
   m_EditorClassIdentifier: 
-  role: Lord
-  group: B
-  variant: 1
-  model: {fileID: 100326467226837312, guid: 6edd98e91cab3a44686124bb93a1e124, type: 3}
+  action: HayForFour-A
+  variant: Poles
+  family: ECD
+  duration: 16
+  animation: {fileID: 7400000, guid: 1d44e2ae6b2d8054ca38bfbb612cb6f0, type: 2}

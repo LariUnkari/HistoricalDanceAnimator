@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a08f3533b1be21b4ea86b0225b4124f8, type: 3}
-  m_Name: PawnModelPreset_LadyB2
+  m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
+  m_Name: ActionPreset_ECD_HayForFour-D
   m_EditorClassIdentifier: 
-  role: Lady
-  group: B
-  variant: 2
-  model: {fileID: 1283479962093927027, guid: 987ec90879db922479245bef806c381e, type: 3}
+  action: HayForFour-D
+  variant: Poles
+  family: ECD
+  duration: 16
+  animation: {fileID: 7400000, guid: 26ed1a2c8e596d14a8a14e4c167aff5a, type: 2}
