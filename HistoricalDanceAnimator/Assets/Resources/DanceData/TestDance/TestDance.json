@@ -42,7 +42,7 @@
                     "duration": 4,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "uphall", "distance": 1.0 }
+                        { "direction": "forward", "distance": 1.0 }
                     ]
                 },
                 {
@@ -57,9 +57,11 @@
                     "duration": 4,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "downhall", "distance": 1.0 }
+                        { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transition": { "time": 0.75, "duration": 0.25, "direction": "cw", "amount": 90 }
+                    "transitions": [
+                        { "time": 0.75, "duration": 0.25, "direction": "cw", "amount": 90 }
+                    ]
                 },
                 {
                     "time": 4,
@@ -73,9 +75,11 @@
                     "duration": 4,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "downhall", "distance": 1.0 }
+                        { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transition": { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 90 }
+                    "transitions": [
+                        { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 90 }
+                    ]
                 },
                 {
                     "time": 8,
@@ -148,7 +152,9 @@
                     "action": "TurnRight",
                     "duration": 4,
                     "startFacing": "right",
-                    "transition": { "time": 0, "duration": 1, "direction": "ccw", "amount": 90 }
+                    "transitions": [
+                        { "time": 0, "duration": 1, "direction": "ccw", "amount": 90 }
+                    ]
                 },
                 {
                     "time": 12,
@@ -161,7 +167,9 @@
                     "action": "TurnRight",
                     "duration": 4,
                     "startFacing": "left",
-                    "transition": { "time": 0, "duration": 1, "direction": "cw", "amount": 90 }
+                    "transitions": [
+                        { "time": 0, "duration": 1, "direction": "cw", "amount": 90 }
+                    ]
                 }
             ]
         },
@@ -185,7 +193,7 @@
                     "duration": 4,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "uphall", "distance": 1.0 }
+                        { "direction": "forward", "distance": 1.0 }
                     ]
                 },
                 {
@@ -200,9 +208,11 @@
                     "duration": 4,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "downhall", "distance": 1.0 }
+                        { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transition": { "time": 0.75, "duration": 0.25, "direction": "cw", "amount": 90 }
+                    "transitions": [
+                        { "time": 0.75, "duration": 0.25, "direction": "cw", "amount": 90 }
+                    ]
                 },
                 {
                     "time": 4,
@@ -216,9 +226,11 @@
                     "duration": 4,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "downhall", "distance": 1.0 }
+                        { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transition": { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 90 }
+                    "transitions": [
+                        { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 90 }
+                    ]
                 },
                 {
                     "time": 8,
@@ -299,7 +311,9 @@
                     "action": "TurnLeft",
                     "duration": 4,
                     "startFacing": "right",
-                    "transition": { "time": 0, "duration": 1, "direction": "ccw", "amount": 180 }
+                    "transitions": [
+                        { "time": 0, "duration": 1, "direction": "ccw", "amount": 180 }
+                    ]
                 },
                 {
                     "time": 12,
@@ -338,7 +352,9 @@
                     "variant": "Poles",
                     "duration": 32,
                     "startFacing": "downhall",
-                    "transition": { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
+                    "transitions": [
+                        { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
+                    ]
                 },
                 {
                     "time": 0,
@@ -359,7 +375,9 @@
                     "variant": "Poles",
                     "duration": 32,
                     "startFacing": "downhall",
-                    "transition": { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
+                    "transitions": [
+                        { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
+                    ]
                 }
             ]
         }
