@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -185,14 +186,47 @@ public class DataLoader : MonoBehaviour
         danceData.danceFamily = json.danceFamily != null ? json.danceFamily : "";
 
         danceData.music = musicClip;
-        danceData.bpm = json.musicBPM;
         danceData.firstBeatTime = json.musicFirstBeatTime;
+        danceData.bpm = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
 
         danceData.SetGroups(ParseGroups(json.groups));
         danceData.placements = ParseFormation(json.formation, danceData.danceType);
         danceData.parts = ParseChoreography(json.choreography, danceData);
 
         return danceData;
+    }
+
+    private MusicBPM ParseBPM(float initialBPM, float startTime, JSONMusicBeatTiming[] beatTimings)
+    {
+        MusicBPM musicBPM = new MusicBPM();
+        musicBPM.SetInitialBPM(initialBPM);
+
+        if (beatTimings != null && beatTimings.Length > 0)
+        {
+            int beat = 0;
+            float time = startTime;
+
+            JSONMusicBeatTiming timing;
+            float bpm, span;
+
+            for (int i = 0; i < beatTimings.Length; i++)
+            {
+                timing = beatTimings[i];
+                span = timing.time - time;
+                bpm = 60 * (timing.beat - beat) / span;
+                Debug.Log($"Parsed BPM change on beat {timing.beat} @" +
+                    $" time: {TimeSpan.FromSeconds(timing.time).ToString("mm'm 'ss's 'fff'ms'")}" +
+                    $", span from previous: {TimeSpan.FromSeconds(span).ToString("mm'm 'ss's 'fff'ms'")} = {bpm}bpm");
+                if (beat == 0)
+                    musicBPM.currentBPM = bpm;
+                else
+                    musicBPM.AddBPMChange(beat, bpm);
+                beat = timing.beat;
+                time = timing.time;
+            }
+        }
+
+        return musicBPM;
     }
 
     private DancerGroup[] ParseGroups(JSONDancerGroup[] jsonDancerGroups)
@@ -401,9 +435,11 @@ public class DataLoader : MonoBehaviour
         {
             case "up":
             case "uphall":
+            case "forward":
                 return DanceDirection.Up;
             case "down":
             case "downhall":
+            case "backward":
                 return DanceDirection.Down;
             case "left":
                 return DanceDirection.Left;

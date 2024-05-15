@@ -3,8 +3,16 @@
     "danceType": "line",
     "danceFamily": "ECD",
     "musicPath": "Heralds in Love (Ensemble Rigodon) (as).mp3",
-    "musicBPM": 124,
-    "musicFirstBeatTime": 4.3,
+    "musicBPM": 120.83,
+    "musicFirstBeatTime": 4.75,
+    "musicBeatTimings": [
+        { "beat": 32,  "time": 20.64},
+        { "beat": 64,  "time": 36.25},
+        { "beat": 96,  "time": 52.08},
+        { "beat": 128, "time": 67.75},
+        { "beat": 160, "time": 83.54},
+        { "beat": 192, "time": 99.22}
+    ],
     "groups": [
         { "group": "A", "roles": [ "Lord", "Lady" ] },
         { "group": "B", "roles": [ "Lord", "Lady" ] },
@@ -378,6 +386,378 @@
                     "transitions": [
                         { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
                     ]
+                }
+            ]
+        },
+        {
+            "part": "Verse 2 - Part A",
+            "time": 64,
+            "actions": [
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "forward", "distance": 0.5 },
+                        { "direction": "right", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "forward", "distance": 0.5 },
+                        { "direction": "right", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 4,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "backward", "distance": 0.5 },
+                        { "direction": "left", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 4,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "backward", "distance": 0.5 },
+                        { "direction": "left", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 8,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "right", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 8,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "right", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 10,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "left", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 10,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "left", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 12,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "TurnRight",
+                    "duration": 4,
+                    "startFacing": "right"
+                },
+                {
+                    "time": 12,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "TurnRight",
+                    "duration": 4,
+                    "startFacing": "left"
+                }
+            ]
+        },
+        {
+            "part": "Verse 2 - Part B",
+            "time": 80,
+            "actions": [
+                
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "forward", "distance": 0.5 },
+                        { "direction": "left", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "forward", "distance": 0.5 },
+                        { "direction": "left", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 4,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "backward", "distance": 0.5 },
+                        { "direction": "right", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 4,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Double",
+                    "duration": 4,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "backward", "distance": 0.5 },
+                        { "direction": "right", "distance": 0.25 }
+                    ]
+                },
+                {
+                    "time": 8,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "left", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 8,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "left", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 10,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "right", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 10,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "B", "role": "Lady" },
+                        { "group": "C", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "Simple",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "right", "distance": 0.3 }
+                    ]
+                },
+                {
+                    "time": 12,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" },
+                        { "group": "C", "role": "Lady" }
+                    ],
+                    "action": "TurnLeft",
+                    "duration": 4,
+                    "startFacing": "left",
+                    "transitions": [
+                        { "time": 0, "duration": 1, "direction": "ccw", "amount": 180 }
+                    ]
+                },
+                {
+                    "time": 12,
+                    "dancers": [
+                        { "group": "B", "role": "Lady" },
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "TurnLeft",
+                    "duration": 4,
+                    "startFacing": "left"
+                },
+                {
+                    "time": 12,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "B", "role": "Lord" },
+                        { "group": "C", "role": "Lord" },
+                        { "group": "D", "role": "Lord" }
+                    ],
+                    "action": "TurnLeft",
+                    "duration": 4,
+                    "startFacing": "right"
+                }
+            ]
+        },
+        {
+            "part": "Chorus 2",
+            "time": 96,
+            "actions": [
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "A", "role": "Lady" }
+                    ],
+                    "action": "HayForFour-A",
+                    "variant": "Poles",
+                    "duration": 32,
+                    "startFacing": "downhall",
+                    "transitions": [
+                        { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
+                    ]
+                },
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "B", "role": "Lady" }
+                    ],
+                    "action": "HayForFour-B",
+                    "variant": "Poles",
+                    "duration": 32,
+                    "startFacing": "downhall"
+                },
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "C", "role": "Lady" }
+                    ],
+                    "action": "HayForFour-C",
+                    "variant": "Poles",
+                    "duration": 32,
+                    "startFacing": "downhall",
+                    "transitions": [
+                        { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
+                    ]
+                },
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "D", "role": "Lady" }
+                    ],
+                    "action": "HayForFour-D",
+                    "variant": "Poles",
+                    "duration": 32,
+                    "startFacing": "downhall"
                 }
             ]
         }

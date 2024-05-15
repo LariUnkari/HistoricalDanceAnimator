@@ -6,6 +6,7 @@ public class JSONChoreography
     public string danceFamily;
     public string musicPath;
     public float musicBPM;
+    public JSONMusicBeatTiming[] musicBeatTimings;
     public float musicFirstBeatTime;
     public JSONDancerGroup[] groups;
     public JSONDancerPosition[] formation;

@@ -9,7 +9,7 @@ public class DanceData
     public string danceFamily;
 
     public AudioClip music;
-    public float bpm;
+    public MusicBPM bpm;
     public float firstBeatTime;
 
     public DancerGroup[] groups;

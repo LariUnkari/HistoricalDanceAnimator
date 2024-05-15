@@ -122,8 +122,8 @@ public class DancerPosition : MonoBehaviour
                     _transitionT = (_actionT - transition.time) / transition.duration;
                     _transitionAmount = _transitionT * transition.amount;
 
-                    if (_doDebug)
-                        Debug.Log($"Transitioning: index={_transitionIndex} actionT={_actionT} transitionT={_transitionT} amount={_transitionAmount}");
+                    //if (_doDebug)
+                    //    Debug.Log($"Transitioning: index={_transitionIndex} actionT={_actionT} transitionT={_transitionT} amount={_transitionAmount}");
                 }
             }
             
@@ -251,7 +251,7 @@ public class DancerPosition : MonoBehaviour
 
     public Vector3 GetDirection()
     {
-        if (_currentDanceAction != null && _currentDanceAction.transitions.Length > 0 && (_isTransitioning || _isTransitionComplete))
+        if (_currentDanceAction != null && _currentDanceAction.transitions != null && _currentDanceAction.transitions.Length > 0 && (_isTransitioning || _isTransitionComplete))
         {
             if (_currentDanceAction.transitions[_transitionIndex].direction == DanceDirection.CW)
                 return Quaternion.AngleAxis(-_transitionAmount, Vector3.forward) * _dancer.up;
