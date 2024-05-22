@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
-  m_Name: ActionPreset_ECD_HayForFour-C
+  m_Name: ActionPreset_ECD_ArmingLeft
   m_EditorClassIdentifier: 
-  action: HayForFour-Poles
-  variant: C
+  action: ArmingLeft
+  variant: 
   family: ECD
-  duration: 16
-  animation: {fileID: 7400000, guid: 6a954ec42a60ee642887536a79604f16, type: 2}
+  duration: 8
+  animation: {fileID: 7400000, guid: 982a7a7e80af08340b219f7f6e7ec070, type: 2}

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
   m_Name: ActionPreset_ECD_HayForFour-B
   m_EditorClassIdentifier: 
-  action: HayForFour-B
-  variant: Poles
+  action: HayForFour-Poles
+  variant: B
   family: ECD
   duration: 16
   animation: {fileID: 7400000, guid: 398cff765d1608944a2c7c1ee9f4479e, type: 2}

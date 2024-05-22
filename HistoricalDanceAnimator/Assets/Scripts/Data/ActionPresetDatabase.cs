@@ -28,9 +28,12 @@ public class ActionPresetDatabase : ScriptableObject
         presetDictionary = new Dictionary<string, ActionPreset>();
         presetDictionary.Add(GetPresetKey(idle.family, idle.action, idle.variant), idle);
 
+        string key;
         foreach (ActionPreset preset in presets)
         {
-            presetDictionary.Add(GetPresetKey(preset.family, preset.action, preset.variant), preset);
+            key = GetPresetKey(preset.family, preset.action, preset.variant);
+            presetDictionary.Add(key, preset);
+            Debug.Log($"Added {typeof(ActionPreset)} instance by key '{key}' from '{preset.name}'");
         }
     }
 
