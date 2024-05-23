@@ -14,6 +14,10 @@ public class DanceUtility
             case DanceDirection.Down:  return Vector3.down;
             case DanceDirection.Left:  return Vector3.left;
             case DanceDirection.Right: return Vector3.right;
+            case DanceDirection.UpLeft: return Vector3.up + Vector3.left;
+            case DanceDirection.UpRight: return Vector3.up + Vector3.right;
+            case DanceDirection.DownRight: return Vector3.down + Vector3.right;
+            case DanceDirection.DownLeft: return Vector3.down + Vector3.left;
             default: break;
         }
 
@@ -27,6 +31,10 @@ public class DanceUtility
             case DanceDirection.Down:  return Quaternion.AngleAxis(180, Vector3.forward);
             case DanceDirection.Left:  return Quaternion.AngleAxis(90, Vector3.forward);
             case DanceDirection.Right: return Quaternion.AngleAxis(-90, Vector3.forward);
+            case DanceDirection.UpLeft: return Quaternion.AngleAxis(45, Vector3.forward);
+            case DanceDirection.UpRight: return Quaternion.AngleAxis(-45, Vector3.forward);
+            case DanceDirection.DownRight: return Quaternion.AngleAxis(-135, Vector3.forward);
+            case DanceDirection.DownLeft: return Quaternion.AngleAxis(135, Vector3.forward);
             default: break;
         }
 

@@ -355,7 +355,7 @@ public class DataLoader : MonoBehaviour
 
                 if (danceData.TryGetRole(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
                 {
-                    Debug.Log($"Adding dance action to role {dancerRole.group.id}.{dancerRole.id}");
+                    Debug.Log($"Adding dance action to role {dancerRole.group.id}.{dancerRole.id}: '{danceAction.key}' T={danceAction.time}, D={danceAction.duration}");
                     dancerRole.AddAction(danceAction.time, danceAction);
                 }
             }
@@ -404,14 +404,15 @@ public class DataLoader : MonoBehaviour
         return new DanceMovement(directions, vector);
     }
 
-    private DanceActionTransition[] ParseTransitions(JSONDanceActionTransition[] jsonTransitions)
+    private DanceActionTransitions ParseTransitions(JSONDanceActionTransition[] jsonTransitions)
     {
         if (jsonTransitions == null || jsonTransitions.Length == 0)
         {
-            return new DanceActionTransition[0];
+            return null;
         }
 
-        DanceActionTransition[] transitions = new DanceActionTransition[jsonTransitions.Length];
+        DanceActionTransitions transitions = new DanceActionTransitions();
+        //DanceActionTransition[] transitions = new DanceActionTransition[jsonTransitions.Length];
 
         JSONDanceActionTransition json;
         for (int i = 0; i < jsonTransitions.Length; i++)
@@ -419,11 +420,7 @@ public class DataLoader : MonoBehaviour
             json = jsonTransitions[i];
             Debug.Log($"Parsing transition[{i}] time={json.time}, duration={json.duration}, direction={json.direction}, amount={json.amount}");
 
-            transitions[i] = new DanceActionTransition(
-                json.time,
-                json.duration,
-                ParseDirection(json.direction),
-                json.amount);
+            transitions.AddTransition(new DanceActionTransition(json.time, json.duration, ParseDirection(json.direction), json.amount));
         }
 
         return transitions;
@@ -445,6 +442,14 @@ public class DataLoader : MonoBehaviour
                 return DanceDirection.Left;
             case "right":
                 return DanceDirection.Right;
+            case "upleft":
+                return DanceDirection.UpLeft;
+            case "upright":
+                return DanceDirection.UpRight;
+            case "downright":
+                return DanceDirection.DownRight;
+            case "downleft":
+                return DanceDirection.DownLeft;
             case "cw":
             case "clockwise":
                 return DanceDirection.CW;
