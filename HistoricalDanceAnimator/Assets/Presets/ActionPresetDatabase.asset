@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idle: {fileID: 11400000, guid: c2710e41f1fc82149b7a5898da195b95, type: 2}
   presets:
+  - {fileID: 11400000, guid: c4c2fe6f5c7764345b0a5915a2ec49f8, type: 2}
   - {fileID: 11400000, guid: 5b6922032d76ac94eaf3a27e90b43e8b, type: 2}
   - {fileID: 11400000, guid: 738e13ffe0c29bf4d9d2400ec29bdc4b, type: 2}
   - {fileID: 11400000, guid: 4611c9f09d2eff644994ef90d31b1e4c, type: 2}

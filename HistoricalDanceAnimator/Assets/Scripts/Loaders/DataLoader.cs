@@ -332,7 +332,7 @@ public class DataLoader : MonoBehaviour
             jsonAction = jsonActions[i];
 
             // Make sure optional action fields are initialized
-            if (jsonAction.family == null || jsonAction.family.Length == 0)
+            if (jsonAction.family == null)
                 jsonAction.family = danceData.danceFamily;
             if (jsonAction.variant == null)
                 jsonAction.variant = "";

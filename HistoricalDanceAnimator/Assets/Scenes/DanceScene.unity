@@ -155,13 +155,15 @@ MonoBehaviour:
   _musicSource: {fileID: 1057513752}
   _metronomeSource: {fileID: 2099723329}
   _formation: {fileID: 0}
-  _debugDanceName: TestDance
+  _debugDanceName: Heralds in Love
   _danceData:
     danceName: 
     danceType: 
     danceFamily: 
     music: {fileID: 0}
-    bpm: 0
+    bpm:
+      initialBPM: 0
+      currentBPM: 0
     firstBeatTime: 0
     groups: []
     placements: []

@@ -152,6 +152,7 @@ Animation:
   m_Animation: {fileID: 7400000, guid: ad8265a3653fdef408b0479297251308, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 4a9107d45c09aea4fa234765b981e666, type: 2}
+  - {fileID: 7400000, guid: 25194a1855419994e8d1eea9ca20ede0, type: 2}
   - {fileID: 7400000, guid: e49bbf65ce9f395439f5a2effa18b667, type: 2}
   - {fileID: 7400000, guid: b5a23954717f8eb4682e57da9e25cf06, type: 2}
   - {fileID: 7400000, guid: 4d4c4d2521074ff4fa9f4535f460ae3a, type: 2}
@@ -220,6 +221,7 @@ Animation:
   m_Animation: {fileID: 7400000, guid: 5b8eae270626b114c93802bfffb274fb, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 4a9107d45c09aea4fa234765b981e666, type: 2}
+  - {fileID: 7400000, guid: 25194a1855419994e8d1eea9ca20ede0, type: 2}
   - {fileID: 7400000, guid: e49bbf65ce9f395439f5a2effa18b667, type: 2}
   - {fileID: 7400000, guid: b5a23954717f8eb4682e57da9e25cf06, type: 2}
   - {fileID: 7400000, guid: 4d4c4d2521074ff4fa9f4535f460ae3a, type: 2}
@@ -463,6 +465,7 @@ Animation:
   m_Animation: {fileID: 7400000, guid: a3418358916c7784f9042098bbf064e9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 4a9107d45c09aea4fa234765b981e666, type: 2}
+  - {fileID: 7400000, guid: 25194a1855419994e8d1eea9ca20ede0, type: 2}
   - {fileID: 7400000, guid: e49bbf65ce9f395439f5a2effa18b667, type: 2}
   - {fileID: 7400000, guid: b5a23954717f8eb4682e57da9e25cf06, type: 2}
   - {fileID: 7400000, guid: 4d4c4d2521074ff4fa9f4535f460ae3a, type: 2}
@@ -800,6 +803,7 @@ Animation:
   m_Animation: {fileID: 7400000, guid: 72b4f78f3d36be941af0825bada1aacb, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 4a9107d45c09aea4fa234765b981e666, type: 2}
+  - {fileID: 7400000, guid: 25194a1855419994e8d1eea9ca20ede0, type: 2}
   - {fileID: 7400000, guid: e49bbf65ce9f395439f5a2effa18b667, type: 2}
   - {fileID: 7400000, guid: b5a23954717f8eb4682e57da9e25cf06, type: 2}
   - {fileID: 7400000, guid: 4d4c4d2521074ff4fa9f4535f460ae3a, type: 2}
