@@ -33,6 +33,8 @@ public class DancerPosition : MonoBehaviour
     //private float _transitionT;
     //private float _transitionAmount;
 
+    [HideInInspector] private Vector3 _lookDirection;
+    [HideInInspector] private Quaternion _lookRotation;
     [HideInInspector] private DanceAction _currentDanceAction;
     [HideInInspector] private DanceAction _nextDanceAction;
 
@@ -198,13 +200,25 @@ public class DancerPosition : MonoBehaviour
 
     public Quaternion GetRotation()
     {
-        return Quaternion.FromToRotation(Vector3.up, GetDirection());
+        _lookDirection = GetDirection();
+
+        _lookRotation = Quaternion.FromToRotation(Vector3.up, _lookDirection);
+        if (_lookRotation.x == 1f)
+        {
+            // Crude hack to fix pawns blinking when look direction is exactly Vector3.down (180 degree offset from Vector3.up)
+            //Debug.LogWarning($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Erroneus rotation detected: {_lookRotation.eulerAngles}");
+            _lookRotation = Quaternion.AngleAxis(180f, _formation.transform.forward);
+        }
+
+        return _lookRotation;
     }
 
     public Vector3 GetDirection()
     {
         if (_currentDanceAction != null && _currentDanceAction.transitions != null && _currentDanceAction.transitions.HasRotationTransitions())
+        {
             return Quaternion.AngleAxis(_currentDanceAction.transitions.RotationOffset, Vector3.forward) * _dancer.up;
+        }
 
         return _dancer.up;
     }
