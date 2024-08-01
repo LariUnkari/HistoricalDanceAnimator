@@ -37,4 +37,9 @@ public class DanceDatabase : MonoBehaviour
     {
         return _danceDictionary.TryGetValue(danceName, out danceData);
     }
+
+    public ICollection<string> GetDanceNames()
+    {
+        return _danceDictionary.Keys;
+    }
 }

@@ -14,6 +14,12 @@ public class DataLoader : MonoBehaviour
     public ActionPresetDatabase _actionPresetDatabase;
     public PawnModelDatabase _pawnModelDatabase;
 
+    private bool _isLoading;
+    private bool _isDoneLoading;
+
+    public bool IsLoading { get { return _isLoading; } }
+    public bool IsDoneLoading { get { return _isDoneLoading; } }
+
     private void Awake()
     {
         if (_actionPresetDatabase)
@@ -28,12 +34,16 @@ public class DataLoader : MonoBehaviour
 
     private void OnLoadingComplete()
     {
+        _isLoading = false;
+        _isDoneLoading = true;
+
         if (OnCompletionCallback != null)
             OnCompletionCallback.Invoke();
     }
 
     public void LoadData()
     {
+        _isLoading = true;
         StartCoroutine(LoadRoutine());
     }
 
