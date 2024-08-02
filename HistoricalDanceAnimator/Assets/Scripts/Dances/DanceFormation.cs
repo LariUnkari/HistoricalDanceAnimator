@@ -16,6 +16,8 @@ public class DanceFormation : MonoBehaviour
 
     private int _beatIndex;
 
+    public string CurrentPart { get { return _currentPart != null ? _currentPart.name : ""; } }
+
     public void SetFormation(DanceData danceData)
     {
         _pawnParent = new GameObject("Pawns").transform;
@@ -142,5 +144,21 @@ public class DanceFormation : MonoBehaviour
 
         foreach (DancerPosition dancerPosition in _dancerPositions)
             dancerPosition.DanceUpdate(danceTime, _beatIndex, beatTime, beatT, beatDuration);
+    }
+
+    public void OnResume()
+    {
+        foreach (DancerPosition dancerPosition in _dancerPositions)
+        {
+            dancerPosition.OnResume();
+        }
+    }
+
+    public void OnPause()
+    {
+        foreach (DancerPosition dancerPosition in _dancerPositions)
+        {
+            dancerPosition.OnPause();
+        }
     }
 }
