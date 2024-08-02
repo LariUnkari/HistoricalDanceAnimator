@@ -40,6 +40,8 @@ public class DancerPosition : MonoBehaviour
 
     private IEnumerator _danceActionRoutine;
 
+    public DancerRole Role { get { return _role; } }
+
     public void Init(DanceFormation formation)
     {
         _formation = formation;

@@ -246,22 +246,23 @@ public class DataLoader : MonoBehaviour
         DancerGroup group;
         for (int i = 0; i < jsonDancerGroups.Length; i++)
         {
-            group = ParseDancerGroup(jsonDancerGroups[i]);
+            group = ParseDancerGroup(jsonDancerGroups[i], i);
             dancerGroups[i] = group;
         }
 
         return dancerGroups;
     }
 
-    private DancerGroup ParseDancerGroup(JSONDancerGroup jsonDancerGroup)
+    private DancerGroup ParseDancerGroup(JSONDancerGroup jsonDancerGroup, int groupIndex)
     {
         DancerGroup dancerGroup = new DancerGroup(jsonDancerGroup.group);
         DancerRole[] groupRoles = new DancerRole[jsonDancerGroup.roles.Length];
 
+        float groupOffset = groupIndex * 0.1f;
         DancerRole role;
         for (int i = 0; i < jsonDancerGroup.roles.Length; i++)
         {
-            role = new DancerRole(jsonDancerGroup.roles[i]);
+            role = new DancerRole(jsonDancerGroup.roles[i], groupOffset + i * 0.05f);
             role.SetGroup(dancerGroup);
             groupRoles[i] = role;
         }

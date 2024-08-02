@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class DancerRole
 {
     public string id;
+    public float renderOffset;
 
     [System.NonSerialized]
     public string key;
@@ -14,9 +15,10 @@ public class DancerRole
     private Dictionary<int, DanceAction> actionsOnBeat;
     private Dictionary<string, DanceAction> actionsPerId;
 
-    public DancerRole(string id)
+    public DancerRole(string id, float renderOffset)
     {
         this.id = id;
+        this.renderOffset = renderOffset;
         actionsOnBeat = new Dictionary<int, DanceAction>();
         actionsPerId = new Dictionary<string, DanceAction>();
     }
