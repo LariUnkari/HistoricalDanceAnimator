@@ -1,18 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PawnModel : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public MeshRenderer _background;
+    public MeshRenderer _foreground;
+    public TextMeshPro _label;
 
-    // Update is called once per frame
-    void Update()
+    public void SetText(string text)
     {
-        
+        _label.text = text;
     }
 }

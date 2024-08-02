@@ -15,4 +15,7 @@ MonoBehaviour:
   role: Lord
   group: 
   variant: 1
-  model: {fileID: 4913741737362169720, guid: 65d0b2d024ac3af408b1ab5deb0a73bf, type: 3}
+  foregroundColor: {r: 0, g: 0.53333336, b: 0, a: 1}
+  backgroundColor: {r: 0, g: 0.73333335, b: 0, a: 1}
+  labelColor: {r: 1, g: 1, b: 1, a: 1}
+  model: {fileID: 1857028098720152559, guid: aee47a829f855544487405296751d948, type: 3}

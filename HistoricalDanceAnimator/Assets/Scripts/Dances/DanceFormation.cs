@@ -91,8 +91,15 @@ public class DanceFormation : MonoBehaviour
         Pawn pawn = dancer.AddComponent<Pawn>();
         pawn._dancerPosition = dancerPosition;
 
-        GameObject model = Instantiate(GetPawnModelPreset(placement).model);
+        PawnModelPreset preset = GetPawnModelPreset(placement);
+        GameObject model = Instantiate(preset.model);
         model.transform.parent = dancer.transform;
+
+        PawnModel pawnModel = model.GetComponent<PawnModel>();
+        pawnModel._label.text = placement.group;
+        pawnModel._label.color = preset.labelColor;
+        pawnModel._foreground.material.color = preset.foregroundColor;
+        pawnModel._background.material.color = preset.backgroundColor;
 
         dancer.transform.parent = _pawnParent;
         dancer.transform.localPosition = placement.position;

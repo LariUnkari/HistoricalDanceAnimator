@@ -15,4 +15,7 @@ MonoBehaviour:
   role: Lady
   group: 
   variant: 2
-  model: {fileID: 7528658870580579020, guid: a3bbd70e42ae1ab40abb41dfec569912, type: 3}
+  foregroundColor: {r: 0, g: 0, b: 0.6, a: 1}
+  backgroundColor: {r: 0, g: 0, b: 0.8666667, a: 1}
+  labelColor: {r: 1, g: 1, b: 1, a: 1}
+  model: {fileID: 1976610763497177345, guid: 85ae1868b77fa2b4abe25de9519b59f5, type: 3}
