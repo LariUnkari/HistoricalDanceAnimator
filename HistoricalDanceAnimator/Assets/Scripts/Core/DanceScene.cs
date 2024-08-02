@@ -41,10 +41,14 @@ public class DanceScene : MonoBehaviour
 
         DanceDatabase database = DanceDatabase.GetInstance();
 
-        if (database.TryGetDance(_debugDanceName, out DanceData danceData))
+        UserData userData = UserData.GetInstance();
+        if (userData.danceName.Length == 0)
+            userData.danceName = _debugDanceName;
+
+        if (database.TryGetDance(userData.danceName, out DanceData danceData))
         {
             _danceData = danceData;
-            Debug.Log($"Debug dance loaded: '{danceData.danceName}'");
+            Debug.Log($"Dance loaded: '{danceData.danceName}'");
         }
     }
 
