@@ -8,6 +8,7 @@ public struct JSONDanceAction
     public string action;
     public string variant;
     public int duration;
+    public int repeat;
     public string startFacing;
     public JSONDanceMovement[] movements;
     public JSONDanceActionTransition[] transitions;

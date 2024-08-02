@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 public class DataLoader : MonoBehaviour
 {
     public delegate void OnCompletionDelegate();
+    public delegate void OnMessageDelegate(string message);
 
     public OnCompletionDelegate OnCompletionCallback;
 
@@ -16,6 +17,7 @@ public class DataLoader : MonoBehaviour
 
     private bool _isLoading;
     private bool _isDoneLoading;
+    private DanceDatabase _danceDatabase;
 
     public bool IsLoading { get { return _isLoading; } }
     public bool IsDoneLoading { get { return _isDoneLoading; } }
@@ -26,6 +28,8 @@ public class DataLoader : MonoBehaviour
             _actionPresetDatabase.Init();
         if (_pawnModelDatabase)
             _pawnModelDatabase.Init();
+
+        _danceDatabase = DanceDatabase.GetInstance();
     }
 
     // *************************
@@ -105,43 +109,86 @@ public class DataLoader : MonoBehaviour
     {
         Debug.Log($"Importing {danceList.Count} dances and their music");
 
-        DanceDatabase database = DanceDatabase.GetInstance();
-
-        JSONChoreography jsonData;
-        DanceData danceData;
-        DataPayloadAudio audioPayload;
-
         for (int j = 0; j < danceList.Count; j++)
+            yield return LoadDanceJSON(danceList[j]);
+    }
+
+    public IEnumerator LoadDanceJSON(JSONChoreography jsonData)
+    {
+        DanceData danceData = ParseDance(jsonData, null);
+
+        // TODO: Display progress
+
+        if (File.Exists(jsonData.musicPath))
         {
-            jsonData = danceList[j];
-            danceData = ParseDance(jsonData, null);
+            DataPayloadAudio audioPayload = new DataPayloadAudio(jsonData.musicPath, AudioType.MPEG);
+            Debug.Log($"Loading music at '{audioPayload.path}'");
 
-            // TODO: Display progress
+            yield return LoadAudioClip(audioPayload);
 
-            if (File.Exists(jsonData.musicPath))
+            if (audioPayload.clip != null)
             {
-                audioPayload = new DataPayloadAudio(jsonData.musicPath, AudioType.MPEG);
-                Debug.Log($"Loading music at '{audioPayload.path}'");
+                danceData.music = audioPayload.clip;
+                Debug.Log($"Successfully loaded music at '{audioPayload.path}'");
 
-                yield return LoadAudioClip(audioPayload);
-
-                if (audioPayload.clip != null)
-                {
-                    danceData.music = audioPayload.clip;
-                    Debug.Log($"Successfully loaded music at '{audioPayload.path}'");
-                }
-                else
-                {
-                    Debug.LogWarning($"Unable to load music at '{audioPayload.path}'");
-                }
+                _danceDatabase.AddDance(danceData);
             }
             else
             {
-                Debug.LogWarning("No music found for '{jsonData.danceName}', at '{jsonData.musicPath}'");
-                yield return null;
+                Debug.LogWarning($"Unable to load music at '{audioPayload.path}'");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"No music found for '{jsonData.danceName}', at '{jsonData.musicPath}'");
+            yield return null;
+        }
+    }
+
+    public IEnumerator ImportDanceJSON(JSONChoreography jsonData, OnMessageDelegate onProgressDelegate, OnCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
+    {
+        DanceData danceData = ParseDance(jsonData, null);
+
+        // TODO: Improve type detection
+        AudioType audioType = AudioType.MPEG;
+        if (jsonData.musicPath.EndsWith(".ogg"))
+        {
+            audioType = AudioType.OGGVORBIS;
+        }
+
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(jsonData.musicPath, audioType))
+        {
+            UnityWebRequestAsyncOperation operation = www.SendWebRequest();
+
+            while (!operation.isDone)
+            {
+                yield return new WaitForSecondsRealtime(1f);
+
+                if (onProgressDelegate != null)
+                {
+                    int progress = Mathf.FloorToInt(100f * operation.progress);
+                    onProgressDelegate.Invoke($"Loading music file, progress={progress}%");
+                }
             }
 
-            database.AddDance(danceData);
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                danceData.music = ((DownloadHandlerAudioClip)www.downloadHandler).audioClip;
+                Debug.Log($"Successfully imported music at '{jsonData.musicPath}'");
+
+                _danceDatabase.AddDance(danceData);
+
+                if (onCompletionDelegate != null)
+                    onCompletionDelegate.Invoke();
+            }
+            else
+            {
+                if (onErrorDelegate != null)
+                    onErrorDelegate.Invoke("Unable to load music at given path");
+
+                Debug.LogWarning($"Unable to load music at '{jsonData.musicPath}'");
+            }
+
         }
     }
 
@@ -279,8 +326,12 @@ public class DataLoader : MonoBehaviour
         for (int i = 0; i < jsonFormation.Length; i++)
         {
             position = jsonFormation[i];
+            if (position.startFacing == null)
+                position.startFacing = "uphall"; // Make sure default is uphall
+
             dancerPlacements[i] = new DancerPlacement(position.role, position.group, position.variant,
-                GetDancerPositionInFormation(position.groupPosition, position.rolePosition, formationType));
+                GetDancerPositionInFormation(position.groupPosition, position.rolePosition, formationType),
+                GetDancerFacingDirectionInFormation(position.groupPosition, position.rolePosition, position.startFacing, formationType));
         }
 
         return dancerPlacements;
@@ -293,6 +344,16 @@ public class DataLoader : MonoBehaviour
         {
             default:
                 return new Vector2(rolePosition, groupPosition);
+        }
+    }
+
+    private DanceDirection GetDancerFacingDirectionInFormation(float groupPosition, float rolePosition, string orientation, string formationType)
+    {
+        // TODO: Implement other formation types
+        switch (formationType)
+        {
+            default:
+                return ParseDirection(orientation);
         }
     }
 
@@ -329,7 +390,7 @@ public class DataLoader : MonoBehaviour
 
     private DanceAction[] ParseDanceActions(JSONDanceAction[] jsonActions, DancePart dancePart, DanceData danceData)
     {
-        DanceAction[] danceActions = new DanceAction[jsonActions.Length];
+        List<DanceAction> danceActions = new List<DanceAction>(jsonActions.Length);
 
         JSONDanceAction jsonAction;
         JSONDancerRole jsonRole;
@@ -337,6 +398,7 @@ public class DataLoader : MonoBehaviour
         ActionPreset actionPreset;
         DancerRole dancerRole;
         string key;
+        int time;
 
         for (int i = 0; i < jsonActions.Length; i++)
         {
@@ -357,34 +419,38 @@ public class DataLoader : MonoBehaviour
                 continue;
             }
 
-            danceAction = ParseDanceAction(jsonAction, actionPreset, dancePart);
-            danceActions[i] = danceAction;
-
-            for (int j = 0; j < jsonAction.dancers.Length; j++)
+            for (int j = 0; j <= jsonAction.repeat; j++)
             {
-                jsonRole = jsonAction.dancers[j];
+                time = dancePart.time + jsonAction.time + j * jsonAction.duration;
+                danceAction = ParseDanceAction(time, jsonAction, actionPreset, dancePart);
+                danceActions.Add(danceAction);
 
-                if (danceData.TryGetRole(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
+                for (int k = 0; k < jsonAction.dancers.Length; k++)
                 {
-                    Debug.Log($"Adding dance action to role {dancerRole.group.id}.{dancerRole.id}: '{danceAction.key}' T={danceAction.time}, D={danceAction.duration}");
-                    dancerRole.AddAction(danceAction.time, danceAction);
+                    jsonRole = jsonAction.dancers[k];
+
+                    if (danceData.TryGetRole(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
+                    {
+                        Debug.Log($"Adding dance action to role {dancerRole.group.id}.{dancerRole.id}: '{danceAction.key}' T={danceAction.time}, D={danceAction.duration}");
+                        dancerRole.AddAction(danceAction.time, danceAction);
+                    }
                 }
             }
         }
 
-        return danceActions;
+        return danceActions.ToArray();
     }
 
-    private DanceAction ParseDanceAction(JSONDanceAction jsonAction, ActionPreset actionPreset, DancePart dancePart)
+    private DanceAction ParseDanceAction(int time, JSONDanceAction jsonAction, ActionPreset actionPreset, DancePart dancePart)
     {
-        Debug.Log($"Parsing dance action at time {jsonAction.time}, part {jsonAction.part}: {DanceAction.GetActionKey(jsonAction.family, jsonAction.action, jsonAction.variant)}");
+        Debug.Log($"Parsing dance action at time {time}, part {jsonAction.part}: {DanceAction.GetActionKey(jsonAction.family, jsonAction.action, jsonAction.variant)}");
 
         DanceAction danceAction = new DanceAction(
             jsonAction.family,
             jsonAction.action,
             jsonAction.variant,
             jsonAction.part,
-            jsonAction.time + dancePart.time,
+            time,
             jsonAction.duration,
             ParseDirection(jsonAction.startFacing),
             jsonAction.movements != null && jsonAction.movements.Length > 0 ? ParseMovement(jsonAction.movements) : null,

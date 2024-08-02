@@ -77,6 +77,7 @@ public class DanceFormation : MonoBehaviour
         GameObject go = new GameObject(name);
         go.transform.parent = _positionParent;
         go.transform.localPosition = placement.position;
+        go.transform.rotation = DanceUtility.GetRotationFromDirection(placement.startFacing);
 
         DancerPosition position = go.AddComponent<DancerPosition>();
         position.Init(this);
@@ -138,7 +139,7 @@ public class DanceFormation : MonoBehaviour
             }
             else
             {
-                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {_currentPart.name}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
+                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {(_currentPart != null ? _currentPart.name : "NULL")}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
             }
         }
 

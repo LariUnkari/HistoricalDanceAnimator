@@ -6,4 +6,5 @@ public struct JSONDancerPosition
     public string variant;
     public float groupPosition;
     public float rolePosition;
+    public string startFacing;
 }

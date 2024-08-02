@@ -89,7 +89,7 @@ public class DanceScene : MonoBehaviour
         _beatTime = _danceTime - _currentBeatIndex * _beatDuration;
         _beatT = _beatTime / _beatDuration;
 
-        Debug.Log($"First beat time is now ({_danceData.firstBeatTime:F3}s)! Beat duration is {_beatDuration:F3} DanceTime {_danceTime:F3}s");
+        Debug.Log($"First beat time is ({_danceData.firstBeatTime:F3}s)! Beat duration is {_beatDuration:F3} DanceTime {_danceTime:F3}s");
         _danceMusicDuration = _musicSource.clip.length - _danceData.firstBeatTime;
         _formation.BeginDance();
         _musicSource.Play();
