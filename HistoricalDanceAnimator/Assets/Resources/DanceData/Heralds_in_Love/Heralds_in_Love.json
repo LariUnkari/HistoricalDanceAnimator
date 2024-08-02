@@ -22,10 +22,10 @@
     "formation": [
         { "group": "A", "role": "Lord", "variant": "1", "groupPosition": 1.5, "rolePosition": -0.5 },
         { "group": "A", "role": "Lady", "variant": "1", "groupPosition": 1.5, "rolePosition": 0.5 },
-        { "group": "B", "role": "Lord", "variant": "3", "groupPosition": 0.5, "rolePosition": -0.5 },
-        { "group": "B", "role": "Lady", "variant": "3", "groupPosition": 0.5, "rolePosition": 0.5 },
-        { "group": "C", "role": "Lord", "variant": "2", "groupPosition": -0.5, "rolePosition": -0.5 },
-        { "group": "C", "role": "Lady", "variant": "2", "groupPosition": -0.5, "rolePosition": 0.5 },
+        { "group": "B", "role": "Lord", "variant": "2", "groupPosition": 0.5, "rolePosition": -0.5 },
+        { "group": "B", "role": "Lady", "variant": "2", "groupPosition": 0.5, "rolePosition": 0.5 },
+        { "group": "C", "role": "Lord", "variant": "3", "groupPosition": -0.5, "rolePosition": -0.5 },
+        { "group": "C", "role": "Lady", "variant": "3", "groupPosition": -0.5, "rolePosition": 0.5 },
         { "group": "D", "role": "Lord", "variant": "4", "groupPosition": -1.5, "rolePosition": -0.5 },
         { "group": "D", "role": "Lady", "variant": "4", "groupPosition": -1.5, "rolePosition": 0.5 }
     ],
@@ -738,7 +738,7 @@
             ]
         },
         {
-            "part": "Chorus 2",
+            "part": "Chorus 2 - Ladies",
             "time": 96,
             "actions": [
                 {
@@ -1099,7 +1099,7 @@
             ]
         },
         {
-            "part": "Chorus 3",
+            "part": "Chorus 3 - All",
             "time": 160,
             "actions": [
                 {
