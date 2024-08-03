@@ -1,5 +1,5 @@
 [System.Serializable]
-public class DanceActionTransition 
+public class DanceActionRotationTransition 
 {
     public float time;
     public float duration;
@@ -7,7 +7,7 @@ public class DanceActionTransition
     public DanceDirection direction;
     public float amount;
 
-    public DanceActionTransition(float time, float duration, DanceDirection direction, float amount)
+    public DanceActionRotationTransition(float time, float duration, DanceDirection direction, float amount)
     {
         this.time = time;
         this.duration = duration;

@@ -1,5 +1,5 @@
 [System.Serializable]
-public struct JSONDanceActionTransition 
+public struct JSONDanceActionRotationTransition
 {
     public float time;
     public float duration;

@@ -454,7 +454,7 @@ public class DataLoader : MonoBehaviour
             jsonAction.duration,
             ParseDirection(jsonAction.startFacing),
             jsonAction.movements != null && jsonAction.movements.Length > 0 ? ParseMovement(jsonAction.movements) : null,
-            ParseTransitions(jsonAction.transitions),
+            ParsePositionTransitions(jsonAction.positionTransitions, jsonAction.rotationTransitions),
             actionPreset.animation,
             actionPreset.duration);
 
@@ -481,23 +481,46 @@ public class DataLoader : MonoBehaviour
         return new DanceMovement(directions, vector);
     }
 
-    private DanceActionTransitions ParseTransitions(JSONDanceActionTransition[] jsonTransitions)
+    private DanceActionTransitions ParsePositionTransitions(JSONDanceActionPositionTransition[] positions, JSONDanceActionRotationTransition[] rotations)
     {
-        if (jsonTransitions == null || jsonTransitions.Length == 0)
-        {
+        if ((positions == null || positions.Length == 0) && (rotations == null || rotations.Length == 0))
             return null;
-        }
 
         DanceActionTransitions transitions = new DanceActionTransitions();
-        //DanceActionTransition[] transitions = new DanceActionTransition[jsonTransitions.Length];
 
-        JSONDanceActionTransition json;
-        for (int i = 0; i < jsonTransitions.Length; i++)
+        if (positions != null)
         {
-            json = jsonTransitions[i];
-            Debug.Log($"Parsing transition[{i}] time={json.time}, duration={json.duration}, direction={json.direction}, amount={json.amount}");
+            JSONDanceActionPositionTransition jsonPos;
+            JSONDanceMovement movement;
+            Vector3 vector, partial;
 
-            transitions.AddTransition(new DanceActionTransition(json.time, json.duration, ParseDirection(json.direction), json.amount));
+            for (int i = 0; i < positions.Length; i++)
+            {
+                jsonPos = positions[i];
+                vector = Vector3.zero;
+
+                for (int k = 0; k < jsonPos.vectors.Length; k++)
+                {
+                    movement = jsonPos.vectors[k];
+                    partial = DanceUtility.GetVectorFromDirection(ParseDirection(movement.direction)) * movement.distance;
+                    vector += partial;
+                    Debug.Log($"Parsing position transition[{i}] time={jsonPos.time}, duration={jsonPos.duration}, partial vector: {movement.direction}^{movement.distance}");
+                }
+
+                Debug.Log($"Parsing position transition[{i}] time={jsonPos.time}, duration={jsonPos.duration}, vector={vector:F3}");
+                transitions.AddTransition(new DanceActionPositionTransition(jsonPos.time, jsonPos.duration, vector));
+            }
+        }
+
+        if (rotations != null)
+        {
+            JSONDanceActionRotationTransition jsonRot;
+            for (int i = 0; i < rotations.Length; i++)
+            {
+                jsonRot = rotations[i];
+                Debug.Log($"Parsing rotation transition[{i}] time={jsonRot.time}, duration={jsonRot.duration}, direction={jsonRot.direction}, amount={jsonRot.amount}");
+                transitions.AddTransition(new DanceActionRotationTransition(jsonRot.time, jsonRot.duration, ParseDirection(jsonRot.direction), jsonRot.amount));
+            }
         }
 
         return transitions;

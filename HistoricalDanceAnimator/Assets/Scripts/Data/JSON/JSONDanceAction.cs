@@ -11,5 +11,6 @@ public struct JSONDanceAction
     public int repeat;
     public string startFacing;
     public JSONDanceMovement[] movements;
-    public JSONDanceActionTransition[] transitions;
+    public JSONDanceActionPositionTransition[] positionTransitions;
+    public JSONDanceActionRotationTransition[] rotationTransitions;
 }

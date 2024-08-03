@@ -4,8 +4,8 @@ using UnityEngine;
 [System.Serializable]
 public class DanceActionTransitions
 {
-    public List<DanceActionTransition> positions = new List<DanceActionTransition>();
-    public List<DanceActionTransition> rotations = new List<DanceActionTransition>();
+    public List<DanceActionPositionTransition> positions = new List<DanceActionPositionTransition>();
+    public List<DanceActionRotationTransition> rotations = new List<DanceActionRotationTransition>();
 
     private bool hasPositionTransitions = false;
     private bool isTransitioningPosition = false;
@@ -41,26 +41,29 @@ public class DanceActionTransitions
         return hasRotationTransitions;
     }
 
-    public void AddTransition(DanceActionTransition transition)
+    public void AddTransition(DanceActionPositionTransition transition)
     {
-        if (transition.direction == DanceDirection.CW || transition.direction == DanceDirection.CCW)
-        {
-            hasRotationTransitions = true;
-            rotations.Add(transition);
-        }
-        else
-        {
-            hasPositionTransitions = true;
-            positions.Add(transition);
-        }
+        hasPositionTransitions = true;
+        positions.Add(transition);
+    }
+
+    public void AddTransition(DanceActionRotationTransition transition)
+    {
+        hasRotationTransitions = true;
+        rotations.Add(transition);
     }
 
     public void OnDanceUpdate(float actionT)
     {
-        DanceActionTransition transition;
-        int i;
+        CheckPositionTransitions(actionT);
+        CheckRotationTransitions(actionT);
+    }
 
-        for (i = Mathf.Max(0, positionTransitionIndex); i < positions.Count; i++)
+    private void CheckPositionTransitions(float actionT)
+    {
+        DanceActionPositionTransition transition;
+
+        for (int i = Mathf.Max(0, positionTransitionIndex); i < positions.Count; i++)
         {
             transition = positions[i];
 
@@ -78,23 +81,7 @@ public class DanceActionTransitions
                 isTransitioningPosition = true;
                 positionTransitionIndex = i;
                 positionFrom = positionOffset;
-                positionTo = positionFrom;
-
-                switch (transition.direction)
-                {
-                    case DanceDirection.Up:
-                        positionTo += Vector3.up;
-                        break;
-                    case DanceDirection.Down:
-                        positionTo += Vector3.down;
-                        break;
-                    case DanceDirection.Left:
-                        positionTo += Vector3.left;
-                        break;
-                    case DanceDirection.Right:
-                        positionTo += Vector3.right;
-                        break;
-                }
+                positionTo = positionFrom + transition.vector;
             }
 
             if (isTransitioningPosition && i == positionTransitionIndex)
@@ -104,8 +91,13 @@ public class DanceActionTransitions
                 break;
             }
         }
+    }
 
-        for (i = Mathf.Max(0, rotationTransitionIndex); i < rotations.Count; i++)
+    private void CheckRotationTransitions(float actionT)
+    {
+        DanceActionRotationTransition transition;
+
+        for (int i = Mathf.Max(0, rotationTransitionIndex); i < rotations.Count; i++)
         {
             transition = rotations[i];
 

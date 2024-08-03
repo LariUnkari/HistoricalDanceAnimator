@@ -9,6 +9,7 @@ public class Pawn : MonoBehaviour
     private Vector3 _dancerAnimationPosition;
     private Vector3 _dancerAnimationDirection;
     private Quaternion _dancerAnimationRotation;
+    private Vector3 _dancerAnimationScale;
 
     private void LateUpdate()
     {
@@ -17,9 +18,11 @@ public class Pawn : MonoBehaviour
         _dancerAnimationPosition = _dancerPosition.GetPosition();
         _dancerAnimationDirection = _dancerPosition.GetDirection();
         _dancerAnimationRotation = _dancerPosition.GetRotation();
+        _dancerAnimationScale = _dancerPosition.GetScale();
 
         transform.position = _dancerAnimationPosition + renderOffset;
         transform.rotation = _dancerAnimationRotation;
+        transform.localScale = _dancerAnimationScale;
     }
 
     public void SetDancerPosition(DancerPosition dancerPosition)

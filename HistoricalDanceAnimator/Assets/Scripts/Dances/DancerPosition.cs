@@ -242,6 +242,11 @@ public class DancerPosition : MonoBehaviour
         return _dancer.up;
     }
 
+    public Vector3 GetScale()
+    {
+        return _dancer.localScale;
+    }
+
     public void OnResume()
     {
         foreach (AnimationState state in _animation)
