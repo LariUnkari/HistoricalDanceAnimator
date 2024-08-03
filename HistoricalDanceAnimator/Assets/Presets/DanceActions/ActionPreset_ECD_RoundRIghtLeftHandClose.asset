@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
-  m_Name: ActionPreset_ECD_Slip
+  m_Name: ActionPreset_ECD_RoundRIghtLeftHandClose
   m_EditorClassIdentifier: 
-  action: Slip
-  variant: 
+  action: RoundRight
+  variant: LeftHandClose
   family: ECD
-  duration: 1
-  animation: {fileID: 7400000, guid: 9137e172e1aa4c0459532010440a5345, type: 2}
+  duration: 8
+  animation: {fileID: 7400000, guid: 50ef5b379ba81104f86a0e919a8249d7, type: 2}

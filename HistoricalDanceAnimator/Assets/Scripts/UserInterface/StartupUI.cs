@@ -135,10 +135,14 @@ public class StartupUI : MonoBehaviour
         GUILayout.EndArea();
     }
 
+    private Vector2 inputScrollPosition;
+
     private void DrawJSONImporter()
     {
         GUILayout.BeginArea(new Rect(panelWidth + 20, 10, panelWidth, panelHeight), GUI.skin.box);
+        inputScrollPosition = GUILayout.BeginScrollView(inputScrollPosition, false, true, GUILayout.Height(panelHeight - 30));
         inputText = GUILayout.TextArea(inputText, GUILayout.ExpandHeight(true));
+        GUILayout.EndScrollView();
         GUILayout.BeginHorizontal();
         GUI.enabled = !isImporting;
         if (GUILayout.Button(new GUIContent("Import dance from JSON"), GUILayout.Width(200)))

@@ -67,7 +67,7 @@
                     "movements": [
                         { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.75, "duration": 0.25, "direction": "cw", "amount": 90 }
                     ]
                 },
@@ -85,7 +85,7 @@
                     "movements": [
                         { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -160,7 +160,7 @@
                     "action": "TurnRight",
                     "duration": 4,
                     "startFacing": "right",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0, "duration": 1, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -175,7 +175,7 @@
                     "action": "TurnRight",
                     "duration": 4,
                     "startFacing": "left",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0, "duration": 1, "direction": "cw", "amount": 90 }
                     ]
                 }
@@ -218,7 +218,7 @@
                     "movements": [
                         { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.75, "duration": 0.25, "direction": "cw", "amount": 90 }
                     ]
                 },
@@ -236,7 +236,7 @@
                     "movements": [
                         { "direction": "backward", "distance": 1.0 }
                     ],
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -319,7 +319,7 @@
                     "action": "TurnLeft",
                     "duration": 4,
                     "startFacing": "right",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0, "duration": 1, "direction": "ccw", "amount": 180 }
                     ]
                 },
@@ -358,7 +358,7 @@
                     "action": "HayForFour-Poles-B",
                     "duration": 32,
                     "startFacing": "down",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.975, "duration": 0.025, "direction": "cw", "amount": 180 }
                     ]
                 },
@@ -379,7 +379,7 @@
                     "action": "HayForFour-Poles-D",
                     "duration": 32,
                     "startFacing": "down",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.975, "duration": 0.025, "direction": "cw", "amount": 180 }
                     ]
                 },
@@ -721,7 +721,7 @@
                     "action": "TurnLeft",
                     "duration": 4,
                     "startFacing": "left",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0, "duration": 1, "direction": "ccw", "amount": 180 }
                     ]
                 },
@@ -750,7 +750,7 @@
                     "variant": "MiddleStart-A",
                     "duration": 32,
                     "startFacing": "down",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.975, "duration": 0.025, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -763,7 +763,7 @@
                     "variant": "MiddleStart-B",
                     "duration": 32,
                     "startFacing": "down",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.975, "duration": 0.025, "direction": "cw", "amount": 90 }
                     ]
                 },
@@ -776,7 +776,7 @@
                     "variant": "MiddleStart-C",
                     "duration": 32,
                     "startFacing": "down",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.975, "duration": 0.025, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -789,7 +789,7 @@
                     "variant": "MiddleStart-D",
                     "duration": 32,
                     "startFacing": "down",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.975, "duration": 0.025, "direction": "cw", "amount": 90 }
                     ]
                 },
@@ -824,7 +824,7 @@
                     "movements": [
                         { "direction": "forward", "distance": 0.3 }
                     ],
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.5, "duration": 0.45, "direction": "cw", "amount": 90 }
                     ]
                 }
@@ -845,7 +845,7 @@
                     "action": "ArmingRight",
                     "duration": 8,
                     "startFacing": "right",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.9, "duration": 0.1, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -860,7 +860,7 @@
                     "action": "ArmingRight",
                     "duration": 8,
                     "startFacing": "left",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.9, "duration": 0.1, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -935,7 +935,7 @@
                     "action": "TurnRight",
                     "duration": 4,
                     "startFacing": "right",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.05, "duration": 0.9, "direction": "ccw", "amount": 90 }
                     ]
                 },
@@ -950,7 +950,7 @@
                     "action": "TurnRight",
                     "duration": 4,
                     "startFacing": "left",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.05, "duration": 0.9, "direction": "ccw", "amount": 90 }
                     ]
                 }
@@ -971,7 +971,7 @@
                     "action": "ArmingLeft",
                     "duration": 8,
                     "startFacing": "right",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.9, "duration": 0.1, "direction": "cw", "amount": 90 }
                     ]
                 },
@@ -986,7 +986,7 @@
                     "action": "ArmingLeft",
                     "duration": 8,
                     "startFacing": "left",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.9, "duration": 0.1, "direction": "cw", "amount": 90 }
                     ]
                 },
@@ -1069,7 +1069,7 @@
                     "action": "TurnLeft",
                     "duration": 4,
                     "startFacing": "right",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0, "duration": 1, "direction": "ccw", "amount": 180 }
                     ]
                 },
@@ -1082,7 +1082,7 @@
                     "action": "TurnLeft",
                     "duration": 4,
                     "startFacing": "left",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0, "duration": 1, "direction": "ccw", "amount": 180 }
                     ]
                 },
@@ -1111,7 +1111,7 @@
                     "variant": "MiddleStart-A",
                     "duration": 32,
                     "startFacing": "downhall",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.95, "duration": 0.05, "direction": "cw", "amount": 180 }
                     ]
                 },
@@ -1144,7 +1144,7 @@
                     "variant": "B",
                     "duration": 32,
                     "startFacing": "downhall",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
                     ]
                 },
@@ -1157,7 +1157,7 @@
                     "variant": "MiddleStart-C",
                     "duration": 32,
                     "startFacing": "downhall",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.95, "duration": 0.05, "direction": "cw", "amount": 180 }
                     ]
                 },
@@ -1190,7 +1190,7 @@
                     "variant": "D",
                     "duration": 32,
                     "startFacing": "downhall",
-                    "transitions": [
+                    "rotationTransitions": [
                         { "time": 0.95, "duration": 0.05, "direction": "ccw", "amount": 180 }
                     ]
                 }

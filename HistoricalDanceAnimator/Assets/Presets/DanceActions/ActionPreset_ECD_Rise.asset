@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
-  m_Name: ActionPreset_ECD_Slip
+  m_Name: ActionPreset_ECD_Rise
   m_EditorClassIdentifier: 
-  action: Slip
+  action: Rise
   variant: 
   family: ECD
   duration: 1
-  animation: {fileID: 7400000, guid: 9137e172e1aa4c0459532010440a5345, type: 2}
+  animation: {fileID: 7400000, guid: 97e668147cb05c54499ededbd87d474f, type: 2}
