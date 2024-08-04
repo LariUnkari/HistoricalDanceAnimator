@@ -53,13 +53,13 @@ public class DanceActionTransitions
         rotations.Add(transition);
     }
 
-    public void OnDanceUpdate(float actionT)
+    public void OnDanceUpdate(float actionT, bool doDebug)
     {
-        CheckPositionTransitions(actionT);
-        CheckRotationTransitions(actionT);
+        CheckPositionTransitions(actionT, doDebug);
+        CheckRotationTransitions(actionT, doDebug);
     }
 
-    private void CheckPositionTransitions(float actionT)
+    private void CheckPositionTransitions(float actionT, bool doDebug)
     {
         DanceActionPositionTransition transition;
 
@@ -70,6 +70,9 @@ public class DanceActionTransitions
             if (isTransitioningPosition && i == positionTransitionIndex && actionT >= transition.endTime)
             {
                 // Transition ended
+                if (doDebug)
+                    Debug.Log($"PositionTransition[{i}] ended at t:{actionT:F3}>={transition.endTime:F3}, vector={transition.vector}");
+
                 positionTransitionT = 1f;
                 positionOffset = positionTo;
                 isTransitioningPosition = false;
@@ -78,22 +81,28 @@ public class DanceActionTransitions
             if (!isTransitioningPosition && i > positionTransitionIndex && actionT >= transition.time)
             {
                 // New transition starting
+                if (doDebug)
+                    Debug.Log($"PositionTransition[{i}] starting at t:{actionT:F3}>={transition.time:F3}, vector={transition.vector}");
+
                 isTransitioningPosition = true;
                 positionTransitionIndex = i;
                 positionFrom = positionOffset;
                 positionTo = positionFrom + transition.vector;
+
+                // Catch transition ending before starting
+                if (actionT >= transition.endTime)
+                    i--;
             }
 
             if (isTransitioningPosition && i == positionTransitionIndex)
             {
                 positionTransitionT = (actionT - transition.time) / transition.duration;
                 positionOffset = Vector3.Lerp(positionFrom, positionTo, positionTransitionT);
-                break;
             }
         }
     }
 
-    private void CheckRotationTransitions(float actionT)
+    private void CheckRotationTransitions(float actionT, bool doDebug)
     {
         DanceActionRotationTransition transition;
 
@@ -104,6 +113,9 @@ public class DanceActionTransitions
             if (isTransitioningRotation && i == rotationTransitionIndex && actionT >= transition.endTime)
             {
                 // Transition ended
+                if (doDebug)
+                    Debug.Log($"RotationTransition[{i}] ending at t:{actionT:F3}>={transition.endTime:F3}, direction={transition.direction}, amount={transition.amount}");
+
                 rotationTransitionT = 1f;
                 rotationOffset = rotationTo;
                 isTransitioningRotation = false;
@@ -112,17 +124,23 @@ public class DanceActionTransitions
             if (!isTransitioningRotation && i > rotationTransitionIndex && actionT >= transition.time)
             {
                 // New transition starting
+                if (doDebug)
+                    Debug.Log($"RotationTransition[{i}] starting at t:{actionT:F3}>={transition.time:F3}, direction={transition.direction}, amount={transition.amount}");
+
                 isTransitioningRotation = true;
                 rotationTransitionIndex = i;
                 rotationFrom = rotationOffset;
                 rotationTo = rotationFrom + (transition.direction == DanceDirection.CW ? -transition.amount : transition.amount);
+
+                // Catch transition ending before starting
+                if (actionT >= transition.endTime)
+                    i--;
             }
 
             if (isTransitioningRotation && i == rotationTransitionIndex)
             {
                 rotationTransitionT = (actionT - transition.time) / transition.duration;
                 rotationOffset = Mathf.Lerp(rotationFrom, rotationTo, rotationTransitionT);
-                break;
             }
         }
     }

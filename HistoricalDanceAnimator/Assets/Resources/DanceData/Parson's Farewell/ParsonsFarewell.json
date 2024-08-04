@@ -1921,7 +1921,7 @@
                         ]}
                     ],
                     "rotationTransitions": [
-                        { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 215 }
+                        { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 225 }
                     ]
                 },
                 {
@@ -1967,7 +1967,7 @@
                         ]}
                     ],
                     "rotationTransitions": [
-                        { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 215 }
+                        { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 225 }
                     ]
                 },
                 {

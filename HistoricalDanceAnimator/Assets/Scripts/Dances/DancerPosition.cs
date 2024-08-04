@@ -123,7 +123,7 @@ public class DancerPosition : MonoBehaviour
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasTransitions())
         {
-            _currentDanceAction.transitions.OnDanceUpdate(_actionT);
+            _currentDanceAction.transitions.OnDanceUpdate(_actionT, _doDebug);
         }
     }
 
@@ -190,6 +190,9 @@ public class DancerPosition : MonoBehaviour
         if (_doDebug)
             Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: '{danceAction.movement}'");
 
+        if (danceAction.transitions != null)
+            danceAction.transitions.OnDanceUpdate(1f, _doDebug);
+
         transform.position = GetPosition();
         transform.rotation = GetRotation();
         _dancer.localPosition = Vector3.zero;
@@ -197,7 +200,9 @@ public class DancerPosition : MonoBehaviour
 
         //_isTransitioning = false;
         //_isTransitionComplete = false;
-        _currentDanceAction = null;
+
+        if (danceAction == _currentDanceAction)
+            _currentDanceAction = null;
     }
 
     public Vector3 GetPosition()
