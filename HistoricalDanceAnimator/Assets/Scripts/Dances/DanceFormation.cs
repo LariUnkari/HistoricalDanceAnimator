@@ -121,7 +121,7 @@ public class DanceFormation : MonoBehaviour
         _beatIndex = -1;
 
         foreach (DancerPosition dancerPosition in _dancerPositions)
-            dancerPosition.BeginDance();
+            dancerPosition.OnDanceBegun();
     }
 
     public void DanceUpdate(float danceTime, int beatIndex, float beatTime, float beatT, float beatDuration)
@@ -145,6 +145,15 @@ public class DanceFormation : MonoBehaviour
 
         foreach (DancerPosition dancerPosition in _dancerPositions)
             dancerPosition.DanceUpdate(danceTime, _beatIndex, beatTime, beatT, beatDuration);
+    }
+
+    public void EndDance()
+    {
+        foreach (DancerPosition dancerPosition in _dancerPositions)
+        {
+            if (dancerPosition.IsDancing)
+                dancerPosition.EndDanceAction();
+        }
     }
 
     public void OnResume()

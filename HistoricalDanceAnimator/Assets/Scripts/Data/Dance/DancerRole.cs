@@ -47,6 +47,15 @@ public class DancerRole
         return actionsOnBeat.TryGetValue(beatIndex, out danceAction);
     }
 
+    public void ResetActionTransitions()
+    {
+        foreach (DanceAction action in actionsOnBeat.Values)
+        {
+            if (action.transitions != null)
+                action.transitions.Reset();
+        }
+    }
+
     public static string GetRoleKey(string group, string role)
     {
         return $"{group}-{role}";

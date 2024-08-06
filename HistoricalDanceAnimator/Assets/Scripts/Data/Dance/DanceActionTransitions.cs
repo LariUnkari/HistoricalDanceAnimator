@@ -9,19 +9,20 @@ public class DanceActionTransitions
 
     private bool hasPositionTransitions = false;
     private bool isTransitioningPosition = false;
-    private int positionTransitionIndex = -1;
-    private float positionTransitionT = 0f;
-    private Vector3 positionOffset = Vector3.zero;
-    private Vector3 positionFrom = Vector3.zero;
-    private Vector3 positionTo = Vector3.zero;
-
     private bool hasRotationTransitions = false;
     private bool isTransitioningRotation = false;
-    private int rotationTransitionIndex = -1;
-    private float rotationTransitionT = 0f;
-    private float rotationOffset = 0f;
-    private float rotationFrom = 0f;
-    private float rotationTo = 0f;
+
+    private int positionTransitionIndex;
+    private float positionTransitionT;
+    private Vector3 positionOffset;
+    private Vector3 positionFrom;
+    private Vector3 positionTo;
+
+    private int rotationTransitionIndex;
+    private float rotationTransitionT;
+    private float rotationOffset;
+    private float rotationFrom;
+    private float rotationTo;
 
     public Vector3 PositionOffset { get { return positionOffset; } }
     public float RotationOffset { get { return rotationOffset; } }
@@ -45,6 +46,21 @@ public class DanceActionTransitions
     {
         hasPositionTransitions = true;
         positions.Add(transition);
+    }
+
+    public void Reset()
+    {
+        positionTransitionIndex = -1;
+        positionTransitionT = 0f;
+        positionOffset = Vector3.zero;
+        positionFrom = Vector3.zero;
+        positionTo = Vector3.zero;
+
+        rotationTransitionIndex = -1;
+        rotationTransitionT = 0f;
+        rotationOffset = 0f;
+        rotationFrom = 0f;
+        rotationTo = 0f;
     }
 
     public void AddTransition(DanceActionRotationTransition transition)

@@ -244,7 +244,7 @@ public class DataLoader : MonoBehaviour
 
         danceData.music = musicClip;
         danceData.firstBeatTime = json.musicFirstBeatTime;
-        danceData.bpm = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
+        danceData.bpmChanges = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
 
         danceData.SetGroups(ParseGroups(json.groups));
         danceData.placements = ParseFormation(json.formation, danceData.danceType);
@@ -253,9 +253,9 @@ public class DataLoader : MonoBehaviour
         return danceData;
     }
 
-    private MusicBPM ParseBPM(float initialBPM, float startTime, JSONMusicBeatTiming[] beatTimings)
+    private MusicBPMChanges ParseBPM(float initialBPM, float startTime, JSONMusicBeatTiming[] beatTimings)
     {
-        MusicBPM musicBPM = new MusicBPM();
+        MusicBPMChanges musicBPM = new MusicBPMChanges();
         musicBPM.SetInitialBPM(initialBPM);
 
         if (beatTimings != null && beatTimings.Length > 0)
@@ -274,10 +274,7 @@ public class DataLoader : MonoBehaviour
                 Debug.Log($"Parsed BPM change on beat {timing.beat} @" +
                     $" time: {TimeSpan.FromSeconds(timing.time).ToString("mm'm 'ss's 'fff'ms'")}" +
                     $", span from previous: {TimeSpan.FromSeconds(span).ToString("mm'm 'ss's 'fff'ms'")} = {bpm}bpm");
-                if (beat == 0)
-                    musicBPM.currentBPM = bpm;
-                else
-                    musicBPM.AddBPMChange(beat, bpm);
+                musicBPM.AddBPMChange(beat, bpm);
                 beat = timing.beat;
                 time = timing.time;
             }

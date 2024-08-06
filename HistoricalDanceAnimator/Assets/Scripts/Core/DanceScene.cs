@@ -12,26 +12,28 @@ public class DanceScene : MonoBehaviour
     private DanceData _danceData;
 
     private bool _isPaused;
-    private bool _hasStarted;
+    private bool _hasMusicStarted;
     private bool _hasDanceBegun;
     private float _danceTime;
     private float _danceMusicDuration;
     private int _currentBeatIndex;
     private int _previousBeatIndex;
+    private float _currentBPM;
+    private float _nextBPM;
+    private float _beatDuration;
+    private float _beatTime;
+    private float _beatT;
     private int _bpmChangeBeatIndex;
     private float _bpmChangeTime;
     private int _bpmChangeSinceBeats;
     private float _bpmChangeSinceTime;
-    private float _beatDuration;
-    private float _beatTime;
-    private float _beatT;
 
     public bool IsPaused { get { return _isPaused; } }
-    public bool HasStarted { get { return _hasStarted; } }
+    public bool HasStarted { get { return _hasMusicStarted; } }
     public string DanceName { get { return _danceData.danceName; } }
     public float DanceTime { get { return _danceTime; } }
     public float DanceDuration { get { return _danceMusicDuration; } }
-    public float DanceBPM { get { return _danceData.bpm.currentBPM; } }
+    public float DanceBPM { get { return _currentBPM; } }
     public string DancePart { get { return _formation.CurrentPart; } }
 
     private void Awake()
@@ -71,15 +73,25 @@ public class DanceScene : MonoBehaviour
 
         if (_musicSource.isPlaying)
             UpdateDanceRoutine();
+        else if (_hasMusicStarted && !_isPaused)
+            EndDance();
     }
 
-    public void BeginDanceRoutine()
+    public void StartDance()
+    {
+        _isPaused = false;
+        _hasMusicStarted = true;
+        _danceTime = 0f;
+        _musicSource.clip = _danceData.music;
+        _musicSource.Play();
+        _currentBPM = _danceData.bpmChanges.initialBPM;
+
+        BeginDanceRoutine();
+    }
+
+    private void BeginDanceRoutine()
     {
         Debug.Log("DanceRoutine begins!");
-
-        _isPaused = false;
-        _hasStarted = true;
-        _musicSource.clip = _danceData.music;
 
         _currentBeatIndex = -1;
         _previousBeatIndex = -1;
@@ -89,14 +101,13 @@ public class DanceScene : MonoBehaviour
         _bpmChangeSinceBeats = 0;
         _bpmChangeSinceTime = _danceTime;
 
-        _beatDuration = 60f / _danceData.bpm.currentBPM;
+        _beatDuration = 60f / _currentBPM;
         _beatTime = _danceTime - _currentBeatIndex * _beatDuration;
         _beatT = _beatTime / _beatDuration;
 
         Debug.Log($"First beat time is ({_danceData.firstBeatTime:F3}s)! Beat duration is {_beatDuration:F3} DanceTime {_danceTime:F3}s");
         _danceMusicDuration = _musicSource.clip.length - _danceData.firstBeatTime;
         _formation.BeginDance();
-        _musicSource.Play();
     }
 
     public void Play()
@@ -138,19 +149,34 @@ public class DanceScene : MonoBehaviour
             if (_metronomeSource != null)
                 _metronomeSource.PlayOneShot(_metronomeSource.clip);
 
-            if (_danceData.bpm.CheckForBPMChange(_currentBeatIndex))
+            if (_danceData.bpmChanges.CheckForBPMChange(_currentBeatIndex, out _nextBPM))
             {
                 //int beatsSinceLastChange = currentBeatIndex - _danceData.bpm.lastBPMChangeBeat;
                 //currentBeatIndex = Mathf.FloorToInt((danceTime - bpmChangeTime) / beatDuration);
+                _currentBPM = _nextBPM;
                 _bpmChangeTime = _danceTime - _beatTime;
                 _bpmChangeBeatIndex = _currentBeatIndex;
-                _beatDuration = 60f / _danceData.bpm.currentBPM;
-                Debug.Log($"BPM Changed to {_danceData.bpm.currentBPM:F2}, beat duration: {_beatDuration:F3}");
+                _beatDuration = 60f / _currentBPM;
+                Debug.Log($"BPM Changed to {_currentBPM:F2}, beat duration: {_beatDuration:F3}");
             }
         }
 
         _formation.DanceUpdate(_danceTime, _currentBeatIndex, _beatTime, _beatT, _beatDuration);
 
         _previousBeatIndex = _currentBeatIndex;
+    }
+
+    public void EndDance()
+    {
+        _isPaused = false;
+        _hasMusicStarted = false;
+        _hasDanceBegun = false;
+        EndDancreRoutine();
+    }
+
+    public void EndDancreRoutine()
+    {
+        Debug.Log("DanceRoutine ended!");
+        _formation.EndDance();
     }
 }

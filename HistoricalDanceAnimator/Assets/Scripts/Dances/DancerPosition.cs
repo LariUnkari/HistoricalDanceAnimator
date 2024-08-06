@@ -4,6 +4,7 @@ using UnityEngine;
 public class DancerPosition : MonoBehaviour
 {
     public bool _doDebug;
+    public bool _doDebugTransitions;
 
     /// <summary>
     /// Transform moved by dance action animations,
@@ -43,6 +44,7 @@ public class DancerPosition : MonoBehaviour
     [HideInInspector] private DanceAction _nextDanceAction;
 
     public DancerRole Role { get { return _role; } }
+    public bool IsDancing { get { return _currentDanceAction != null; } }
 
     public void Init(DanceFormation formation)
     {
@@ -73,9 +75,10 @@ public class DancerPosition : MonoBehaviour
             _animation.AddClip(action.animationClip, action.animationClip.name);
     }
 
-    public void BeginDance()
+    public void OnDanceBegun()
     {
         _beatIndex = -1;
+        _role.ResetActionTransitions();
     }
 
     public void DanceUpdate(float danceTime, int beatIndex, float beatTime, float beatT, float beatDuration)
@@ -185,6 +188,17 @@ public class DancerPosition : MonoBehaviour
             OnDanceActionCompleted(danceAction);
     }
 
+    public void EndDanceAction()
+    {
+        if (_currentDanceAction != null)
+        {
+            _actionT = 1f;
+            OnDanceActionCompleted(_currentDanceAction);
+        }
+        else
+            Debug.LogWarning($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: No dance action to end!");
+    }
+
     private void OnDanceActionCompleted(DanceAction danceAction)
     {
         if (_doDebug)
@@ -195,6 +209,10 @@ public class DancerPosition : MonoBehaviour
 
         transform.position = GetPosition();
         transform.rotation = GetRotation();
+
+        if (_doDebug)
+            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Action ended, position={transform.position}, rotation={transform.rotation.eulerAngles}");
+
         _dancer.localPosition = Vector3.zero;
         _dancer.localRotation = Quaternion.identity;
 
@@ -217,13 +235,21 @@ public class DancerPosition : MonoBehaviour
             );
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasPositionTransitions())
+        {
+            if (_doDebugTransitions)
+                Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying position transition of offset={_currentDanceAction.transitions.PositionOffset} at t={_actionT}");
+
             return transform.TransformPoint(_currentDanceAction.transitions.PositionOffset + _dancer.localPosition);
+        }
 
         return transform.TransformPoint(_dancer.localPosition);
     }
 
     public Quaternion GetRotation()
     {
+        if (_dancer == null || _currentDanceAction == null)
+            return transform.rotation;
+
         _lookDirection = GetDirection();
 
         _lookRotation = Quaternion.FromToRotation(Vector3.up, _lookDirection);
@@ -241,6 +267,9 @@ public class DancerPosition : MonoBehaviour
     {
         if (_currentDanceAction != null && _currentDanceAction.transitions != null && _currentDanceAction.transitions.HasRotationTransitions())
         {
+            if (_doDebugTransitions)
+                Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying rotation transition of angle={_currentDanceAction.transitions.RotationOffset} at t={_actionT}");
+
             return Quaternion.AngleAxis(_currentDanceAction.transitions.RotationOffset, Vector3.forward) * _dancer.up;
         }
 

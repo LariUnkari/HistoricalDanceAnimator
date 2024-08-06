@@ -62,7 +62,7 @@ public class DanceUI : MonoBehaviour
     {
         if (!_danceScene.HasStarted)
         {
-            _danceScene.BeginDanceRoutine();
+            _danceScene.StartDance();
             return;
         }
 

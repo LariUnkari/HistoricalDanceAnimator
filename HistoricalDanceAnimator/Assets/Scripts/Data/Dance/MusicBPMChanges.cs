@@ -3,29 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class MusicBPM
+public class MusicBPMChanges
 {
     public float initialBPM;
-    public float currentBPM;
-
-    private float nextBPM;
     private Dictionary<int, float> bpmChanges = new Dictionary<int, float>();
 
-    public bool CheckForBPMChange(int beatIndex)
+    public bool CheckForBPMChange(int beatIndex, out float newBPM)
     {
-        if (bpmChanges.TryGetValue(beatIndex, out nextBPM))
-        {
-            currentBPM = nextBPM;
+        if (bpmChanges.TryGetValue(beatIndex, out newBPM))
             return true;
-        }
 
+        newBPM = 0f;
         return false;
     }
 
     public void SetInitialBPM(float bpm)
     {
         initialBPM = bpm;
-        currentBPM = bpm;
     }
 
     public void AddBPMChange(int beatIndex, float bpm)
