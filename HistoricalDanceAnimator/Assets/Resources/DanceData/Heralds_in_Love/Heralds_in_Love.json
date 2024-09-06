@@ -1,7 +1,9 @@
 {
     "danceName": "Heralds in Love",
-    "danceType": "longways",
     "danceFamily": "ECD",
+    "_new_danceSet": { "form": "Line", "pattern": "Longways" },
+    "danceSet": "Longways",
+    "dancerGroupCount": { "preset": 4, "min": 4, "max": 4 },
     "musicPath": "Heralds in Love (Ensemble Rigodon) (as).mp3",
     "musicBPM": 120.83,
     "musicFirstBeatTime": 4.75,
@@ -14,20 +16,40 @@
         { "beat": 192, "time": 99.22}
     ],
     "groups": [
-        { "group": "A", "roles": [ "Lord", "Lady" ] },
-        { "group": "B", "roles": [ "Lord", "Lady" ] },
-        { "group": "C", "roles": [ "Lord", "Lady" ] },
-        { "group": "D", "roles": [ "Lord", "Lady" ] }
+        { "group": "A", "roles": [
+            { "role": "Lord", "variant": "1" },
+            { "role": "Lady", "variant": "1" }
+        ] },
+        { "group": "B", "roles": [
+            { "role": "Lord", "variant": "2" },
+            { "role": "Lady", "variant": "2" }
+        ] },
+        { "group": "C", "roles": [
+            { "role": "Lord", "variant": "3" },
+            { "role": "Lady", "variant": "3" }
+        ] },
+        { "group": "D", "roles": [
+            { "role": "Lord", "variant": "4" },
+            { "role": "Lady", "variant": "4" }
+        ] }
     ],
     "formation": [
-        { "group": "A", "role": "Lord", "variant": "1", "groupPosition": 1.5, "rolePosition": -0.5 },
-        { "group": "A", "role": "Lady", "variant": "1", "groupPosition": 1.5, "rolePosition": 0.5 },
-        { "group": "B", "role": "Lord", "variant": "2", "groupPosition": 0.5, "rolePosition": -0.5 },
-        { "group": "B", "role": "Lady", "variant": "2", "groupPosition": 0.5, "rolePosition": 0.5 },
-        { "group": "C", "role": "Lord", "variant": "3", "groupPosition": -0.5, "rolePosition": -0.5 },
-        { "group": "C", "role": "Lady", "variant": "3", "groupPosition": -0.5, "rolePosition": 0.5 },
-        { "group": "D", "role": "Lord", "variant": "4", "groupPosition": -1.5, "rolePosition": -0.5 },
-        { "group": "D", "role": "Lady", "variant": "4", "groupPosition": -1.5, "rolePosition": 0.5 }
+        { "group": "A", "position": 1.5, "roles": [
+            { "role": "Lord", "position": -0.5 },
+            { "role": "Lady", "position": 0.5 }
+        ] },
+        { "group": "B", "position": 0.5, "roles": [
+            { "role": "Lord", "position": -0.5 },
+            { "role": "Lady", "position": 0.5 }
+        ] },
+        { "group": "C", "position": -0.5, "roles": [
+            { "role": "Lord", "position": -0.5 },
+            { "role": "Lady", "position": 0.5 }
+        ] },
+        { "group": "D", "position": -1.5, "roles": [
+            { "role": "Lord", "position": -0.5 },
+            { "role": "Lady", "position": 0.5 }
+        ] }
     ],
     "choreography": [
         {

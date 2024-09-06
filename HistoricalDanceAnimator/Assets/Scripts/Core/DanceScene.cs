@@ -18,6 +18,9 @@ public class DanceScene : MonoBehaviour
     private float _danceMusicDuration;
     private int _currentBeatIndex;
     private int _previousBeatIndex;
+    private int _currentDanceBeatIndex;
+    private int _previousDanceBeatIndex;
+    private int _currentDanceRepeatIndex;
     private float _currentBPM;
     private float _nextBPM;
     private float _beatDuration;
@@ -68,12 +71,12 @@ public class DanceScene : MonoBehaviour
 
     private void Update()
     {
-        if (_danceData == null || _musicSource == null)
+        if (_danceData == null || _musicSource == null || !_hasMusicStarted)
             return;
 
         if (_musicSource.isPlaying)
             UpdateDanceRoutine();
-        else if (_hasMusicStarted && !_isPaused)
+        else if (!_isPaused)
             EndDance();
     }
 
@@ -95,6 +98,9 @@ public class DanceScene : MonoBehaviour
 
         _currentBeatIndex = -1;
         _previousBeatIndex = -1;
+        _currentDanceBeatIndex = -1;
+        _previousDanceBeatIndex = -1;
+        _currentDanceRepeatIndex = 0;
 
         _bpmChangeBeatIndex = 0;
         _bpmChangeTime = 0f;
@@ -124,7 +130,7 @@ public class DanceScene : MonoBehaviour
         _formation.OnPause();
     }
 
-    private void UpdateDanceRoutine()
+    private void UpdateDanceTime()
     {
         _danceTime = _musicSource.time - _danceData.firstBeatTime;
 
@@ -159,11 +165,36 @@ public class DanceScene : MonoBehaviour
                 _beatDuration = 60f / _currentBPM;
                 Debug.Log($"BPM Changed to {_currentBPM:F2}, beat duration: {_beatDuration:F3}");
             }
+
+            if (_danceData.danceLength > 0)
+            {
+                _currentDanceBeatIndex = _currentBeatIndex % _danceData.danceLength;
+
+                if (_currentDanceBeatIndex < _previousDanceBeatIndex)
+                    _currentDanceRepeatIndex++;
+            }
+            else
+            {
+                _currentDanceBeatIndex = _currentBeatIndex;
+            }
+        }
+    }
+
+    private void UpdateDanceRoutine()
+    {
+        UpdateDanceTime();
+
+        if ((_danceData.danceLength > 0 && _currentBeatIndex >= _danceData.danceLength) ||
+            (_danceData.danceRepeats > 0 && _currentDanceRepeatIndex >= _danceData.danceRepeats))
+        {
+            EndDance();
+            return;
         }
 
-        _formation.DanceUpdate(_danceTime, _currentBeatIndex, _beatTime, _beatT, _beatDuration);
+        _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _currentDanceRepeatIndex, _beatTime, _beatT, _beatDuration);
 
         _previousBeatIndex = _currentBeatIndex;
+        _previousDanceBeatIndex = _currentDanceBeatIndex;
     }
 
     public void EndDance()
@@ -171,10 +202,10 @@ public class DanceScene : MonoBehaviour
         _isPaused = false;
         _hasMusicStarted = false;
         _hasDanceBegun = false;
-        EndDancreRoutine();
+        EndDanceRoutine();
     }
 
-    public void EndDancreRoutine()
+    public void EndDanceRoutine()
     {
         Debug.Log("DanceRoutine ended!");
         _formation.EndDance();

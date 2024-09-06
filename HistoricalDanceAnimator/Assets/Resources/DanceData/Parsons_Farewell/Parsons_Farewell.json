@@ -1,7 +1,10 @@
 {
     "danceName": "Parson's Farewell",
-    "danceType": "Square",
     "danceFamily": "ECD",
+    "danceSet": "Square",
+    "dancerGroupType": "Couple",
+    "dancerGroupCount": { "preset": 2, "min": 2, "max": 2 },
+    "danceProgression": "None",
     "musicPath": "Parsons Farewell (slow) (Pandemonium).mp3",
     "musicBPM": 98.97,
     "musicFirstBeatTime": 7.67,
@@ -30,14 +33,24 @@
         { "beat": 145, "time": 99.00}
     ],
     "groups": [
-        { "group": "A", "roles": [ "Lord", "Lady" ] },
-        { "group": "B", "roles": [ "Lord", "Lady" ] }
+        { "group": "A", "roles": [
+            { "role": "Lord", "variant": "1" },
+            { "role": "Lady", "variant": "1" }
+        ] },
+        { "group": "B", "roles": [
+            { "role": "Lord", "variant": "2" },
+            { "role": "Lady", "variant": "2" }
+        ] }
     ],
     "formation": [
-        { "group": "A", "role": "Lord", "variant": "1", "groupPosition": 0.5, "rolePosition": 0.5, "startFacing": "downhall" },
-        { "group": "A", "role": "Lady", "variant": "1", "groupPosition": 0.5, "rolePosition": -0.5, "startFacing": "downhall" },
-        { "group": "B", "role": "Lord", "variant": "2", "groupPosition": -0.5, "rolePosition": -0.5 },
-        { "group": "B", "role": "Lady", "variant": "2", "groupPosition": -0.5, "rolePosition": 0.5 }
+        { "group": "A", "position": 0.5, "startFacing": "downhall", "roles": [
+            { "role": "Lord", "position": -0.5, "variant": "1" },
+            { "role": "Lady", "position": 0.5, "variant": "1" }
+        ] },
+        { "group": "B", "position": -0.5, "roles": [
+            { "role": "Lord", "position": -0.5, "variant": "2" },
+            { "role": "Lady", "position": 0.5, "variant": "2" }
+        ] }
     ],
     "choreography": [
         {

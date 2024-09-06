@@ -188,7 +188,6 @@ public class DataLoader : MonoBehaviour
 
                 Debug.LogWarning($"Unable to load music at '{jsonData.musicPath}'");
             }
-
         }
     }
 
@@ -238,16 +237,23 @@ public class DataLoader : MonoBehaviour
     {
         DanceData danceData = new DanceData();
 
+        Debug.Log($"Parsing dance '{json.danceName}'");
+
         danceData.danceName = json.danceName;
-        danceData.danceType = json.danceType;
         danceData.danceFamily = json.danceFamily != null ? json.danceFamily : "";
+        danceData.danceSetType = json.danceSet != null ? json.danceSet : "";
+        danceData.danceGroupType = json.danceGroupType != null ? json.danceGroupType : "";
+        danceData.danceGroupCount = new RangeInt(json.dancerGroupCount.min, json.dancerGroupCount.max);
+        danceData.danceProgression = json.danceProgression != null ? DanceUtility.ParseProgression(json.danceProgression) : DanceProgression.None;
+        danceData.danceRepeats = json.danceRepeats;
+        danceData.danceLength = json.danceLength;
 
         danceData.music = musicClip;
         danceData.firstBeatTime = json.musicFirstBeatTime;
         danceData.bpmChanges = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
 
         danceData.SetGroups(ParseGroups(json.groups));
-        danceData.placements = ParseFormation(json.formation, danceData.danceType);
+        danceData.placements = ParseFormation(json.formation, danceData);
         danceData.parts = ParseChoreography(json.choreography, danceData);
 
         return danceData;
@@ -302,11 +308,13 @@ public class DataLoader : MonoBehaviour
         DancerGroup dancerGroup = new DancerGroup(jsonDancerGroup.group);
         DancerRole[] groupRoles = new DancerRole[jsonDancerGroup.roles.Length];
 
-        float groupOffset = groupIndex * 0.1f;
+        float renderOffset = groupIndex * 0.1f;
+        JSONDancerRole jsonRole;
         DancerRole role;
         for (int i = 0; i < jsonDancerGroup.roles.Length; i++)
         {
-            role = new DancerRole(jsonDancerGroup.roles[i], groupOffset + i * 0.05f);
+            jsonRole = jsonDancerGroup.roles[i];
+            role = new DancerRole(jsonRole.role, jsonRole.variant, renderOffset + i * 0.05f);
             role.SetGroup(dancerGroup);
             groupRoles[i] = role;
         }
@@ -315,43 +323,37 @@ public class DataLoader : MonoBehaviour
         return dancerGroup;
     }
 
-    private DancerPlacement[] ParseFormation(JSONDancerPosition[] jsonFormation, string formationType)
+    private DancerPlacement[] ParseFormation(JSONGroupPosition[] jsonFormation, DanceData danceData)
     {
-        DancerPlacement[] dancerPlacements = new DancerPlacement[jsonFormation.Length];
+        List<DancerPlacement> dancerPlacements = new List<DancerPlacement>();
 
-        JSONDancerPosition position;
+        JSONGroupPosition group;
+        JSONDancerPosition dancer;
+        DancerRole role;
+        string variant;
         for (int i = 0; i < jsonFormation.Length; i++)
         {
-            position = jsonFormation[i];
-            if (position.startFacing == null)
-                position.startFacing = "uphall"; // Make sure default is uphall
+            group = jsonFormation[i];
 
-            dancerPlacements[i] = new DancerPlacement(position.role, position.group, position.variant,
-                GetDancerPositionInFormation(position.groupPosition, position.rolePosition, formationType),
-                GetDancerFacingDirectionInFormation(position.groupPosition, position.rolePosition, position.startFacing, formationType));
+            for (int j = 0; j < group.roles.Length; j++)
+            {
+                dancer = group.roles[j];
+
+                if (danceData.TryGetRole(DancerRole.GetRoleKey(group.group, dancer.role), out role))
+                    variant = role.variant;
+                else
+                    variant = "1";
+
+                if (dancer.startFacing == null)
+                    dancer.startFacing = "uphall"; // Make sure default is uphall
+
+                dancerPlacements.Add(new DancerPlacement(dancer.role, group.group, variant,
+                    DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, danceData.danceSetType),
+                    DanceUtility.GetDancerFacingDirectionInFormation(group.position, dancer.position, dancer.startFacing, danceData.danceSetType)));
+            }
         }
 
-        return dancerPlacements;
-    }
-
-    private Vector2 GetDancerPositionInFormation(float groupPosition, float rolePosition, string formationType)
-    {
-        // TODO: Implement other formation types
-        switch (formationType)
-        {
-            default:
-                return new Vector2(rolePosition, groupPosition);
-        }
-    }
-
-    private DanceDirection GetDancerFacingDirectionInFormation(float groupPosition, float rolePosition, string orientation, string formationType)
-    {
-        // TODO: Implement other formation types
-        switch (formationType)
-        {
-            default:
-                return ParseDirection(orientation);
-        }
+        return dancerPlacements.ToArray();
     }
 
     private DancePart[] ParseChoreography(JSONDancePart[] jsonParts, DanceData danceData)
@@ -390,7 +392,7 @@ public class DataLoader : MonoBehaviour
         List<DanceAction> danceActions = new List<DanceAction>(jsonActions.Length);
 
         JSONDanceAction jsonAction;
-        JSONDancerRole jsonRole;
+        JSONDanceActionRole jsonRole;
         DanceAction danceAction;
         ActionPreset actionPreset;
         DancerRole dancerRole;
@@ -428,7 +430,7 @@ public class DataLoader : MonoBehaviour
 
                     if (danceData.TryGetRole(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
                     {
-                        Debug.Log($"Adding dance action to role {dancerRole.group.id}.{dancerRole.id}: '{danceAction.key}' T={danceAction.time}, D={danceAction.duration}");
+                        Debug.Log($"Adding dance action to role {dancerRole.key}: '{danceAction.key}' T={danceAction.time}, D={danceAction.duration}");
                         dancerRole.AddAction(danceAction.time, danceAction);
                     }
                 }
@@ -449,7 +451,7 @@ public class DataLoader : MonoBehaviour
             jsonAction.part,
             time,
             jsonAction.duration,
-            ParseDirection(jsonAction.startFacing),
+            DanceUtility.ParseDirection(jsonAction.startFacing),
             jsonAction.movements != null && jsonAction.movements.Length > 0 ? ParseMovement(jsonAction.movements) : null,
             ParsePositionTransitions(jsonAction.positionTransitions, jsonAction.rotationTransitions),
             actionPreset.animation,
@@ -468,7 +470,7 @@ public class DataLoader : MonoBehaviour
         for (int i = 0; i < jsonMovements.Length; i++)
         {
             movement = jsonMovements[i];
-            danceVector = new DanceVector(ParseDirection(movement.direction), movement.distance);
+            danceVector = new DanceVector(DanceUtility.ParseDirection(movement.direction), movement.distance);
             directions[i] = danceVector;
             vector += DanceUtility.GetVectorFromDirection(danceVector.direction) * danceVector.distance;
             Debug.Log($"Parsed dance movement direction {danceVector.direction}, distance {danceVector.distance}");
@@ -499,7 +501,7 @@ public class DataLoader : MonoBehaviour
                 for (int k = 0; k < jsonPos.vectors.Length; k++)
                 {
                     movement = jsonPos.vectors[k];
-                    partial = DanceUtility.GetVectorFromDirection(ParseDirection(movement.direction)) * movement.distance;
+                    partial = DanceUtility.GetVectorFromDirection(DanceUtility.ParseDirection(movement.direction)) * movement.distance;
                     vector += partial;
                     Debug.Log($"Parsing position transition[{i}] time={jsonPos.time}, duration={jsonPos.duration}, partial vector: {movement.direction}^{movement.distance}");
                 }
@@ -516,45 +518,10 @@ public class DataLoader : MonoBehaviour
             {
                 jsonRot = rotations[i];
                 Debug.Log($"Parsing rotation transition[{i}] time={jsonRot.time}, duration={jsonRot.duration}, direction={jsonRot.direction}, amount={jsonRot.amount}");
-                transitions.AddTransition(new DanceActionRotationTransition(jsonRot.time, jsonRot.duration, ParseDirection(jsonRot.direction), jsonRot.amount));
+                transitions.AddTransition(new DanceActionRotationTransition(jsonRot.time, jsonRot.duration, DanceUtility.ParseDirection(jsonRot.direction), jsonRot.amount));
             }
         }
 
         return transitions;
-    }
-
-    private DanceDirection ParseDirection(string direction)
-    {
-        switch (direction.ToLower())
-        {
-            case "up":
-            case "uphall":
-            case "forward":
-                return DanceDirection.Up;
-            case "down":
-            case "downhall":
-            case "backward":
-                return DanceDirection.Down;
-            case "left":
-                return DanceDirection.Left;
-            case "right":
-                return DanceDirection.Right;
-            case "upleft":
-                return DanceDirection.UpLeft;
-            case "upright":
-                return DanceDirection.UpRight;
-            case "downright":
-                return DanceDirection.DownRight;
-            case "downleft":
-                return DanceDirection.DownLeft;
-            case "cw":
-            case "clockwise":
-                return DanceDirection.CW;
-            case "ccw":
-            case "counterclockwise":
-                return DanceDirection.CCW;
-            default:
-                return DanceDirection.Up;
-        }
     }
 }

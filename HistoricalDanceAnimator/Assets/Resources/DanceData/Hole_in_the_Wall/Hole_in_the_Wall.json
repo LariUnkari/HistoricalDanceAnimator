@@ -1,0 +1,70 @@
+{
+    "danceName": "Hole in the Wall",
+    "danceFamily": "ECD",
+    "_new_danceSet": { "form": "Line", "pattern": "Longways" },
+    "_new_danceSetMinor": { "type": "Duple", "groups": [ "A", "B" ] },
+    "danceSet": "Longways",
+    "dancerGroupType": "Couple",
+    "dancerGroupCount": { "default": 4, "min": 2, "max": -1 },
+    "danceProgression": "Line-AB",
+    "danceRepeats": 4,
+    "danceLength": 48,
+    "musicPath": "Hole in the Wall (Bury) (4x, hidas as, hidastettu).mp3",
+    "musicBPM": 98.07,
+    "musicFirstBeatTime": 8.10,
+    "musicBeatTimings": [
+        { "beat": 12,  "time": 15.28},
+        { "beat": 24,  "time": 22.52},
+        { "beat": 36,  "time": 29.68},
+        { "beat": 48,  "time": 37.00},
+        { "beat": 96,  "time": 66.10},
+        { "beat": 144, "time": 96.20},
+        { "beat": 193, "time": 124.90}
+    ],
+    "groups": [
+        { "group": "A", "roles": [
+            { "role": "Lord", "variant": "1" },
+            { "role": "Lady", "variant": "1" }
+        ] },
+        { "group": "B", "roles": [
+            { "role": "Lord", "variant": "2" },
+            { "role": "Lady", "variant": "2" }
+        ] },
+        { "group": "inactive", "roles": [
+            { "role": "Lord", "variant": "5" },
+            { "role": "Lady", "variant": "5" }
+        ] }
+    ],
+    "formation": [
+        { "group": "A", "position": 0.5, "roles": [
+            { "role": "Lord", "position": -0.5 },
+            { "role": "Lady", "position": 0.5 }
+        ] },
+        { "group": "B", "position": -0.5, "roles": [
+            { "role": "Lord", "position": -0.5 },
+            { "role": "Lady", "position": 0.5 }
+        ] }
+    ],
+    "formationSeparation": 2.0,
+    "choreography": [
+        {
+            "part": "Part A",
+            "time": 0,
+            "actions": [
+                {
+                    "time": 0,
+                    "dancers": [
+                        { "group": "A", "role": "Lord" },
+                        { "group": "A", "role": "Lady" }
+                    ],
+                    "action": "ChangePlacesLeft",
+                    "duration": 4,
+                    "startFacing": "downhall",
+                    "movements": [
+                        { "direction": "forward", "distance": 1.0 }
+                    ]
+                }
+            ]
+        }
+    ]
+}

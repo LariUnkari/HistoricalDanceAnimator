@@ -15,7 +15,7 @@ public class DanceFormation : MonoBehaviour
     private Dictionary<string, List<DancerPosition>> _dancersByRole;
 
     private int _beatIndex;
-
+    private int _repeatIndex;
     public string CurrentPart { get { return _currentPart != null ? _currentPart.name : ""; } }
 
     public void SetFormation(DanceData danceData)
@@ -124,8 +124,18 @@ public class DanceFormation : MonoBehaviour
             dancerPosition.OnDanceBegun();
     }
 
-    public void DanceUpdate(float danceTime, int beatIndex, float beatTime, float beatT, float beatDuration)
+    private void OnDanceRepeat(int repeatIndex)
     {
+        Debug.LogWarning($"Dance repeating for the {DanceUtility.GetOrdinalNumberString(repeatIndex)} time!");
+        _repeatIndex = repeatIndex;
+        _beatIndex = -1;
+    }
+
+    public void DanceUpdate(float danceTime, int beatIndex, int repeatIndex, float beatTime, float beatT, float beatDuration)
+    {
+        if (repeatIndex > _repeatIndex)
+            OnDanceRepeat(repeatIndex);
+
         if (beatIndex > _beatIndex)
         {
             //Debug.Break();
