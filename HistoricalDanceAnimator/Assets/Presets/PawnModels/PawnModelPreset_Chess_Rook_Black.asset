@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a08f3533b1be21b4ea86b0225b4124f8, type: 3}
+  m_Name: PawnModelPreset_Chess_Rook_Black
+  m_EditorClassIdentifier: 
+  role: Rook
+  group: 
+  variant: Black
+  foregroundColor: {r: 1, g: 1, b: 1, a: 1}
+  backgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  labelColor: {r: 1, g: 1, b: 1, a: 0}
+  model: {fileID: 1857028098720152559, guid: 929600d1c322db940bfc625995db5583, type: 3}
