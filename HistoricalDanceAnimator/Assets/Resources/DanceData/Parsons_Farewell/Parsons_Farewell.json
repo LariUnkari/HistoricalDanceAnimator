@@ -35,8 +35,8 @@
     ],
     "groups": [
         { "group": "A", "roles": [
-            { "role": "Lord", "variant": "1" },
-            { "role": "Lady", "variant": "1" }
+            { "role": "Lady", "variant": "1" },
+            { "role": "Lord", "variant": "1" }
         ] },
         { "group": "B", "roles": [
             { "role": "Lord", "variant": "2" },
@@ -45,8 +45,8 @@
     ],
     "formation": [
         { "group": "A", "position": 0.5, "startFacing": "downhall", "roles": [
-            { "role": "Lord", "position": -0.5, "variant": "1" },
-            { "role": "Lady", "position": 0.5, "variant": "1" }
+            { "role": "Lord", "position": 0.5, "variant": "1" },
+            { "role": "Lady", "position": -0.5, "variant": "1" }
         ] },
         { "group": "B", "position": -0.5, "roles": [
             { "role": "Lord", "position": -0.5, "variant": "2" },
