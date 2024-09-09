@@ -83,7 +83,7 @@ public class DataLoader : MonoBehaviour
         if (jsonFiles.Length == 0)
             yield break;
 
-        JSONDanceData jsonData;
+        JSONDance jsonData;
         DataPayloadString jsonPayload;
 
         for (int i = 0; i < jsonFiles.Length; i++)
@@ -94,7 +94,7 @@ public class DataLoader : MonoBehaviour
 
             yield return LoadJSON(jsonPayload);
 
-            jsonData = JsonUtility.FromJson<JSONDanceData>(jsonPayload.data);
+            jsonData = JsonUtility.FromJson<JSONDance>(jsonPayload.data);
             if (jsonData != null)
             {
                 Debug.Log($"[{i}]: Successfully loaded dance JSON from '{jsonPayload.path}':\n{jsonData.GetDebugString()}");
@@ -111,12 +111,12 @@ public class DataLoader : MonoBehaviour
         OnJSONLoadingComplete();
     }
 
-    public void LoadDanceJSON(JSONDanceData jsonData, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
+    public void LoadDanceJSON(JSONDance jsonData, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
     {
         StartCoroutine(DanceJSONLoadRoutine(jsonData, onCompletionDelegate, onErrorDelegate));
     }
 
-    private IEnumerator DanceJSONLoadRoutine(JSONDanceData jsonData, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
+    private IEnumerator DanceJSONLoadRoutine(JSONDance jsonData, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
     {
         DanceData danceData = null;
 
@@ -170,7 +170,7 @@ public class DataLoader : MonoBehaviour
         }
     }
 
-    public IEnumerator ImportDanceJSON(JSONDanceData jsonData, OnMessageDelegate onProgressDelegate, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
+    public IEnumerator ImportDanceJSON(JSONDance jsonData, OnMessageDelegate onProgressDelegate, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
     {
         DanceData danceData = ParseDance(jsonData);
 
@@ -256,7 +256,7 @@ public class DataLoader : MonoBehaviour
     // ******** PARSING ********
     // *************************
 
-    public DanceData ParseDance(JSONDanceData json)
+    public DanceData ParseDance(JSONDance json)
     {
         DanceData danceData = new DanceData();
 
@@ -264,12 +264,10 @@ public class DataLoader : MonoBehaviour
 
         danceData.danceName = json.danceName;
         danceData.danceFamily = json.danceFamily != null ? json.danceFamily : "";
-        danceData.danceSetType = json.danceSet != null ? json.danceSet : "";
-        danceData.danceGroupType = json.danceGroupType != null ? json.danceGroupType : "";
-        danceData.danceGroupCount = new RangeInt(json.dancerGroupCount.min, json.dancerGroupCount.max);
-        danceData.danceProgression = json.danceProgression != null ? DanceUtility.ParseProgression(json.danceProgression) : DanceProgression.None;
-        danceData.danceRepeats = json.danceRepeats;
-        danceData.danceLength = json.danceLength;
+        danceData.danceSet = ParseSet(json.danceSet);
+        danceData.danceProgression = DanceUtility.ParseProgression(json.danceProgression.type);
+        danceData.danceRepeats = json.danceProgression.repeats;
+        danceData.danceLength = json.danceProgression.lengthBeats;
 
         danceData.firstBeatTime = json.musicFirstBeatTime;
         danceData.bpmChanges = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
@@ -279,6 +277,13 @@ public class DataLoader : MonoBehaviour
         danceData.choreography = ParseChoreography(json.choreography, danceData);
 
         return danceData;
+    }
+
+    private DanceSet ParseSet(JSONDanceSet jsonSet)
+    {
+        return new DanceSet(jsonSet.form, jsonSet.pattern,
+            jsonSet.size.type, jsonSet.size.preset, jsonSet.size.min, jsonSet.size.max,
+            jsonSet.minor.type, jsonSet.minor.groups);
     }
 
     private MusicBPMChanges ParseBPM(float initialBPM, float startTime, JSONMusicBeatTiming[] beatTimings)
@@ -345,12 +350,12 @@ public class DataLoader : MonoBehaviour
         return dancerGroup;
     }
 
-    private DancerPlacement[] ParseFormation(JSONGroupPosition[] jsonFormation, DanceData danceData)
+    private DancerPlacement[] ParseFormation(JSONDancerGroupPosition[] jsonFormation, DanceData danceData)
     {
         List<DancerPlacement> dancerPlacements = new List<DancerPlacement>();
 
-        JSONGroupPosition group;
-        JSONDancerPosition dancer;
+        JSONDancerGroupPosition group;
+        JSONDancerRolePosition dancer;
         DancerRole role;
         string variant;
         for (int i = 0; i < jsonFormation.Length; i++)
@@ -370,8 +375,8 @@ public class DataLoader : MonoBehaviour
                     dancer.startFacing = "uphall"; // Make sure default is uphall
 
                 dancerPlacements.Add(new DancerPlacement(dancer.role, group.group, variant,
-                    DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, danceData.danceSetType),
-                    DanceUtility.GetDancerFacingDirectionInFormation(group.position, dancer.position, dancer.startFacing, danceData.danceSetType)));
+                    DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, danceData.danceSet.form, danceData.danceSet.pattern),
+                    DanceUtility.GetDancerFacingDirectionInFormation(group.position, dancer.position, dancer.startFacing, danceData.danceSet.form, danceData.danceSet.pattern)));
             }
         }
 

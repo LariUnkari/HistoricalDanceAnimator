@@ -46,7 +46,7 @@ public class DanceUtility
         return Quaternion.identity;
     }
 
-    public static Vector2 GetDancerPositionInFormation(float groupPosition, float rolePosition, string formationType)
+    public static Vector2 GetDancerPositionInFormation(float groupPosition, float rolePosition, string formationType, string formationPattern)
     {
         // TODO: Implement other formation types
         switch (formationType)
@@ -56,7 +56,7 @@ public class DanceUtility
         }
     }
 
-    public static DanceDirection GetDancerFacingDirectionInFormation(float groupPosition, float rolePosition, string orientation, string formationType)
+    public static DanceDirection GetDancerFacingDirectionInFormation(float groupPosition, float rolePosition, string orientation, string formationType, string formationPattern)
     {
         // TODO: Implement other formation types
         switch (formationType)

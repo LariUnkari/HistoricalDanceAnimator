@@ -1,9 +1,11 @@
 {
     "danceName": "Heralds in Love",
     "danceFamily": "ECD",
-    "_new_danceSet": { "form": "Line", "pattern": "Longways" },
-    "danceSet": "Longways",
-    "dancerGroupCount": { "preset": 4, "min": 4, "max": 4 },
+    "danceSet": { "form": "Line", "pattern": "Longways",
+        "size": { "type": "Couple", "countDefault": 4, "countMin": 4, "countMax": 4 },
+        "minor": { "type": "None" }
+    },
+    "danceProgression": { "type": "None" },
     "musicPath": "Heralds in Love (Ensemble Rigodon) (as).mp3",
     "musicBPM": 120.83,
     "musicFirstBeatTime": 4.75,

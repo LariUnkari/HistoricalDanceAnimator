@@ -1,9 +1,11 @@
 {
     "danceName": "The Chess Dance with Ring Progression",
     "danceFamily": "ECD",
-    "_new_danceSet": { "form": "Square", "pattern": "OpposingRows" },
-    "danceSet": "OpposingRows",
-    "dancerGroupCount": { "preset": 32, "min": 32, "max": 32 },
+    "danceSet": { "form": "Square", "pattern": "Opposing Double Rows",
+        "size": { "type": "Single", "countDefault": 32, "countMin": 32, "countMax": 32 },
+        "minor": { "type": "None" }
+    },
+    "danceProgression": { "type": "Custom", "repeats": 4, "lengthBeats": 48 },
     "musicPath": "Chess Dance.mp3",
     "musicBPM": 97.81,
     "musicFirstBeatTime": 15.53,

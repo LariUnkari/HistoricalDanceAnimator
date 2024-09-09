@@ -78,7 +78,7 @@ public class DanceScene : BaseScene
             return;
         }
 
-        JSONDanceData jsonData;
+        JSONDance jsonData;
         if (!DanceDatabase.GetInstance().TryGetDance(_debugDanceName, out jsonData))
         {
             Debug.LogError($"No dance data loaded! Unable to find debug dance data for '{_debugDanceName}'!");

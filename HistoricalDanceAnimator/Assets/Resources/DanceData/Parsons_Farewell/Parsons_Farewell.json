@@ -1,10 +1,11 @@
 {
     "danceName": "Parson's Farewell",
     "danceFamily": "ECD",
-    "danceSet": "Square",
-    "dancerGroupType": "Couple",
-    "dancerGroupCount": { "preset": 2, "min": 2, "max": 2 },
-    "danceProgression": "None",
+    "danceSet": { "form": "Square",
+        "size": { "type": "Couple", "countDefault": 2, "countMin": 2, "countMax": 2 },
+        "minor": { "type": "None" }
+    },
+    "danceProgression": { "type": "None" },
     "musicPath": "Parsons Farewell (slow) (Pandemonium).mp3",
     "musicBPM": 98.97,
     "musicFirstBeatTime": 7.67,

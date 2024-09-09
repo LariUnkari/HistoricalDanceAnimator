@@ -15,7 +15,7 @@ public class StartupUI : MonoBehaviour
     private string importMessage;
     private bool isImporting;
     private IEnumerator importRoutine;
-    private JSONDanceData importChoreography;
+    private JSONDance importChoreography;
 
     private void Start()
     {
@@ -45,7 +45,7 @@ public class StartupUI : MonoBehaviour
 
             if (DataLoader.GetInstance() != null)
             {
-                if (DanceDatabase.GetInstance().TryGetDance(selectedDance, out JSONDanceData jsonData))
+                if (DanceDatabase.GetInstance().TryGetDance(selectedDance, out JSONDance jsonData))
                     DataLoader.GetInstance().LoadDanceJSON(jsonData, OnDanceDataLoaded, OnDanceDataLoadError);
                 else
                     Debug.LogError($"Unable to find data for dance '{selectedDance}'!");
@@ -152,7 +152,7 @@ public class StartupUI : MonoBehaviour
 
             try
             {
-                importChoreography = JsonUtility.FromJson<JSONDanceData>(inputText);
+                importChoreography = JsonUtility.FromJson<JSONDance>(inputText);
             }
             catch
             {
@@ -176,7 +176,7 @@ public class StartupUI : MonoBehaviour
         GUILayout.EndArea();
     }
 
-    private IEnumerator ImportDanceRoutine(JSONDanceData data)
+    private IEnumerator ImportDanceRoutine(JSONDance data)
     {
         if (DataLoader.GetInstance() != null)
             yield return DataLoader.GetInstance().ImportDanceJSON(data, OnImportProgress, OnImportComplete, OnImportError);

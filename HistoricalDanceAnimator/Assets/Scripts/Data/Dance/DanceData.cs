@@ -6,9 +6,7 @@ public class DanceData
 {
     public string danceName;
     public string danceFamily;
-    public string danceSetType;
-    public string danceGroupType;
-    public RangeInt danceGroupCount;
+    public DanceSet danceSet;
     public DanceProgression danceProgression;
     public int danceRepeats;
     public int danceLength;

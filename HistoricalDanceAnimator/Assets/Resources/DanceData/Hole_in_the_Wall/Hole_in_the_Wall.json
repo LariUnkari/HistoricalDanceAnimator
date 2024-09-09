@@ -1,14 +1,11 @@
 {
     "danceName": "Hole in the Wall",
     "danceFamily": "ECD",
-    "_new_danceSet": { "form": "Line", "pattern": "Longways" },
-    "_new_danceSetMinor": { "type": "Duple", "groups": [ "A", "B" ] },
-    "danceSet": "Longways",
-    "dancerGroupType": "Couple",
-    "dancerGroupCount": { "default": 4, "min": 2, "max": -1 },
-    "danceProgression": "Line-AB",
-    "danceRepeats": 4,
-    "danceLength": 48,
+    "danceSet": { "form": "Line", "pattern": "Longways",
+         "size": { "type": "Couple", "countDefault": 4, "countMin": 4, "countMax": 8 },
+         "minor": { "type": "Duple", "groups": [ "A", "B" ] }
+    },
+    "danceProgression": { "type": "Line-AB", "repeats": 4, "lengthBeats": 48 },
     "musicPath": "Hole in the Wall (Bury) (4x, hidas as, hidastettu).mp3",
     "musicBPM": 98.07,
     "musicFirstBeatTime": 8.10,
@@ -30,7 +27,7 @@
             { "role": "Lord", "variant": "2" },
             { "role": "Lady", "variant": "2" }
         ] },
-        { "group": "inactive", "roles": [
+        { "group": "", "roles": [
             { "role": "Lord", "variant": "5" },
             { "role": "Lady", "variant": "5" }
         ] }

@@ -1,5 +1,5 @@
 [System.Serializable]
-public struct JSONDancerPosition
+public struct JSONDancerRolePosition
 {
     public string role;
     public float position;
