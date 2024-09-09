@@ -7,10 +7,12 @@ using UnityEngine.Networking;
 
 public class DataLoader : MonoBehaviour
 {
-    public delegate void OnCompletionDelegate();
-    public delegate void OnMessageDelegate(string message);
+    private static DataLoader s_instance;
 
-    public OnCompletionDelegate OnCompletionCallback;
+    public static DataLoader GetInstance() { return s_instance; }
+
+    public delegate void OnDataLoadCompletionDelegate(DanceData danceData);
+    public delegate void OnMessageDelegate(string message);
 
     public ActionPresetDatabase _actionPresetDatabase;
     public PawnModelDatabase _pawnModelDatabase;
@@ -24,46 +26,48 @@ public class DataLoader : MonoBehaviour
 
     private void Awake()
     {
+        if (s_instance != null)
+        {
+            Debug.LogWarning($"Attempting to load multiple instances of {typeof(DataLoader)}, disabling this object (click log message to see)!", gameObject);
+            gameObject.SetActive(false);
+            return;
+        }
+
+        s_instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    // Only initialize databases on Start() so everything's loaded for sure
+    private void Start()
+    {
         if (_actionPresetDatabase)
             _actionPresetDatabase.Init();
         if (_pawnModelDatabase)
             _pawnModelDatabase.Init();
 
-        _danceDatabase = DanceDatabase.GetInstance();
+        InitDanceData();
     }
 
     // *************************
     // ******** LOADING ********
     // *************************
 
-    private void OnLoadingComplete()
+    private void OnJSONLoadingComplete()
     {
         _isLoading = false;
         _isDoneLoading = true;
-
-        if (OnCompletionCallback != null)
-            OnCompletionCallback.Invoke();
     }
 
-    public void LoadData()
+    public void InitDanceData()
     {
+        _danceDatabase = DanceDatabase.GetInstance();
         _isLoading = true;
-        StartCoroutine(LoadRoutine());
+
+        // TODO: Don't use Resources folder, instead use a default external or user's custom path
+        StartCoroutine(FindDancesRoutine(Application.dataPath + "/Resources/DanceData/"));
     }
 
-    private IEnumerator LoadRoutine()
-    {
-        List<JSONChoreography> danceList = new List<JSONChoreography>();
-
-        yield return FindDances(Application.dataPath + "/Resources/DanceData/", danceList);
-
-        if (danceList.Count > 0)
-            yield return ImportDances(danceList);
-
-        OnLoadingComplete();
-    }
-
-    private IEnumerator FindDances(string danceDataPath, List<JSONChoreography> danceList)
+    private IEnumerator FindDancesRoutine(string danceDataPath)
     {
         Debug.Log($"Looking for dance data in '{danceDataPath}'");
 
@@ -79,7 +83,7 @@ public class DataLoader : MonoBehaviour
         if (jsonFiles.Length == 0)
             yield break;
 
-        JSONChoreography jsonData;
+        JSONDanceData jsonData;
         DataPayloadString jsonPayload;
 
         for (int i = 0; i < jsonFiles.Length; i++)
@@ -90,64 +94,85 @@ public class DataLoader : MonoBehaviour
 
             yield return LoadJSON(jsonPayload);
 
-            jsonData = JsonUtility.FromJson<JSONChoreography>(jsonPayload.data);
+            jsonData = JsonUtility.FromJson<JSONDanceData>(jsonPayload.data);
             if (jsonData != null)
             {
                 Debug.Log($"[{i}]: Successfully loaded dance JSON from '{jsonPayload.path}':\n{jsonData.GetDebugString()}");
 
                 jsonData.musicPath = jsonPayload.path.Remove(jsonPayload.path.LastIndexOf('/') + 1) + jsonData.musicPath;
-                danceList.Add(jsonData);
+                _danceDatabase.AddDance(jsonData);
             }
             else
             {
                 Debug.LogWarning($"[{i}]: Failed to load dance JSON from '{jsonPayload.path}'");
             }
         }
+
+        OnJSONLoadingComplete();
     }
 
-    private IEnumerator ImportDances(List<JSONChoreography> danceList)
+    public void LoadDanceJSON(JSONDanceData jsonData, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
     {
-        Debug.Log($"Importing {danceList.Count} dances and their music");
-
-        for (int j = 0; j < danceList.Count; j++)
-            yield return LoadDanceJSON(danceList[j]);
+        StartCoroutine(DanceJSONLoadRoutine(jsonData, onCompletionDelegate, onErrorDelegate));
     }
 
-    public IEnumerator LoadDanceJSON(JSONChoreography jsonData)
+    private IEnumerator DanceJSONLoadRoutine(JSONDanceData jsonData, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
     {
-        DanceData danceData = ParseDance(jsonData, null);
+        DanceData danceData = null;
 
-        // TODO: Display progress
+        try
+        {
+            danceData = ParseDance(jsonData);
+        }
+        catch (Exception e)
+        {
+            if (onErrorDelegate != null)
+                onErrorDelegate.Invoke($"Error loading dance JSON data: {e.Message}");
+        }
 
         if (File.Exists(jsonData.musicPath))
         {
+            // TODO: Detect audio type
             DataPayloadAudio audioPayload = new DataPayloadAudio(jsonData.musicPath, AudioType.MPEG);
-            Debug.Log($"Loading music at '{audioPayload.path}'");
 
-            yield return LoadAudioClip(audioPayload);
+            yield return LoadMusicRoutine(audioPayload);
 
             if (audioPayload.clip != null)
-            {
                 danceData.music = audioPayload.clip;
-                Debug.Log($"Successfully loaded music at '{audioPayload.path}'");
-
-                _danceDatabase.AddDance(danceData);
-            }
             else
-            {
-                Debug.LogWarning($"Unable to load music at '{audioPayload.path}'");
-            }
+                Debug.LogWarning($"Unable to load music for '{jsonData.danceName}' at '{jsonData.musicPath}'");
         }
         else
         {
-            Debug.LogWarning($"No music found for '{jsonData.danceName}', at '{jsonData.musicPath}'");
-            yield return null;
+            Debug.LogWarning($"No music found for '{jsonData.danceName}' at '{jsonData.musicPath}'");
+        }
+
+
+        if (onCompletionDelegate != null)
+            onCompletionDelegate.Invoke(danceData);
+    }
+
+    private IEnumerator LoadMusicRoutine(DataPayloadAudio audioPayload)
+    {
+        // TODO: Display progress
+  
+        Debug.Log($"Loading music at '{audioPayload.path}'");
+
+        yield return LoadAudioClip(audioPayload);
+
+        if (audioPayload.clip != null)
+        {
+            Debug.Log($"Successfully loaded music at '{audioPayload.path}'");
+        }
+        else
+        {
+            Debug.LogWarning($"Unable to load music at '{audioPayload.path}'");
         }
     }
 
-    public IEnumerator ImportDanceJSON(JSONChoreography jsonData, OnMessageDelegate onProgressDelegate, OnCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
+    public IEnumerator ImportDanceJSON(JSONDanceData jsonData, OnMessageDelegate onProgressDelegate, OnDataLoadCompletionDelegate onCompletionDelegate, OnMessageDelegate onErrorDelegate)
     {
-        DanceData danceData = ParseDance(jsonData, null);
+        DanceData danceData = ParseDance(jsonData);
 
         // TODO: Improve type detection
         AudioType audioType = AudioType.MPEG;
@@ -176,10 +201,8 @@ public class DataLoader : MonoBehaviour
                 danceData.music = ((DownloadHandlerAudioClip)www.downloadHandler).audioClip;
                 Debug.Log($"Successfully imported music at '{jsonData.musicPath}'");
 
-                _danceDatabase.AddDance(danceData);
-
                 if (onCompletionDelegate != null)
-                    onCompletionDelegate.Invoke();
+                    onCompletionDelegate.Invoke(danceData);
             }
             else
             {
@@ -233,7 +256,7 @@ public class DataLoader : MonoBehaviour
     // ******** PARSING ********
     // *************************
 
-    public DanceData ParseDance(JSONChoreography json, AudioClip musicClip)
+    public DanceData ParseDance(JSONDanceData json)
     {
         DanceData danceData = new DanceData();
 
@@ -248,13 +271,12 @@ public class DataLoader : MonoBehaviour
         danceData.danceRepeats = json.danceRepeats;
         danceData.danceLength = json.danceLength;
 
-        danceData.music = musicClip;
         danceData.firstBeatTime = json.musicFirstBeatTime;
         danceData.bpmChanges = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
 
         danceData.SetGroups(ParseGroups(json.groups));
         danceData.placements = ParseFormation(json.formation, danceData);
-        danceData.parts = ParseChoreography(json.choreography, danceData);
+        danceData.choreography = ParseChoreography(json.choreography, danceData);
 
         return danceData;
     }

@@ -28,9 +28,9 @@ public class DanceFormation : MonoBehaviour
         _dancePartsOnBeat = new Dictionary<int, DancePart>();
 
         DancePart part;
-        for (int i = 0; i < danceData.parts.Length; i++)
+        for (int i = 0; i < danceData.choreography.Length; i++)
         {
-            part = danceData.parts[i];
+            part = danceData.choreography[i];
             _dancePartsOnBeat.Add(part.time, part);
         }
 

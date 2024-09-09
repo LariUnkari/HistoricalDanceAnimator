@@ -19,7 +19,7 @@ public class DanceData
 
     public DancerGroup[] groups;
     public DancerPlacement[] placements;
-    public DancePart[] parts;
+    public DancePart[] choreography;
 
     private Dictionary<string, DancerGroup> groupDictionary;
     private Dictionary<string, DancerRole> roleDictionary;

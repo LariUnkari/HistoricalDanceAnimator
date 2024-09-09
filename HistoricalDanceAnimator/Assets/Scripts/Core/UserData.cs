@@ -16,10 +16,10 @@ public class UserData
         return s_instance;
     }
 
-    public string danceName;
+    public DanceData danceData;
 
     public UserData()
     {
-        danceName = "";
+        danceData = null;
     }
 }

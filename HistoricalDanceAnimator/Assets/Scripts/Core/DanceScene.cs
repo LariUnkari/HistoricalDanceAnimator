@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class DanceScene : MonoBehaviour
+public class DanceScene : BaseScene
 {
     public AudioSource _musicSource;
     public AudioSource _metronomeSource;
@@ -33,44 +33,32 @@ public class DanceScene : MonoBehaviour
 
     public bool IsPaused { get { return _isPaused; } }
     public bool HasStarted { get { return _hasMusicStarted; } }
-    public string DanceName { get { return _danceData.danceName; } }
+    public string DanceName { get { return _danceData != null ? _danceData.danceName : ""; } }
     public float DanceTime { get { return _danceTime; } }
     public float DanceDuration { get { return _danceMusicDuration; } }
+    public int DanceBeat { get { return _currentBeatIndex; } }
     public float DanceBPM { get { return _currentBPM; } }
     public string DancePart { get { return _formation.CurrentPart; } }
 
-    private void Awake()
+    protected override void Awake()
     {
         GameObject go = new GameObject("Formation");
         _formation = go.AddComponent<DanceFormation>();
 
-        DanceDatabase database = DanceDatabase.GetInstance();
-
-        UserData userData = UserData.GetInstance();
-        if (userData.danceName.Length == 0)
-            userData.danceName = _debugDanceName;
-
-        if (database.TryGetDance(userData.danceName, out DanceData danceData))
-        {
-            _danceData = danceData;
-            Debug.Log($"Dance loaded: '{danceData.danceName}'");
-        }
+        base.Awake();
     }
 
     private void Start()
     {
         if (_musicSource != null && _musicSource.playOnAwake)
             _musicSource.Stop();
-
-        // Check dance data is valid before setting up formation (Unity Inspector can create invalid data if valid data was not set)
-        if (_danceData != null && _danceData.danceName != null && _danceData.danceName.Length > 0)
-        {
-            _formation.SetFormation(_danceData);
-        }
     }
 
     private void Update()
     {
+        if (!_isInitialized)
+            return;
+
         if (_danceData == null || _musicSource == null || !_hasMusicStarted)
             return;
 
@@ -78,6 +66,38 @@ public class DanceScene : MonoBehaviour
             UpdateDanceRoutine();
         else if (!_isPaused)
             EndDance();
+    }
+
+    protected override void OnInitComplete()
+    {
+        UserData userData = UserData.GetInstance();
+
+        if (userData.danceData != null)
+        {
+            OnDanceLoadComplete(userData.danceData);
+            return;
+        }
+
+        JSONDanceData jsonData;
+        if (!DanceDatabase.GetInstance().TryGetDance(_debugDanceName, out jsonData))
+        {
+            Debug.LogError($"No dance data loaded! Unable to find debug dance data for '{_debugDanceName}'!");
+            return;
+        }
+
+        DataLoader.GetInstance().LoadDanceJSON(jsonData, OnDanceLoadComplete, OnDanceLoadError);
+    }
+
+    private void OnDanceLoadComplete(DanceData danceData)
+    {
+        Debug.Log($"Dance loaded: '{danceData.danceName}'");
+        _danceData = danceData;
+        _formation.SetFormation(danceData);
+    }
+
+    private void OnDanceLoadError(string message)
+    {
+        Debug.LogError("No dance loaded!");
     }
 
     public void StartDance()

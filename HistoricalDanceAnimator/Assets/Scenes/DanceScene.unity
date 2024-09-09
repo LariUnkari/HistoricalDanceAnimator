@@ -152,22 +152,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f1e2f4b7ae65324c965366ad0dbe5d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dataSceneName: Data
   _musicSource: {fileID: 1057513752}
   _metronomeSource: {fileID: 2099723329}
   _formation: {fileID: 0}
   _debugDanceName: Heralds in Love
-  _danceData:
-    danceName: 
-    danceType: 
-    danceFamily: 
-    music: {fileID: 0}
-    bpm:
-      initialBPM: 0
-      currentBPM: 0
-    firstBeatTime: 0
-    groups: []
-    placements: []
-    parts: []
 --- !u!4 &588946668
 Transform:
   m_ObjectHideFlags: 0

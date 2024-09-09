@@ -24,7 +24,12 @@ public class DanceUI : MonoBehaviour
         GUILayout.EndArea();
 
         GUILayout.BeginArea(new Rect(10, 60, 300, 80));
-        GUILayout.Label(new GUIContent($"Time: {TimeSpan.FromSeconds(_danceScene.DanceTime).ToString("mm'm 'ss's 'fff'ms'")}"));
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(new GUIContent("Time:"), GUILayout.Width(36f));
+        GUILayout.Label(new GUIContent(GetDanceSignString()), GUILayout.Width(8f));
+        GUILayout.Label(new GUIContent(GetDanceTimeString()), GUILayout.Width(116f));
+        GUILayout.Label(new GUIContent($"Beat: {GetDanceBeat()}"));
+        GUILayout.EndHorizontal();
         GUILayout.HorizontalSlider(_danceScene.DanceTime / _danceScene.DanceDuration, 0f, 1f, GUILayout.Width(300));
         GUILayout.Label(new GUIContent($"Current BPM: {_danceScene.DanceBPM}"));
         GUILayout.EndArea();
@@ -76,5 +81,29 @@ public class DanceUI : MonoBehaviour
             Debug.LogWarning($"Resuming dance '{_danceScene.DanceName}'");
             _danceScene.Play();
         }
+    }
+
+    private string GetDanceSignString()
+    {
+        if (!_danceScene.HasStarted)
+            return "-";
+
+        return $"{(_danceScene.DanceTime < 0f ? "-" : "+")}";
+    }
+
+    private string GetDanceTimeString()
+    {
+        if (!_danceScene.HasStarted)
+            return "";
+
+        return TimeSpan.FromSeconds(_danceScene.DanceTime).ToString("mm'm 'ss's 'fff'ms'");
+    }
+
+    private string GetDanceBeat()
+    {
+        if (!_danceScene.HasStarted)
+            return "-";
+
+        return $"{(_danceScene.DanceBeat < 0 ? 0 : _danceScene.DanceBeat + 1)}";
     }
 }

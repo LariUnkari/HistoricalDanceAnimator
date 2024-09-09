@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class StartupUI : MonoBehaviour
 {
-    public StartupHandler startupHandler;
-    public DataLoader dataLoader;
+    public StartupScene startupHandler;
 
     private string selectedDance;
     private bool loadDanceSceneClicked;
@@ -16,24 +15,7 @@ public class StartupUI : MonoBehaviour
     private string importMessage;
     private bool isImporting;
     private IEnumerator importRoutine;
-    private JSONChoreography importChoreography;
-
-    private void OnEnable()
-    {
-        if (dataLoader)
-            dataLoader.OnCompletionCallback += OnDataLoaded;
-    }
-
-    private void OnDisable()
-    {
-        if (dataLoader)
-            dataLoader.OnCompletionCallback -= OnDataLoaded;
-    }
-
-    private void OnDataLoaded()
-    {
-        Debug.Log("Done loading dance data");
-    }
+    private JSONDanceData importChoreography;
 
     private void Start()
     {
@@ -41,9 +23,6 @@ public class StartupUI : MonoBehaviour
         importMessage = "";
         selectedDance = "";
         loadDanceSceneClicked = false;
-
-        if (dataLoader)
-            dataLoader.LoadData();
     }
 
     private void Update()
@@ -52,7 +31,7 @@ public class StartupUI : MonoBehaviour
         {
             if (importRoutine == null)
             {
-                importRoutine = ImportRoutine(importChoreography);
+                importRoutine = ImportDanceRoutine(importChoreography);
                 StartCoroutine(importRoutine);
             }
         }
@@ -60,9 +39,29 @@ public class StartupUI : MonoBehaviour
         if (loadDanceSceneClicked)
         {
             loadDanceSceneClicked = false;
-            if (importRoutine != null) StopCoroutine(importRoutine);
-            startupHandler.LoadDanceScene(selectedDance);
+
+            if (importRoutine != null)
+                StopCoroutine(importRoutine);
+
+            if (DataLoader.GetInstance() != null)
+            {
+                if (DanceDatabase.GetInstance().TryGetDance(selectedDance, out JSONDanceData jsonData))
+                    DataLoader.GetInstance().LoadDanceJSON(jsonData, OnDanceDataLoaded, OnDanceDataLoadError);
+                else
+                    Debug.LogError($"Unable to find data for dance '{selectedDance}'!");
+            }
         }
+    }
+
+    private void OnDanceDataLoaded(DanceData danceData)
+    {
+        Debug.Log($"Done loading dance data '{danceData.danceName}'");
+        startupHandler.LoadDanceScene(danceData);
+    }
+
+    private void OnDanceDataLoadError(string message)
+    {
+        Debug.LogError($"Unsuccessful at loading data for dance '{selectedDance}'!\nError message: '{message}'");
     }
 
     private void OnGUI()
@@ -97,7 +96,7 @@ public class StartupUI : MonoBehaviour
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
-        if (!dataLoader)
+        if (DataLoader.GetInstance() == null)
         {
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
@@ -105,7 +104,7 @@ public class StartupUI : MonoBehaviour
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
-        else if (!dataLoader.IsDoneLoading)
+        else if (!DataLoader.GetInstance().IsDoneLoading)
         {
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
@@ -114,7 +113,7 @@ public class StartupUI : MonoBehaviour
             GUILayout.EndHorizontal();
         }
 
-        if (dataLoader && dataLoader.IsDoneLoading)
+        if (DataLoader.GetInstance() != null && DataLoader.GetInstance().IsDoneLoading)
         {
             foreach (string key in DanceDatabase.GetInstance().GetDanceNames())
             {
@@ -140,9 +139,11 @@ public class StartupUI : MonoBehaviour
     private void DrawJSONImporter()
     {
         GUILayout.BeginArea(new Rect(panelWidth + 20, 10, panelWidth, panelHeight), GUI.skin.box);
+
         inputScrollPosition = GUILayout.BeginScrollView(inputScrollPosition, false, true, GUILayout.Height(panelHeight - 30));
         inputText = GUILayout.TextArea(inputText, GUILayout.ExpandHeight(true));
         GUILayout.EndScrollView();
+
         GUILayout.BeginHorizontal();
         GUI.enabled = !isImporting;
         if (GUILayout.Button(new GUIContent("Import dance from JSON"), GUILayout.Width(200)))
@@ -151,7 +152,7 @@ public class StartupUI : MonoBehaviour
 
             try
             {
-                importChoreography = JsonUtility.FromJson<JSONChoreography>(inputText);
+                importChoreography = JsonUtility.FromJson<JSONDanceData>(inputText);
             }
             catch
             {
@@ -171,12 +172,17 @@ public class StartupUI : MonoBehaviour
         GUI.enabled = true;
         GUILayout.Label(importMessage, GUILayout.ExpandWidth(true));
         GUILayout.EndHorizontal();
+
         GUILayout.EndArea();
     }
 
-    private IEnumerator ImportRoutine(JSONChoreography choreography)
+    private IEnumerator ImportDanceRoutine(JSONDanceData data)
     {
-        yield return dataLoader.ImportDanceJSON(choreography, OnImportProgress, OnImportComplete, OnImportError);
+        if (DataLoader.GetInstance() != null)
+            yield return DataLoader.GetInstance().ImportDanceJSON(data, OnImportProgress, OnImportComplete, OnImportError);
+        else
+            yield return null;
+
         importRoutine = null;
         isImporting = false;
     }
@@ -191,8 +197,8 @@ public class StartupUI : MonoBehaviour
         importMessage = message;
     }
 
-    private void OnImportComplete()
+    private void OnImportComplete(DanceData danceData)
     {
-        importMessage = $"Import successful, added '{importChoreography.danceName}'";
+        importMessage = $"Import successful, added '{danceData.danceName}'";
     }
 }
