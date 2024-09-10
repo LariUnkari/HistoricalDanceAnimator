@@ -83,12 +83,16 @@ public class DanceUtility
             case "right":
                 return DanceDirection.Right;
             case "upleft":
+            case "forwardleft":
                 return DanceDirection.UpLeft;
             case "upright":
+            case "forwardright":
                 return DanceDirection.UpRight;
             case "downright":
+            case "backwardright":
                 return DanceDirection.DownRight;
             case "downleft":
+            case "backwardleft":
                 return DanceDirection.DownLeft;
             case "cw":
             case "clockwise":

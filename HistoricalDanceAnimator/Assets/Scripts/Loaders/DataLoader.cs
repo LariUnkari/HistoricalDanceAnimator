@@ -371,8 +371,9 @@ public class DataLoader : MonoBehaviour
                 else
                     variant = "1";
 
+                // Dancer facing direction has priority, but otherwise pick group's direction or default uphall
                 if (dancer.startFacing == null)
-                    dancer.startFacing = "uphall"; // Make sure default is uphall
+                    dancer.startFacing = group.startFacing != null ? group.startFacing : "uphall";
 
                 dancerPlacements.Add(new DancerPlacement(dancer.role, group.group, variant,
                     DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, danceData.danceSet.form, danceData.danceSet.pattern),
