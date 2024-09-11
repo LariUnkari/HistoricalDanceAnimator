@@ -282,7 +282,7 @@ public class DataLoader : MonoBehaviour
         danceData.bpmChanges = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
 
         danceData.SetGroups(ParseGroups(json.groups));
-        danceData.placements = ParseFormation(json.formation, danceData);
+        danceData.placements = ParseFormation(json.formation, danceData.danceSet.form, danceData.danceSet.pattern, danceData.TryGetRole);
         danceData.choreography = ParseChoreography(json.choreography, danceData);
 
         return danceData;
@@ -291,7 +291,7 @@ public class DataLoader : MonoBehaviour
     private DanceSet ParseSet(JSONDanceSet jsonSet)
     {
         return new DanceSet(jsonSet.form, jsonSet.pattern,
-            jsonSet.size.type, jsonSet.size.preset, jsonSet.size.min, jsonSet.size.max,
+            jsonSet.size.type, Math.Max(1, jsonSet.size.countDefault), jsonSet.size.countMin, jsonSet.size.countMax, jsonSet.size.separation,
             jsonSet.minor.type, jsonSet.minor.groups);
     }
 
@@ -359,7 +359,9 @@ public class DataLoader : MonoBehaviour
         return dancerGroup;
     }
 
-    private DancerPlacement[] ParseFormation(JSONDancerGroupPosition[] jsonFormation, DanceData danceData)
+    private delegate bool TryGetRoleDelegate(string key, out DancerRole role);
+
+    private DancerPlacement[] ParseFormation(JSONDancerGroupPosition[] jsonFormation, string setForm, string setPattern, TryGetRoleDelegate getRoleDelegate)
     {
         List<DancerPlacement> dancerPlacements = new List<DancerPlacement>();
 
@@ -375,7 +377,7 @@ public class DataLoader : MonoBehaviour
             {
                 dancer = group.roles[j];
 
-                if (danceData.TryGetRole(DancerRole.GetRoleKey(group.group, dancer.role), out role))
+                if (getRoleDelegate.Invoke(DancerRole.GetRoleKey(group.group, dancer.role), out role))
                     variant = role.variant;
                 else
                     variant = "1";
@@ -385,8 +387,8 @@ public class DataLoader : MonoBehaviour
                     dancer.startFacing = group.startFacing != null ? group.startFacing : "uphall";
 
                 dancerPlacements.Add(new DancerPlacement(dancer.role, group.group, variant,
-                    DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, danceData.danceSet.form, danceData.danceSet.pattern),
-                    DanceUtility.GetDancerFacingDirectionInFormation(group.position, dancer.position, dancer.startFacing, danceData.danceSet.form, danceData.danceSet.pattern)));
+                    DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, setForm, setPattern),
+                    DanceUtility.GetDancerFacingDirectionInFormation(group.position, dancer.position, dancer.startFacing, setForm, setPattern)));
             }
         }
 

@@ -2,7 +2,7 @@
     "danceName": "Hole in the Wall",
     "danceFamily": "ECD",
     "danceSet": { "form": "Line", "pattern": "Longways",
-         "size": { "type": "Couple", "countDefault": 4, "countMin": 4, "countMax": 8 },
+         "size": { "type": "Minor", "countDefault": 3, "countMin": 2, "countMax": 4, "separation": 3.0 },
          "minor": { "type": "Duple", "groups": [ "A", "B" ] }
     },
     "danceProgression": { "type": "Line-AB", "repeats": 4, "lengthBeats": 48 },
@@ -42,7 +42,6 @@
             { "role": "Lady", "position": 0.75, "startFacing": "left" }
         ] }
     ],
-    "formationSeparation": 2.0,
     "choreography": [
         {
             "part": "Part A",

@@ -192,7 +192,7 @@ public class DanceScene : BaseScene
                 _currentDanceBeatIndex = _currentBeatIndex % _danceData.danceLength;
 
                 if (_currentDanceBeatIndex < _previousDanceBeatIndex)
-                    _currentDanceRepeatIndex++;
+                    RepeatDance();
             }
             else
             {
@@ -205,8 +205,7 @@ public class DanceScene : BaseScene
     {
         UpdateDanceTime();
 
-        if ((_danceData.danceLength > 0 && _currentBeatIndex >= _danceData.danceLength) ||
-            (_danceData.danceRepeats > 0 && _currentDanceRepeatIndex >= _danceData.danceRepeats))
+        if (HasDanceEnded())
         {
             EndDance();
             return;
@@ -216,6 +215,23 @@ public class DanceScene : BaseScene
 
         _previousBeatIndex = _currentBeatIndex;
         _previousDanceBeatIndex = _currentDanceBeatIndex;
+    }
+
+    private bool HasDanceEnded()
+    {
+        if (_danceData.danceRepeats > 0 && _currentDanceRepeatIndex < _danceData.danceRepeats)
+            return false;
+
+        if (_danceData.danceLength > 0 && _currentBeatIndex < _danceData.danceLength)
+            return false;
+
+        return true;
+    }
+
+    private void RepeatDance()
+    {
+        _currentDanceRepeatIndex++;
+        // TODO: Change dancer roles via progression if applicable
     }
 
     public void EndDance()

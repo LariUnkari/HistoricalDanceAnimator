@@ -25,6 +25,7 @@ public class DancerPosition : MonoBehaviour
 
     private DanceFormation _formation;
     private DancerRole _role;
+    private int _minorSetIndex;
 
     private GameObject _debugDancerPosition;
 
@@ -40,12 +41,6 @@ public class DancerPosition : MonoBehaviour
     private float _actionT;
     private float _actionTimeScale;
 
-    //private bool _isTransitioning;
-    //private bool _isTransitionComplete;
-    //private int _transitionIndex;
-    //private float _transitionT;
-    //private float _transitionAmount;
-
     [HideInInspector] private Vector3 _dancerLocalPosition;
     [HideInInspector] private Vector3 _lookDirection;
     [HideInInspector] private Quaternion _lookRotation;
@@ -55,9 +50,10 @@ public class DancerPosition : MonoBehaviour
     public DancerRole Role { get { return _role; } }
     public bool IsDancing { get { return _currentDanceAction != null; } }
 
-    public void Init(DanceFormation formation, GameObject debugDancerPositionPrefab)
+    public void Init(DanceFormation formation, int minorSetIndex, GameObject debugDancerPositionPrefab)
     {
         _formation = formation;
+        _minorSetIndex = minorSetIndex;
 
         _pivot = new GameObject("Pivot").transform;
         _pivot.parent = transform;
