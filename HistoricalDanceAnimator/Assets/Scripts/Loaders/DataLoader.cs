@@ -83,7 +83,7 @@ public class DataLoader : MonoBehaviour
         if (jsonFiles.Length == 0)
             yield break;
 
-        JSONDance jsonData;
+        JSONDance jsonData = null;
         DataPayloadString jsonPayload;
 
         for (int i = 0; i < jsonFiles.Length; i++)
@@ -94,7 +94,16 @@ public class DataLoader : MonoBehaviour
 
             yield return LoadJSON(jsonPayload);
 
-            jsonData = JsonUtility.FromJson<JSONDance>(jsonPayload.data);
+            try
+            {
+                jsonData = JsonUtility.FromJson<JSONDance>(jsonPayload.data);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Syntax error in dance JSON file at\n'{jsonPayload.path}'\nException: '{e.Message}'");
+                continue;
+            }
+
             if (jsonData != null)
             {
                 Debug.Log($"[{i}]: Successfully loaded dance JSON from '{jsonPayload.path}':\n{jsonData.GetDebugString()}");

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
-  m_Name: ActionPreset_ECD_CastOutLeft-LeadBack
+  m_Name: ActionPreset_ECD_CircleForFour-CounterclockwiseHalf
   m_EditorClassIdentifier: 
-  action: CastOutLeft
-  variant: LeadBack
+  action: CircleForFour
+  variant: CounterclockwiseHalf
   family: ECD
-  duration: 8
-  animation: {fileID: 7400000, guid: c7173f27e895f884d93112dbf6ef5119, type: 2}
+  duration: 4
+  animation: {fileID: 7400000, guid: ef9f1879e80da1741ad651e6f0e68926, type: 2}

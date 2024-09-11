@@ -8,6 +8,7 @@ public class DanceScene : BaseScene
     public DanceFormation _formation;
 
     public string _debugDanceName;
+    public GameObject _debugDancerPositionPrefab;
 
     private DanceData _danceData;
 
@@ -92,7 +93,7 @@ public class DanceScene : BaseScene
     {
         Debug.Log($"Dance loaded: '{danceData.danceName}'");
         _danceData = danceData;
-        _formation.SetFormation(danceData);
+        _formation.SetFormation(danceData, _debugDancerPositionPrefab);
     }
 
     private void OnDanceLoadError(string message)

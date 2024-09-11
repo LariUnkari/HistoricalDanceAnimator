@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
-  m_Name: ActionPreset_ECD_ChangePlacesRightTurnDouble
+  m_Name: ActionPreset_ECD_CircleForFour-CounterclockwiseFull
   m_EditorClassIdentifier: 
-  action: ChangePlacesRight
-  variant: TurnDouble
+  action: CircleForFour
+  variant: CounterclockwiseFull
   family: ECD
-  duration: 4
-  animation: {fileID: 7400000, guid: 605bf7a9a4198ce4db1cef5e56d50dd3, type: 2}
+  duration: 8
+  animation: {fileID: 7400000, guid: a883c478a70f5e64a8b360861f6dde24, type: 2}

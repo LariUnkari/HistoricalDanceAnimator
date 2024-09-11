@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AnimDanceAction-ECDChangePlacesRightTurnDouble
+  m_Name: AnimDanceAction-ECDChangePlacesRight-TurnDouble
   serializedVersion: 7
   m_Legacy: 1
   m_Compressed: 0
@@ -47,7 +47,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Dancer
+    path: Pivot/Dancer
   m_PositionCurves:
   - curve:
       serializedVersion: 2
@@ -91,7 +91,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Dancer
+    path: Pivot/Dancer
   m_ScaleCurves: []
   m_FloatCurves: []
   m_PPtrCurves: []
@@ -168,7 +168,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -216,7 +216,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -264,7 +264,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -303,7 +303,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -342,7 +342,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -381,7 +381,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -394,7 +394,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -406,7 +406,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -418,7 +418,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Dancer
+    path: Pivot/Dancer
     classID: 4
     script: {fileID: 0}
     flags: 0

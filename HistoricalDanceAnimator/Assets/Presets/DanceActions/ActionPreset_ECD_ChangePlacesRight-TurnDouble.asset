@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a875b6888efebc43a2b5481693eed3f, type: 3}
-  m_Name: ActionPreset_ECD_ChangePlacesLeftTurnDouble
+  m_Name: ActionPreset_ECD_ChangePlacesRight-TurnDouble
   m_EditorClassIdentifier: 
-  action: ChangePlacesLeft
+  action: ChangePlacesRight
   variant: TurnDouble
   family: ECD
   duration: 4
-  animation: {fileID: 7400000, guid: 6c7a987842cbc574da33788bc76f9303, type: 2}
+  animation: {fileID: 7400000, guid: 605bf7a9a4198ce4db1cef5e56d50dd3, type: 2}

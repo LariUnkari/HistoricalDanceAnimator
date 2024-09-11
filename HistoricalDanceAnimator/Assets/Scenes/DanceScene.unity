@@ -157,6 +157,8 @@ MonoBehaviour:
   _metronomeSource: {fileID: 2099723329}
   _formation: {fileID: 0}
   _debugDanceName: Heralds in Love
+  _debugDancerPositionPrefab: {fileID: 2888387031608756787, guid: 500dd5255725f884cb68b8f8c0c8d144,
+    type: 3}
 --- !u!4 &588946668
 Transform:
   m_ObjectHideFlags: 0
@@ -412,7 +414,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 311
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

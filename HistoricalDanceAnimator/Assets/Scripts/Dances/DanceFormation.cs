@@ -18,7 +18,7 @@ public class DanceFormation : MonoBehaviour
     private int _repeatIndex;
     public string CurrentPart { get { return _currentPart != null ? _currentPart.name : ""; } }
 
-    public void SetFormation(DanceData danceData)
+    public void SetFormation(DanceData danceData, GameObject debugDancerPositionPrefab)
     {
         _pawnParent = new GameObject("Pawns").transform;
         _pawnParent.parent = transform;
@@ -49,7 +49,7 @@ public class DanceFormation : MonoBehaviour
         for (int i = 0; i < danceData.placements.Length; i++)
         {
             placement = danceData.placements[i];
-            position = CreatePosition(placement);
+            position = CreatePosition(placement, debugDancerPositionPrefab);
             _dancerPositions[i] = position;
 
             roleKey = DancerRole.GetRoleKey(placement.group, placement.role);
@@ -69,7 +69,7 @@ public class DanceFormation : MonoBehaviour
         }
     }
 
-    private DancerPosition CreatePosition(DancerPlacement placement)
+    private DancerPosition CreatePosition(DancerPlacement placement, GameObject debugDancerPositionPrefab)
     {
         string name = $"Position_{placement.group}-{placement.role}";
         Debug.Log($"Creating position {name}");
@@ -80,7 +80,7 @@ public class DanceFormation : MonoBehaviour
         go.transform.rotation = DanceUtility.GetRotationFromDirection(placement.startFacing);
 
         DancerPosition position = go.AddComponent<DancerPosition>();
-        position.Init(this);
+        position.Init(this, debugDancerPositionPrefab);
 
         return position;
     }
