@@ -228,6 +228,8 @@ public class DanceScene : BaseScene
 
         foreach (DancerPosition position in _formation._dancerPositions)
         {
+            position.OnDanceRepeat();
+
             if (_danceData.danceProgression == DanceProgression.Line_AB)
             {
                 group = null;

@@ -103,6 +103,11 @@ public class DancerPosition : MonoBehaviour
     public void OnDanceBegun()
     {
         _beatIndex = -1;
+        OnDanceRepeat();
+    }
+
+    public void OnDanceRepeat()
+    {
         _role.ResetActionTransitions();
     }
 
@@ -114,7 +119,7 @@ public class DancerPosition : MonoBehaviour
 
         if (_currentDanceAction != null)
         {
-            UpdateDanceActionRoutine(_currentDanceAction, beatTime, beatT, beatDuration);
+            UpdateDanceAction(_currentDanceAction, beatTime, beatT, beatDuration);
         }
 
         if (beatIndex != _beatIndex)
@@ -147,7 +152,7 @@ public class DancerPosition : MonoBehaviour
         if (_currentDanceAction == null)
             return;
 
-        UpdateDanceActionRoutine(_currentDanceAction, beatTime, beatT, beatDuration);
+        UpdateDanceAction(_currentDanceAction, beatTime, beatT, beatDuration);
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasTransitions())
         {
@@ -210,7 +215,7 @@ public class DancerPosition : MonoBehaviour
         }
     }
 
-    private void UpdateDanceActionRoutine(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
+    private void UpdateDanceAction(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
     {
         UpdateActionTime();
 
