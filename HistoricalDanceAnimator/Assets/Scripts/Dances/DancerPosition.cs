@@ -13,12 +13,21 @@ public class DancerPosition : MonoBehaviour
     public Transform _dancer;
 
     /// <summary>
+    /// Transform moved by dance action animations,
+    /// used to offset dancer position or rotation point during animations
+    /// </summary>
+    public Transform _pivot;
+
+    /// <summary>
     /// Animation component to run dance animations animations on.
     /// </summary>
     public Animation _animation;
 
     private DanceFormation _formation;
     private DancerRole _role;
+    private int _minorSetIndex;
+
+    private GameObject _debugDancerPosition;
 
     private int _beatIndex;
     private float _beatT;
@@ -32,12 +41,7 @@ public class DancerPosition : MonoBehaviour
     private float _actionT;
     private float _actionTimeScale;
 
-    //private bool _isTransitioning;
-    //private bool _isTransitionComplete;
-    //private int _transitionIndex;
-    //private float _transitionT;
-    //private float _transitionAmount;
-
+    [HideInInspector] private Vector3 _dancerLocalPosition;
     [HideInInspector] private Vector3 _lookDirection;
     [HideInInspector] private Quaternion _lookRotation;
     [HideInInspector] private DanceAction _currentDanceAction;
@@ -46,12 +50,22 @@ public class DancerPosition : MonoBehaviour
     public DancerRole Role { get { return _role; } }
     public bool IsDancing { get { return _currentDanceAction != null; } }
 
-    public void Init(DanceFormation formation)
+    public void Init(DanceFormation formation, int minorSetIndex, GameObject debugDancerPositionPrefab)
     {
         _formation = formation;
+        _minorSetIndex = minorSetIndex;
+
+        _pivot = new GameObject("Pivot").transform;
+        _pivot.parent = transform;
+        _pivot.localPosition = Vector3.zero;
+        _pivot.localRotation = Quaternion.identity;
 
         _dancer = new GameObject("Dancer").transform;
-        _dancer.parent = transform;
+        _dancer.parent = _pivot;
+        _dancer.localPosition = Vector3.zero;
+        _dancer.localRotation = Quaternion.identity;
+
+        _debugDancerPosition = Instantiate(debugDancerPositionPrefab, _dancer);
 
         _animation = gameObject.AddComponent<Animation>();
 
@@ -163,9 +177,10 @@ public class DancerPosition : MonoBehaviour
 
         if (_doDebug)
         {
-            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Starting to play dance action " +
-                $"{danceAction.actionName}.{danceAction.variantName}', movement: {danceAction.movement}, animation: '{danceAction.animationClip.name}'\n" +
-                $"Action startTime={_actionStartTime:F3}, endTime={_actionEndTime:F3}, duration={_actionDuration:F3}, beatLength={danceAction.duration}, animationDuration={danceAction.animationDuration}, beatDuration={beatDuration:F3}, timeScale={_actionTimeScale:F3}");
+            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}',\n" +
+                $"movement: {danceAction.movement}, facing: {danceAction.startFacing}, animation: '{danceAction.animationClip.name}', animationDuration={danceAction.animationDuration}\n" +
+                $"Action startTime={_actionStartTime:F3}, endTime={_actionEndTime:F3}, duration={_actionDuration:F3}, " +
+                $"beatLength={danceAction.duration}, beatDuration={beatDuration:F3}, timeScale={_actionTimeScale:F3}");
         }
 
         if (!_animation.IsPlaying(danceAction.animationClip.name))
@@ -178,6 +193,10 @@ public class DancerPosition : MonoBehaviour
             state.speed = _actionTimeScale;
 
         transform.rotation = DanceUtility.GetRotationFromDirection(danceAction.startFacing);
+        if (_doDebug)
+        {
+            Debug.LogWarning($"Rotation from {danceAction.startFacing} resulted in euler angles: {transform.rotation.eulerAngles}");
+        }
     }
 
     private void UpdateDanceActionRoutine(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
@@ -213,8 +232,15 @@ public class DancerPosition : MonoBehaviour
         if (_doDebug)
             Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Action ended, position={transform.position}, rotation={transform.rotation.eulerAngles}");
 
+        _dancerLocalPosition = Vector3.zero;
+
+        _pivot.localPosition = Vector3.zero;
+        _pivot.localRotation = Quaternion.identity;
+        _pivot.localScale = Vector3.one;
+
         _dancer.localPosition = Vector3.zero;
         _dancer.localRotation = Quaternion.identity;
+        _dancer.localScale = Vector3.one;
 
         //_isTransitioning = false;
         //_isTransitionComplete = false;
@@ -228,21 +254,25 @@ public class DancerPosition : MonoBehaviour
         if (_dancer == null || _currentDanceAction == null)
             return transform.position;
 
+        _dancerLocalPosition = transform.InverseTransformPoint(_dancer.position);
+
         if (_currentDanceAction.movement != null && _currentDanceAction.movement.directions != null && _currentDanceAction.movement.directions.Length > 0)
+        {
             return transform.TransformPoint(
-                _currentDanceAction.movement.cross * _dancer.localPosition.x +
-                _currentDanceAction.movement.vector * _dancer.localPosition.y
-            );
+                  _currentDanceAction.movement.cross * _dancerLocalPosition.x +
+                  _currentDanceAction.movement.vector * _dancerLocalPosition.y
+              );
+        }
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasPositionTransitions())
         {
             if (_doDebugTransitions)
                 Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying position transition of offset={_currentDanceAction.transitions.PositionOffset} at t={_actionT}");
 
-            return transform.TransformPoint(_currentDanceAction.transitions.PositionOffset + _dancer.localPosition);
+            return transform.TransformPoint(_currentDanceAction.transitions.PositionOffset + _dancerLocalPosition);
         }
 
-        return transform.TransformPoint(_dancer.localPosition);
+        return transform.TransformPoint(_dancerLocalPosition);
     }
 
     public Quaternion GetRotation()

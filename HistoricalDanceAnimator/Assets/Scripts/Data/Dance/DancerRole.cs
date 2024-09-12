@@ -11,13 +11,15 @@ public class DancerRole
 
     [System.NonSerialized]
     public DancerGroup group;
+    public string variant;
 
     private Dictionary<int, DanceAction> actionsOnBeat;
     private Dictionary<string, DanceAction> actionsPerId;
 
-    public DancerRole(string id, float renderOffset)
+    public DancerRole(string id, string variant, float renderOffset)
     {
         this.id = id;
+        this.variant = variant;
         this.renderOffset = renderOffset;
         actionsOnBeat = new Dictionary<int, DanceAction>();
         actionsPerId = new Dictionary<string, DanceAction>();

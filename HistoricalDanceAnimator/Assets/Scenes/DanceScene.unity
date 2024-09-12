@@ -152,22 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f1e2f4b7ae65324c965366ad0dbe5d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dataSceneName: Data
   _musicSource: {fileID: 1057513752}
   _metronomeSource: {fileID: 2099723329}
   _formation: {fileID: 0}
   _debugDanceName: Heralds in Love
-  _danceData:
-    danceName: 
-    danceType: 
-    danceFamily: 
-    music: {fileID: 0}
-    bpm:
-      initialBPM: 0
-      currentBPM: 0
-    firstBeatTime: 0
-    groups: []
-    placements: []
-    parts: []
+  _debugDancerPositionPrefab: {fileID: 2888387031608756787, guid: 500dd5255725f884cb68b8f8c0c8d144,
+    type: 3}
 --- !u!4 &588946668
 Transform:
   m_ObjectHideFlags: 0
@@ -423,7 +414,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 311
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

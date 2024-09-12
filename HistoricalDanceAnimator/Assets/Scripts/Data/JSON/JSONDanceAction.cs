@@ -3,7 +3,7 @@ public struct JSONDanceAction
 {
     public int time;
     public string part;
-    public JSONDancerRole[] dancers;
+    public JSONDanceActionRole[] dancers;
     public string family;
     public string action;
     public string variant;

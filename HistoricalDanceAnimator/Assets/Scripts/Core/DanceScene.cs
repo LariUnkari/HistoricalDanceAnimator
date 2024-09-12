@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
 
-public class DanceScene : MonoBehaviour
+public class DanceScene : BaseScene
 {
     public AudioSource _musicSource;
     public AudioSource _metronomeSource;
     public DanceFormation _formation;
 
     public string _debugDanceName;
+    public GameObject _debugDancerPositionPrefab;
 
     private DanceData _danceData;
 
@@ -18,6 +19,9 @@ public class DanceScene : MonoBehaviour
     private float _danceMusicDuration;
     private int _currentBeatIndex;
     private int _previousBeatIndex;
+    private int _currentDanceBeatIndex;
+    private int _previousDanceBeatIndex;
+    private int _currentDanceRepeatIndex;
     private float _currentBPM;
     private float _nextBPM;
     private float _beatDuration;
@@ -30,51 +34,71 @@ public class DanceScene : MonoBehaviour
 
     public bool IsPaused { get { return _isPaused; } }
     public bool HasStarted { get { return _hasMusicStarted; } }
-    public string DanceName { get { return _danceData.danceName; } }
+    public string DanceName { get { return _danceData != null ? _danceData.danceName : ""; } }
     public float DanceTime { get { return _danceTime; } }
     public float DanceDuration { get { return _danceMusicDuration; } }
+    public int DanceBeat { get { return _currentBeatIndex; } }
     public float DanceBPM { get { return _currentBPM; } }
     public string DancePart { get { return _formation.CurrentPart; } }
 
-    private void Awake()
+    protected override void Awake()
     {
         GameObject go = new GameObject("Formation");
         _formation = go.AddComponent<DanceFormation>();
 
-        DanceDatabase database = DanceDatabase.GetInstance();
-
-        UserData userData = UserData.GetInstance();
-        if (userData.danceName.Length == 0)
-            userData.danceName = _debugDanceName;
-
-        if (database.TryGetDance(userData.danceName, out DanceData danceData))
-        {
-            _danceData = danceData;
-            Debug.Log($"Dance loaded: '{danceData.danceName}'");
-        }
+        base.Awake();
     }
 
     private void Start()
     {
         if (_musicSource != null && _musicSource.playOnAwake)
             _musicSource.Stop();
-
-        // Check dance data is valid before setting up formation (Unity Inspector can create invalid data if valid data was not set)
-        if (_danceData != null && _danceData.danceName != null && _danceData.danceName.Length > 0)
-        {
-            _formation.SetFormation(_danceData);
-        }
     }
 
     private void Update()
     {
-        if (_danceData == null || _musicSource == null)
+        if (!_isInitialized)
+            return;
+
+        if (_danceData == null || _musicSource == null || !_hasMusicStarted)
             return;
 
         if (_musicSource.isPlaying)
             UpdateDanceRoutine();
-        else if (_hasMusicStarted && !_isPaused)
+        else if (!_isPaused)
             EndDance();
+    }
+
+    protected override void OnInitComplete()
+    {
+        UserData userData = UserData.GetInstance();
+
+        if (userData.danceData != null)
+        {
+            OnDanceLoadComplete(userData.danceData);
+            return;
+        }
+
+        JSONDance jsonData;
+        if (!DanceDatabase.GetInstance().TryGetDance(_debugDanceName, out jsonData))
+        {
+            Debug.LogError($"No dance data loaded! Unable to find debug dance data for '{_debugDanceName}'!");
+            return;
+        }
+
+        DataLoader.GetInstance().LoadDanceJSON(jsonData, OnDanceLoadComplete, OnDanceLoadError);
+    }
+
+    private void OnDanceLoadComplete(DanceData danceData)
+    {
+        Debug.Log($"Dance loaded: '{danceData.danceName}'");
+        _danceData = danceData;
+        _formation.SetFormation(danceData, _debugDancerPositionPrefab);
+    }
+
+    private void OnDanceLoadError(string message)
+    {
+        Debug.LogError("No dance loaded!");
     }
 
     public void StartDance()
@@ -95,6 +119,9 @@ public class DanceScene : MonoBehaviour
 
         _currentBeatIndex = -1;
         _previousBeatIndex = -1;
+        _currentDanceBeatIndex = -1;
+        _previousDanceBeatIndex = -1;
+        _currentDanceRepeatIndex = 0;
 
         _bpmChangeBeatIndex = 0;
         _bpmChangeTime = 0f;
@@ -124,7 +151,7 @@ public class DanceScene : MonoBehaviour
         _formation.OnPause();
     }
 
-    private void UpdateDanceRoutine()
+    private void UpdateDanceTime()
     {
         _danceTime = _musicSource.time - _danceData.firstBeatTime;
 
@@ -159,11 +186,52 @@ public class DanceScene : MonoBehaviour
                 _beatDuration = 60f / _currentBPM;
                 Debug.Log($"BPM Changed to {_currentBPM:F2}, beat duration: {_beatDuration:F3}");
             }
+
+            if (_danceData.danceLength > 0)
+            {
+                _currentDanceBeatIndex = _currentBeatIndex % _danceData.danceLength;
+
+                if (_currentDanceBeatIndex < _previousDanceBeatIndex)
+                    RepeatDance();
+            }
+            else
+            {
+                _currentDanceBeatIndex = _currentBeatIndex;
+            }
+        }
+    }
+
+    private void UpdateDanceRoutine()
+    {
+        UpdateDanceTime();
+
+        if (HasDanceEnded())
+        {
+            EndDance();
+            return;
         }
 
-        _formation.DanceUpdate(_danceTime, _currentBeatIndex, _beatTime, _beatT, _beatDuration);
+        _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _currentDanceRepeatIndex, _beatTime, _beatT, _beatDuration);
 
         _previousBeatIndex = _currentBeatIndex;
+        _previousDanceBeatIndex = _currentDanceBeatIndex;
+    }
+
+    private bool HasDanceEnded()
+    {
+        if (_danceData.danceRepeats > 0 && _currentDanceRepeatIndex < _danceData.danceRepeats)
+            return false;
+
+        if (_danceData.danceLength > 0 && _currentBeatIndex < _danceData.danceLength)
+            return false;
+
+        return true;
+    }
+
+    private void RepeatDance()
+    {
+        _currentDanceRepeatIndex++;
+        // TODO: Change dancer roles via progression if applicable
     }
 
     public void EndDance()
@@ -171,10 +239,10 @@ public class DanceScene : MonoBehaviour
         _isPaused = false;
         _hasMusicStarted = false;
         _hasDanceBegun = false;
-        EndDancreRoutine();
+        EndDanceRoutine();
     }
 
-    public void EndDancreRoutine()
+    public void EndDanceRoutine()
     {
         Debug.Log("DanceRoutine ended!");
         _formation.EndDance();

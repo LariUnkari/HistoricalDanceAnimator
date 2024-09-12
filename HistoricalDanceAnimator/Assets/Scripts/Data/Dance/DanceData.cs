@@ -5,8 +5,11 @@ using UnityEngine;
 public class DanceData
 {
     public string danceName;
-    public string danceType;
     public string danceFamily;
+    public DanceSet danceSet;
+    public DanceProgression danceProgression;
+    public int danceRepeats;
+    public int danceLength;
 
     public AudioClip music;
     public MusicBPMChanges bpmChanges;
@@ -14,7 +17,7 @@ public class DanceData
 
     public DancerGroup[] groups;
     public DancerPlacement[] placements;
-    public DancePart[] parts;
+    public DancePart[] choreography;
 
     private Dictionary<string, DancerGroup> groupDictionary;
     private Dictionary<string, DancerRole> roleDictionary;
@@ -32,7 +35,13 @@ public class DanceData
 
             foreach (DancerRole role in group.roles)
             {
-                roleDictionary.Add(role.key, role);
+                if (!roleDictionary.ContainsKey(role.key))
+                {
+                    Debug.Log($"Role with key '{role.key}' added!");
+                    roleDictionary.Add(role.key, role);
+                }
+                else
+                    Debug.LogError($"Role with key '{role.key}' already exists in dictionary!");
             }
         }
     }
