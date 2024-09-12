@@ -378,7 +378,7 @@ public class DataLoader : MonoBehaviour
                 dancer = group.roles[j];
 
                 if (getRoleDelegate.Invoke(DancerRole.GetRoleKey(group.group, dancer.role), out role))
-                    variant = role.variant;
+                    variant = role.Variant;
                 else
                     variant = "1";
 

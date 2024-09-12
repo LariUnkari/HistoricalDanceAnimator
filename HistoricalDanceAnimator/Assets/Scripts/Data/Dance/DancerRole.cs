@@ -3,18 +3,18 @@ using System.Collections.Generic;
 [System.Serializable]
 public class DancerRole
 {
-    public string id;
-    public float renderOffset;
-
-    [System.NonSerialized]
-    public string key;
-
     [System.NonSerialized]
     public DancerGroup group;
-    public string variant;
 
+    public string id;
+    public string key;
+    public float renderOffset;
+
+    private string variant;
     private Dictionary<int, DanceAction> actionsOnBeat;
     private Dictionary<string, DanceAction> actionsPerId;
+
+    public string Variant { get { return variant; } }
 
     public DancerRole(string id, string variant, float renderOffset)
     {

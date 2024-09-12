@@ -35,8 +35,8 @@ public class PawnModelDatabase : ScriptableObject
         }
     }
 
-    public PawnModelPreset GetPreset(string key)
+    public bool TryGetPreset(string key, out PawnModelPreset preset)
     {
-        return presetDictionary[key];
+        return presetDictionary.TryGetValue(key, out preset);
     }
 }

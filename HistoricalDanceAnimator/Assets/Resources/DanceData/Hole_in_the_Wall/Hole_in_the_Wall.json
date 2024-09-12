@@ -26,10 +26,6 @@
         { "group": "B", "roles": [
             { "role": "Lord", "variant": "2" },
             { "role": "Lady", "variant": "2" }
-        ] },
-        { "group": "", "roles": [
-            { "role": "Lord", "variant": "5" },
-            { "role": "Lady", "variant": "5" }
         ] }
     ],
     "formation": [

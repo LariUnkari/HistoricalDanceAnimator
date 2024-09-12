@@ -11,4 +11,11 @@ public class PawnModel : MonoBehaviour
     {
         _label.text = text;
     }
+
+    public void SetVisualsFromPreset(PawnModelPreset preset)
+    {
+        _label.color = preset.labelColor;
+        _foreground.material.color = preset.foregroundColor;
+        _background.material.color = preset.backgroundColor;
+    }
 }

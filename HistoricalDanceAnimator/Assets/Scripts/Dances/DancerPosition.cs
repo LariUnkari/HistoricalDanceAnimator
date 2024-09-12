@@ -25,6 +25,7 @@ public class DancerPosition : MonoBehaviour
 
     private DanceFormation _formation;
     private DancerRole _role;
+    private Pawn _pawn;
     private int _dancerIndex;
     private int _setPositionIndex;
 
@@ -49,6 +50,7 @@ public class DancerPosition : MonoBehaviour
     [HideInInspector] private DanceAction _nextDanceAction;
 
     public DancerRole Role { get { return _role; } }
+    public Pawn Pawn { get { return _pawn; } }
     public int DancerIndex { get { return _dancerIndex; } }
     public int SetPositionIndex { get { return _setPositionIndex; } set { _setPositionIndex = value; } }
     public bool IsDancing { get { return _currentDanceAction != null; } }
@@ -91,6 +93,11 @@ public class DancerPosition : MonoBehaviour
 
         foreach (DanceAction action in role.GetActionCollection())
             _animation.AddClip(action.animationClip, action.animationClip.name);
+    }
+
+    public void SetPawn(Pawn pawn)
+    {
+        _pawn = pawn;
     }
 
     public void OnDanceBegun()

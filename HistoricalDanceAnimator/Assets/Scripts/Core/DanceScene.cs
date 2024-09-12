@@ -224,43 +224,45 @@ public class DanceScene : BaseScene
     private void RepeatDance()
     {
         _currentDanceRepeatIndex++;
-        string key;
+        string group;
 
         foreach (DancerPosition position in _formation._dancerPositions)
         {
             if (_danceData.danceProgression == DanceProgression.Line_AB)
             {
-                key = null;
+                group = null;
 
                 if (position.Role.group.id == "A")
                 {
                     position.SetPositionIndex++;
 
                     if (position.SetPositionIndex == _formation.SetLength - 1)
-                        key = DancerRole.GetRoleKey("inactive", position.Role.id);
+                        group = "inactive";
                 }
                 else if (position.Role.group.id == "B")
                 {
                     position.SetPositionIndex--;
 
                     if (position.SetPositionIndex == 0)
-                        key = DancerRole.GetRoleKey("inactive", position.Role.id);
+                        group = "inactive";
                 }
                 else if (position.Role.group.id == "inactive")
                 {
                     if (position.SetPositionIndex == 0)
-                        key = DancerRole.GetRoleKey("A", position.Role.id);
+                        group = "A";
                     else if (position.SetPositionIndex == _formation.SetLength - 1)
-                        key = DancerRole.GetRoleKey("B", position.Role.id);
+                        group = "B";
                 }
 
-                if (key != null)
+                if (group != null)
                 {
+                    string key = DancerRole.GetRoleKey(group, position.Role.id);
+
                     DancerRole role;
                     if (_danceData.TryGetRole(key, out role))
                     {
-                        Debug.LogWarning($"Switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {role.key}");
-                        position.SetRole(role);
+                        Debug.Log($"Switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {role.key}");
+                        ChangeDancerRole(position, role);
                     }
                     else
                     {
@@ -269,6 +271,28 @@ public class DanceScene : BaseScene
                 }
             }
         }
+    }
+
+    private void ChangeDancerRole(DancerPosition position, DancerRole role)
+    {
+        position.SetRole(role);
+
+        string key = "";
+        if (role.group.id == "inactive")
+        {
+            key = PawnModelDatabase.GetPresetKey(role.id, role.group.id, role.Variant);
+        }
+        else
+        {
+            key = PawnModelDatabase.GetPresetKey(role.id, "", role.Variant);
+            position.Pawn.model.SetText(role.group.id);
+        }
+
+        PawnModelPreset preset;
+        if (PawnModelDatabase.GetInstance().TryGetPreset(key, out preset))
+            position.Pawn.model.SetVisualsFromPreset(preset);
+        else
+            Debug.LogError($"Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to {key} visuals!");
     }
 
     public void EndDance()

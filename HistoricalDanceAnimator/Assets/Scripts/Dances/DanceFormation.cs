@@ -62,6 +62,7 @@ public class DanceFormation : MonoBehaviour
         Vector2 minorSetOffset = Vector2.zero;
         int setPositionIndex;
 
+        Pawn pawn;
         int dancerIndex = 0;
         for (int i = 0; i < danceData.danceSet.sizeCount; i++)
         {
@@ -91,7 +92,11 @@ public class DanceFormation : MonoBehaviour
 
                 rolePositions.Add(position);
 
-                _dancerPawns[dancerIndex] = CreateDancer(placement, position);
+                pawn = CreateDancer(placement, dancerRole.Variant);
+                _dancerPawns[dancerIndex] = pawn;
+
+                pawn.SetDancerPosition(position);
+                position.SetPawn(pawn);
             }
         }
     }
@@ -115,7 +120,8 @@ public class DanceFormation : MonoBehaviour
         return minorSetIndex;
     }
 
-    private DancerPosition CreatePosition(DancerPlacement placement, int dancerIndex, int setPositionIndex, Vector2 offset, GameObject debugDancerPositionPrefab)
+    private DancerPosition CreatePosition(DancerPlacement placement, int dancerIndex, int setPositionIndex,
+        Vector2 offset, GameObject debugDancerPositionPrefab)
     {
         string name = $"Position_{placement.group}-{placement.role}";
         Debug.Log($"Creating position {name}");
@@ -131,35 +137,35 @@ public class DanceFormation : MonoBehaviour
         return position;
     }
 
-    private Pawn CreateDancer(DancerPlacement placement, DancerPosition dancerPosition)
+    private Pawn CreateDancer(DancerPlacement placement, string variant)
     {
-        string name = $"Dancer_{placement.group}-{placement.role}-{placement.variant}";
+        string name = $"Dancer_{placement.group}-{placement.role}-{variant}";
         Debug.Log($"Creating dancer {name}");
 
         GameObject dancer = new GameObject(name);
         Pawn pawn = dancer.AddComponent<Pawn>();
-        pawn.SetDancerPosition(dancerPosition);
 
-        PawnModelPreset preset = GetPawnModelPreset(placement);
+        string key = PawnModelDatabase.GetPresetKey(placement.role, "", variant);
+
+        PawnModelPreset preset;
+        if (!PawnModelDatabase.GetInstance().TryGetPreset(key, out preset))
+        {
+            Debug.LogError($"Unable to find preset with key {key}");
+            return pawn;
+        }
+            
         GameObject model = Instantiate(preset.model);
         model.transform.parent = dancer.transform;
 
         PawnModel pawnModel = model.GetComponent<PawnModel>();
         pawn.model = pawnModel;
-        pawnModel._label.text = placement.group;
-        pawnModel._label.color = preset.labelColor;
-        pawnModel._foreground.material.color = preset.foregroundColor;
-        pawnModel._background.material.color = preset.backgroundColor;
+        pawnModel.SetText(placement.group);
+        pawnModel.SetVisualsFromPreset(preset);
 
         dancer.transform.parent = _pawnParent;
         dancer.transform.localPosition = placement.position;
 
         return pawn;
-    }
-
-    private PawnModelPreset GetPawnModelPreset(DancerPlacement dancerPosition)
-    {
-        return PawnModelDatabase.GetInstance().GetPreset(PawnModelDatabase.GetPresetKey(dancerPosition.role, "", dancerPosition.variant));
     }
 
     public void BeginDance()
