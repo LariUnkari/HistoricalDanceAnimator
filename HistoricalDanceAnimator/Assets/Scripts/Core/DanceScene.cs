@@ -22,6 +22,7 @@ public class DanceScene : BaseScene
     private int _currentDanceBeatIndex;
     private int _previousDanceBeatIndex;
     private int _currentDanceRepeatIndex;
+    private int _previousDanceRepeatIndex;
     private float _currentBPM;
     private float _nextBPM;
     private float _beatDuration;
@@ -195,19 +196,23 @@ public class DanceScene : BaseScene
     {
         UpdateDanceTime();
 
+        if (_danceData.danceRepeats > 0 && _currentDanceBeatIndex < _previousDanceBeatIndex)
+            _currentDanceRepeatIndex++;
+
         if (HasDanceEnded())
         {
             EndDance();
             return;
         }
 
-        if (_currentDanceBeatIndex < _previousDanceBeatIndex)
-            RepeatDance();
+        if (_currentDanceRepeatIndex > _previousDanceRepeatIndex)
+            OnDanceRepeat();
 
         _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _currentDanceRepeatIndex, _beatTime, _beatT, _beatDuration);
 
         _previousBeatIndex = _currentBeatIndex;
         _previousDanceBeatIndex = _currentDanceBeatIndex;
+        _previousDanceRepeatIndex = _currentDanceRepeatIndex;
     }
 
     private bool HasDanceEnded()
@@ -221,9 +226,8 @@ public class DanceScene : BaseScene
         return true;
     }
 
-    private void RepeatDance()
+    private void OnDanceRepeat()
     {
-        _currentDanceRepeatIndex++;
         string group;
 
         foreach (DancerPosition position in _formation._dancerPositions)
