@@ -14,9 +14,12 @@ public class DanceFormation : MonoBehaviour
     private Dictionary<int, DancePart> _dancePartsOnBeat;
     private Dictionary<string, List<DancerPosition>> _dancersByRole;
 
+    private int _setLength;
     private int _beatIndex;
     private int _repeatIndex;
+
     public string CurrentPart { get { return _currentPart != null ? _currentPart.name : ""; } }
+    public int SetLength { get { return _setLength; } }
 
     public void SetFormation(DanceData danceData, GameObject debugDancerPositionPrefab)
     {
@@ -34,11 +37,22 @@ public class DanceFormation : MonoBehaviour
             _dancePartsOnBeat.Add(part.time, part);
         }
 
+        _setLength = CalculateSetLength(danceData);
+
         _dancersByRole = new Dictionary<string, List<DancerPosition>>();
 
-        _dancerPawns = new Pawn[danceData.placements.Length];
-        // TODO: Add extra positions if dancers wait to change role etc.
-        _dancerPositions = new DancerPosition[danceData.placements.Length];
+        if (danceData.danceSet.sizeCount > 1)
+        {
+            _dancerPawns = new Pawn[danceData.placements.Length * danceData.danceSet.sizeCount];
+            _dancerPositions = new DancerPosition[danceData.placements.Length * danceData.danceSet.sizeCount];
+            Debug.Log($"Creating a formation of {danceData.danceSet.sizeCount} minor sets of {danceData.placements.Length} placements, total {_dancerPositions.Length} positions");
+        }
+        else
+        {
+            _dancerPawns = new Pawn[danceData.placements.Length];
+            _dancerPositions = new DancerPosition[danceData.placements.Length];
+            Debug.Log($"Creating a formation of {danceData.placements.Length} placements");
+        }
 
         string roleKey;
         DancerRole dancerRole;
@@ -46,12 +60,9 @@ public class DanceFormation : MonoBehaviour
         DancerPlacement placement;
         List<DancerPosition> rolePositions;
         Vector2 minorSetOffset = Vector2.zero;
+        int setPositionIndex;
 
-        if (danceData.danceSet.sizeCount > 1)
-            Debug.Log($"Creating a formation of {danceData.danceSet.sizeCount} minor sets of {danceData.placements.Length} placements");
-        else
-            Debug.Log($"Creating a formation of {danceData.placements.Length} placements");
-
+        int dancerIndex = 0;
         for (int i = 0; i < danceData.danceSet.sizeCount; i++)
         {
             // Calculate minor set offset if applicable
@@ -60,9 +71,12 @@ public class DanceFormation : MonoBehaviour
 
             for (int k = 0; k < danceData.placements.Length; k++)
             {
+                dancerIndex = i * danceData.placements.Length + k;
                 placement = danceData.placements[k];
-                position = CreatePosition(placement, i, minorSetOffset, debugDancerPositionPrefab);
-                _dancerPositions[k] = position;
+
+                setPositionIndex = CalculateSetPositionIndex(danceData.danceSet, i, placement.group);
+                position = CreatePosition(placement, dancerIndex, setPositionIndex, minorSetOffset, debugDancerPositionPrefab);
+                _dancerPositions[dancerIndex] = position;
 
                 roleKey = DancerRole.GetRoleKey(placement.group, placement.role);
 
@@ -77,12 +91,31 @@ public class DanceFormation : MonoBehaviour
 
                 rolePositions.Add(position);
 
-                _dancerPawns[k] = CreateDancer(placement, position);
+                _dancerPawns[dancerIndex] = CreateDancer(placement, position);
             }
         }
     }
 
-    private DancerPosition CreatePosition(DancerPlacement placement, int minorSetIndex, Vector2 offset, GameObject debugDancerPositionPrefab)
+    private int CalculateSetLength(DanceData danceData)
+    {
+        if (danceData.danceSet.form == DanceSetForm.LineLongways)
+        {
+            if (danceData.danceSet.minorGroups != null)
+                return danceData.danceSet.GetMinorSetLength() * danceData.danceSet.sizeCount;
+        }
+
+        return danceData.danceSet.sizeCount;
+    }
+
+    private int CalculateSetPositionIndex(DanceSet set, int minorSetIndex, string group)
+    {
+        if (set.form == DanceSetForm.LineLongways)
+            return minorSetIndex * set.GetMinorSetLength() + set.GetGroupMinorIndex(group);
+
+        return minorSetIndex;
+    }
+
+    private DancerPosition CreatePosition(DancerPlacement placement, int dancerIndex, int setPositionIndex, Vector2 offset, GameObject debugDancerPositionPrefab)
     {
         string name = $"Position_{placement.group}-{placement.role}";
         Debug.Log($"Creating position {name}");
@@ -93,7 +126,7 @@ public class DanceFormation : MonoBehaviour
         go.transform.rotation = DanceUtility.GetRotationFromDirection(placement.startFacing);
 
         DancerPosition position = go.AddComponent<DancerPosition>();
-        position.Init(this, minorSetIndex, debugDancerPositionPrefab);
+        position.Init(this, dancerIndex, setPositionIndex, debugDancerPositionPrefab);
 
         return position;
     }

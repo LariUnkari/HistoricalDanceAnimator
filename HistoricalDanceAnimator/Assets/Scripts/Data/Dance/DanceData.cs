@@ -29,6 +29,16 @@ public class DanceData
         groupDictionary = new Dictionary<string, DancerGroup>();
         roleDictionary = new Dictionary<string, DancerRole>();
 
+        DancerGroup inactiveGroup = new DancerGroup("inactive");
+        DancerRole inactiveLord = new DancerRole("Lord", "", 0f);
+        DancerRole inactiveLady = new DancerRole("Lady", "", 0f);
+
+        groupDictionary.Add(inactiveGroup.id, inactiveGroup);
+        inactiveLord.SetGroup(inactiveGroup);
+        inactiveLady.SetGroup(inactiveGroup);
+        roleDictionary.Add(inactiveLord.key, inactiveLord);
+        roleDictionary.Add(inactiveLady.key, inactiveLady);
+
         foreach (DancerGroup group in groups)
         {
             groupDictionary.Add(group.id, group);

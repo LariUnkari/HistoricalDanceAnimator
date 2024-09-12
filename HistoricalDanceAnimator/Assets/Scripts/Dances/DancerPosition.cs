@@ -25,7 +25,8 @@ public class DancerPosition : MonoBehaviour
 
     private DanceFormation _formation;
     private DancerRole _role;
-    private int _minorSetIndex;
+    private int _dancerIndex;
+    private int _setPositionIndex;
 
     private GameObject _debugDancerPosition;
 
@@ -48,12 +49,15 @@ public class DancerPosition : MonoBehaviour
     [HideInInspector] private DanceAction _nextDanceAction;
 
     public DancerRole Role { get { return _role; } }
+    public int DancerIndex { get { return _dancerIndex; } }
+    public int SetPositionIndex { get { return _setPositionIndex; } set { _setPositionIndex = value; } }
     public bool IsDancing { get { return _currentDanceAction != null; } }
 
-    public void Init(DanceFormation formation, int minorSetIndex, GameObject debugDancerPositionPrefab)
+    public void Init(DanceFormation formation, int dancerIndex, int setPositionIndex, GameObject debugDancerPositionPrefab)
     {
         _formation = formation;
-        _minorSetIndex = minorSetIndex;
+        _dancerIndex = dancerIndex;
+        _setPositionIndex = setPositionIndex;
 
         _pivot = new GameObject("Pivot").transform;
         _pivot.parent = transform;

@@ -282,7 +282,7 @@ public class DataLoader : MonoBehaviour
         danceData.bpmChanges = ParseBPM(json.musicBPM, json.musicFirstBeatTime, json.musicBeatTimings);
 
         danceData.SetGroups(ParseGroups(json.groups));
-        danceData.placements = ParseFormation(json.formation, danceData.danceSet.form, danceData.danceSet.pattern, danceData.TryGetRole);
+        danceData.placements = ParseFormation(json.formation, danceData.danceSet.form, danceData.TryGetRole);
         danceData.choreography = ParseChoreography(json.choreography, danceData);
 
         return danceData;
@@ -290,7 +290,7 @@ public class DataLoader : MonoBehaviour
 
     private DanceSet ParseSet(JSONDanceSet jsonSet)
     {
-        return new DanceSet(jsonSet.form, jsonSet.pattern,
+        return new DanceSet(DanceUtility.ParseSetForm(jsonSet.form, jsonSet.pattern),
             jsonSet.size.type, Math.Max(1, jsonSet.size.countDefault), jsonSet.size.countMin, jsonSet.size.countMax, jsonSet.size.separation,
             jsonSet.minor.type, jsonSet.minor.groups);
     }
@@ -344,7 +344,7 @@ public class DataLoader : MonoBehaviour
         DancerGroup dancerGroup = new DancerGroup(jsonDancerGroup.group);
         DancerRole[] groupRoles = new DancerRole[jsonDancerGroup.roles.Length];
 
-        float renderOffset = groupIndex * 0.1f;
+        float renderOffset = (groupIndex + 1) * 0.1f;
         JSONDancerRole jsonRole;
         DancerRole role;
         for (int i = 0; i < jsonDancerGroup.roles.Length; i++)
@@ -361,7 +361,7 @@ public class DataLoader : MonoBehaviour
 
     private delegate bool TryGetRoleDelegate(string key, out DancerRole role);
 
-    private DancerPlacement[] ParseFormation(JSONDancerGroupPosition[] jsonFormation, string setForm, string setPattern, TryGetRoleDelegate getRoleDelegate)
+    private DancerPlacement[] ParseFormation(JSONDancerGroupPosition[] jsonFormation, DanceSetForm setForm, TryGetRoleDelegate getRoleDelegate)
     {
         List<DancerPlacement> dancerPlacements = new List<DancerPlacement>();
 
@@ -387,8 +387,8 @@ public class DataLoader : MonoBehaviour
                     dancer.startFacing = group.startFacing != null ? group.startFacing : "uphall";
 
                 dancerPlacements.Add(new DancerPlacement(dancer.role, group.group, variant,
-                    DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, setForm, setPattern),
-                    DanceUtility.GetDancerFacingDirectionInFormation(group.position, dancer.position, dancer.startFacing, setForm, setPattern)));
+                    DanceUtility.GetDancerPositionInFormation(group.position, dancer.position, setForm),
+                    DanceUtility.GetDancerFacingDirectionInFormation(group.position, dancer.position, dancer.startFacing, setForm)));
             }
         }
 

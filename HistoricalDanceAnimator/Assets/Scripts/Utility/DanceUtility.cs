@@ -46,24 +46,63 @@ public class DanceUtility
         return Quaternion.identity;
     }
 
-    public static Vector2 GetDancerPositionInFormation(float groupPosition, float rolePosition, string formationType, string formationPattern)
+    public static Vector2 GetDancerPositionInFormation(float groupPosition, float rolePosition, DanceSetForm formation)
     {
         // TODO: Implement other formation types
-        switch (formationType)
+        switch (formation)
         {
             default:
                 return new Vector2(rolePosition, groupPosition);
         }
     }
 
-    public static DanceDirection GetDancerFacingDirectionInFormation(float groupPosition, float rolePosition, string orientation, string formationType, string formationPattern)
+    public static DanceDirection GetDancerFacingDirectionInFormation(float groupPosition, float rolePosition, string orientation, DanceSetForm formation)
     {
         // TODO: Implement other formation types
-        switch (formationType)
+        switch (formation)
         {
             default:
                 return ParseDirection(orientation);
         }
+    }
+
+    public static DanceSetForm ParseSetForm(string form, string pattern)
+    {
+        string formLower = form.ToLower();
+
+        if (formLower == "circle")
+        {
+            switch (pattern.ToLower())
+            {
+                case "ccw":
+                case "anticlockwise":
+                case "counterclockwise":
+                case "counter-clockwise":
+                    return DanceSetForm.CircleCCW;
+            }
+
+            return DanceSetForm.CircleInward;
+        }
+
+        if (formLower == "line")
+        {
+            // No alternatives defined yet
+            return DanceSetForm.LineLongways;
+        }
+
+        if (formLower == "square")
+        {
+            switch (pattern.ToLower())
+            {
+                case "ab":
+                    return DanceSetForm.SquareAB;
+            }
+
+            return DanceSetForm.SquareOpposing;
+        }
+
+        Debug.LogError($"Error parsing dance set formation from form='{form}' pattern='{pattern}'");
+        return DanceSetForm.Error;
     }
 
     public static DanceDirection ParseDirection(string direction)

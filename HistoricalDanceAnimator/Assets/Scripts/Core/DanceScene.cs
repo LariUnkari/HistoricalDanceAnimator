@@ -187,17 +187,7 @@ public class DanceScene : BaseScene
                 Debug.Log($"BPM Changed to {_currentBPM:F2}, beat duration: {_beatDuration:F3}");
             }
 
-            if (_danceData.danceLength > 0)
-            {
-                _currentDanceBeatIndex = _currentBeatIndex % _danceData.danceLength;
-
-                if (_currentDanceBeatIndex < _previousDanceBeatIndex)
-                    RepeatDance();
-            }
-            else
-            {
-                _currentDanceBeatIndex = _currentBeatIndex;
-            }
+            _currentDanceBeatIndex = _danceData.danceLength > 0 ? _currentBeatIndex % _danceData.danceLength : _currentBeatIndex;
         }
     }
 
@@ -210,6 +200,9 @@ public class DanceScene : BaseScene
             EndDance();
             return;
         }
+
+        if (_currentDanceBeatIndex < _previousDanceBeatIndex)
+            RepeatDance();
 
         _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _currentDanceRepeatIndex, _beatTime, _beatT, _beatDuration);
 
@@ -231,7 +224,51 @@ public class DanceScene : BaseScene
     private void RepeatDance()
     {
         _currentDanceRepeatIndex++;
-        // TODO: Change dancer roles via progression if applicable
+        string key;
+
+        foreach (DancerPosition position in _formation._dancerPositions)
+        {
+            if (_danceData.danceProgression == DanceProgression.Line_AB)
+            {
+                key = null;
+
+                if (position.Role.group.id == "A")
+                {
+                    position.SetPositionIndex++;
+
+                    if (position.SetPositionIndex == _formation.SetLength - 1)
+                        key = DancerRole.GetRoleKey("inactive", position.Role.id);
+                }
+                else if (position.Role.group.id == "B")
+                {
+                    position.SetPositionIndex--;
+
+                    if (position.SetPositionIndex == 0)
+                        key = DancerRole.GetRoleKey("inactive", position.Role.id);
+                }
+                else if (position.Role.group.id == "inactive")
+                {
+                    if (position.SetPositionIndex == 0)
+                        key = DancerRole.GetRoleKey("A", position.Role.id);
+                    else if (position.SetPositionIndex == _formation.SetLength - 1)
+                        key = DancerRole.GetRoleKey("B", position.Role.id);
+                }
+
+                if (key != null)
+                {
+                    DancerRole role;
+                    if (_danceData.TryGetRole(key, out role))
+                    {
+                        Debug.LogWarning($"Switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {role.key}");
+                        position.SetRole(role);
+                    }
+                    else
+                    {
+                        Debug.LogError($"Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {key}!");
+                    }
+                }
+            }
+        }
     }
 
     public void EndDance()
