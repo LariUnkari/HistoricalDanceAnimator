@@ -64,6 +64,62 @@
                     "startFacing": "left"
                 },
                 {
+                    "time": 4,
+                    "dancers": [
+                        { "group": "Inactive-A", "role": "Lord" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "right", "distance": 0.75 }
+                    ]
+
+                },
+                {
+                    "time": 4,
+                    "dancers": [
+                        { "group": "Inactive-A", "role": "Lady" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "left", "distance": 0.75 }
+                    ]
+
+                },
+                {
+                    "time": 6,
+                    "dancers": [
+                        { "group": "Inactive-A", "role": "Lord" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "left", "distance": 0.75 }
+                    ]
+
+                },
+                {
+                    "time": 6,
+                    "dancers": [
+                        { "group": "Inactive-A", "role": "Lady" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "right", "distance": 0.75 }
+                    ]
+
+                },
+                {
                     "time": 12,
                     "dancers": [
                         { "group": "B", "role": "Lord" }
@@ -87,16 +143,72 @@
                     ]
                 },
                 {
-                    "time": 12,
+                    "time": 16,
+                    "dancers": [
+                        { "group": "Inactive-B", "role": "Lord" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "left", "distance": 0.75 }
+                    ]
+
+                },
+                {
+                    "time": 16,
+                    "dancers": [
+                        { "group": "Inactive-B", "role": "Lady" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "right", "distance": 0.75 }
+                    ]
+
+                },
+                {
+                    "time": 18,
+                    "dancers": [
+                        { "group": "Inactive-B", "role": "Lord" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "right",
+                    "movements": [
+                        { "direction": "right", "distance": 0.75 }
+                    ]
+
+                },
+                {
+                    "time": 18,
+                    "dancers": [
+                        { "group": "Inactive-B", "role": "Lady" }
+                    ],
+                    "action": "Slide",
+                    "family": "",
+                    "duration": 2,
+                    "startFacing": "left",
+                    "movements": [
+                        { "direction": "left", "distance": 0.75 }
+                    ]
+
+                },
+                {
+                    "time": 23,
                     "dancers": [
                         { "group": "A", "role": "Lord" }
                     ],
                     "action": "Idle",
                     "family": "",
-                    "duration": 12,
+                    "duration": 1,
                     "startFacing": "right",
                     "rotationTransitions": [
-                        { "time": 0.95, "duration": 0.05, "direction": "cw", "amount": 45 }
+                        { "time": 0.0, "duration": 1.0, "direction": "cw", "amount": 45 }
                     ]
                 }
             ]

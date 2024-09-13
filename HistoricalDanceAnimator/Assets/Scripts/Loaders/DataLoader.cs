@@ -136,7 +136,7 @@ public class DataLoader : MonoBehaviour
         catch (Exception e)
         {
             if (onErrorDelegate != null)
-                onErrorDelegate.Invoke($"Error loading dance JSON data: {e.Message}");
+                onErrorDelegate.Invoke($"Error loading dance JSON data: {e.Message}, stacktrace:\n{e.StackTrace}");
         }
 
         if (File.Exists(jsonData.musicPath))
@@ -290,7 +290,7 @@ public class DataLoader : MonoBehaviour
 
     private DanceSet ParseSet(JSONDanceSet jsonSet)
     {
-        return new DanceSet(DanceUtility.ParseSetForm(jsonSet.form, jsonSet.pattern),
+        return new DanceSet(DanceUtility.ParseSetForm(jsonSet.form, jsonSet.pattern != null ? jsonSet.pattern : ""),
             jsonSet.size.type, Math.Max(1, jsonSet.size.countDefault), jsonSet.size.countMin, jsonSet.size.countMax, jsonSet.size.separation,
             jsonSet.minor.type, jsonSet.minor.groups);
     }
@@ -398,9 +398,11 @@ public class DataLoader : MonoBehaviour
     private DancePart[] ParseChoreography(JSONDancePart[] jsonParts, DanceData danceData)
     {
         DancePart[] danceParts = new DancePart[jsonParts.Length];
+        int danceEndBeat = 0;
 
         JSONDancePart jsonPart;
         DancePart dancePart;
+        int partEndBeat;
 
         for (int i = 0; i < jsonParts.Length; i++)
         {
@@ -409,26 +411,37 @@ public class DataLoader : MonoBehaviour
             // Make sure optional part fields are initialized
             if (jsonPart.part == null) jsonPart.part = $"Part{i+1}";
 
-            dancePart = ParseDancePart(jsonPart, danceData);
+            dancePart = ParseDancePart(jsonPart, danceData.danceFamily, danceData.TryGetRole);
             danceParts[i] = dancePart;
+
+            partEndBeat = dancePart.time + dancePart.length;
+
+            if (partEndBeat > danceEndBeat)
+                danceEndBeat = partEndBeat;
         }
+
+        if (danceData.danceLength == 0)
+            danceData.danceLength = danceEndBeat;
+        else
+            Debug.LogWarning($"Dance part end time {danceEndBeat} exceeds dance length {danceData.danceLength}!");
 
         return danceParts;
     }
 
-    private DancePart ParseDancePart(JSONDancePart jsonPart, DanceData danceData)
+    private DancePart ParseDancePart(JSONDancePart jsonPart, string danceFamily, TryGetRoleDelegate getRoleDelegate)
     {
-        Debug.Log($"Parsing dance part '{jsonPart.part}' at time {jsonPart.time}");
+        Debug.Log($"Parsing dance part '{jsonPart.part}' at time {jsonPart.time} with {jsonPart.actions.Length} actions");
 
-        DancePart dancePart = new DancePart(jsonPart.part, jsonPart.time, null);
-        dancePart.actions = ParseDanceActions(jsonPart.actions, dancePart, danceData);
+        int length;
+        DanceAction[] actions = ParseDanceActions(jsonPart.actions, jsonPart.time, danceFamily, getRoleDelegate, out length);
 
-        return dancePart;
+        return new DancePart(jsonPart.part, jsonPart.time, length, actions);
     }
 
-    private DanceAction[] ParseDanceActions(JSONDanceAction[] jsonActions, DancePart dancePart, DanceData danceData)
+    private DanceAction[] ParseDanceActions(JSONDanceAction[] jsonActions, int partStartTime, string danceFamily, TryGetRoleDelegate getRoleDelegate, out int length)
     {
         List<DanceAction> danceActions = new List<DanceAction>(jsonActions.Length);
+        length = 0;
 
         JSONDanceAction jsonAction;
         JSONDanceActionRole jsonRole;
@@ -436,7 +449,7 @@ public class DataLoader : MonoBehaviour
         ActionPreset actionPreset;
         DancerRole dancerRole;
         string key;
-        int time;
+        int absoluteStartBeatIndex, actionStartBeatIndex, actionEndBeatIndex;
 
         for (int i = 0; i < jsonActions.Length; i++)
         {
@@ -444,7 +457,7 @@ public class DataLoader : MonoBehaviour
 
             // Make sure optional action fields are initialized
             if (jsonAction.family == null)
-                jsonAction.family = danceData.danceFamily;
+                jsonAction.family = danceFamily;
             if (jsonAction.variant == null)
                 jsonAction.variant = "";
             if (jsonAction.part == null)
@@ -459,27 +472,32 @@ public class DataLoader : MonoBehaviour
 
             for (int j = 0; j <= jsonAction.repeat; j++)
             {
-                time = dancePart.time + jsonAction.time + j * jsonAction.duration;
-                danceAction = ParseDanceAction(time, jsonAction, actionPreset, dancePart);
+                actionStartBeatIndex = jsonAction.time + j * jsonAction.duration;
+                actionEndBeatIndex = actionStartBeatIndex + jsonAction.duration;
+                absoluteStartBeatIndex = partStartTime + actionStartBeatIndex;
+                danceAction = ParseDanceAction(absoluteStartBeatIndex, jsonAction, actionPreset);
                 danceActions.Add(danceAction);
 
                 for (int k = 0; k < jsonAction.dancers.Length; k++)
                 {
                     jsonRole = jsonAction.dancers[k];
 
-                    if (danceData.TryGetRole(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
+                    if (getRoleDelegate(DancerRole.GetRoleKey(jsonRole.group, jsonRole.role), out dancerRole))
                     {
                         Debug.Log($"Adding dance action to role {dancerRole.key}: '{danceAction.key}' T={danceAction.time}, D={danceAction.duration}");
                         dancerRole.AddAction(danceAction.time, danceAction);
                     }
                 }
+
+                if (actionEndBeatIndex > length)
+                    length = actionEndBeatIndex;
             }
         }
 
         return danceActions.ToArray();
     }
 
-    private DanceAction ParseDanceAction(int time, JSONDanceAction jsonAction, ActionPreset actionPreset, DancePart dancePart)
+    private DanceAction ParseDanceAction(int time, JSONDanceAction jsonAction, ActionPreset actionPreset)
     {
         Debug.Log($"Parsing dance action at time {time}, part {jsonAction.part}: {DanceAction.GetActionKey(jsonAction.family, jsonAction.action, jsonAction.variant)}");
 

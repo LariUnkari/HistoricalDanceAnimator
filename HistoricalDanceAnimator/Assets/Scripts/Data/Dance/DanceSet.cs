@@ -30,8 +30,11 @@ public class DanceSet
 
         minorSetIndices = new Dictionary<string, int>();
 
-        for (int i = 0; i < minorGroups.Length; i++)
-            minorSetIndices.Add(minorGroups[i], i);
+        if (minorGroups != null)
+        {
+            for (int i = 0; i < minorGroups.Length; i++)
+                minorSetIndices.Add(minorGroups[i], i);
+        }
     }
 
     public int GetMinorSetLength() {

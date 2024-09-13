@@ -1,6 +1,8 @@
 [System.Serializable]
 public class DancerGroup
 {
+    public const string INACTIVE_ID = "Inactive";
+
     public string id;
     public DancerRole[] roles;
 

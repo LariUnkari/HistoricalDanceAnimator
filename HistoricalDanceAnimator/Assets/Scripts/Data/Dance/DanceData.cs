@@ -29,26 +29,29 @@ public class DanceData
         groupDictionary = new Dictionary<string, DancerGroup>();
         roleDictionary = new Dictionary<string, DancerRole>();
 
-        DancerGroup inactiveGroup = new DancerGroup("inactive");
-        DancerRole inactiveLord = new DancerRole("Lord", "", 0f);
-        DancerRole inactiveLady = new DancerRole("Lady", "", 0f);
-
-        groupDictionary.Add(inactiveGroup.id, inactiveGroup);
-        inactiveLord.SetGroup(inactiveGroup);
-        inactiveLady.SetGroup(inactiveGroup);
-        roleDictionary.Add(inactiveLord.key, inactiveLord);
-        roleDictionary.Add(inactiveLady.key, inactiveLady);
+        DancerRole inactiveRole;
+        DancerGroup inactiveGroup;
 
         foreach (DancerGroup group in groups)
         {
             groupDictionary.Add(group.id, group);
 
+            inactiveGroup = new DancerGroup($"{DancerGroup.INACTIVE_ID}-{group.id}");
+            groupDictionary.Add(inactiveGroup.id, inactiveGroup);
+
+            Debug.Log($"Added group with id '{group.id}' and it's inactive counterpart '{inactiveGroup.id}'!");
+
             foreach (DancerRole role in group.roles)
             {
                 if (!roleDictionary.ContainsKey(role.key))
                 {
-                    Debug.Log($"Role with key '{role.key}' added!");
                     roleDictionary.Add(role.key, role);
+
+                    inactiveRole = new DancerRole(role.id, "", 0f);
+                    inactiveRole.SetGroup(inactiveGroup);
+                    roleDictionary.Add(inactiveRole.key, inactiveRole);
+
+                    Debug.Log($"Added role with key '{role.key}' and it's inactive counterpart '{inactiveRole.key}'!");
                 }
                 else
                     Debug.LogError($"Role with key '{role.key}' already exists in dictionary!");

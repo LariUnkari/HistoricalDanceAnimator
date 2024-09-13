@@ -191,26 +191,29 @@ public class DanceFormation : MonoBehaviour
             {
                 group = null;
 
-                if (position.Role.group.id == "A")
-                {
-                    position.SetPositionIndex++;
-
-                    if (position.SetPositionIndex == _setLength - 1)
-                        group = "inactive";
-                }
-                else if (position.Role.group.id == "B")
-                {
-                    position.SetPositionIndex--;
-
-                    if (position.SetPositionIndex == 0)
-                        group = "inactive";
-                }
-                else if (position.Role.group.id == "inactive")
+                if (position.Role.group.id.StartsWith(DancerGroup.INACTIVE_ID))
                 {
                     if (position.SetPositionIndex == 0)
                         group = "A";
                     else if (position.SetPositionIndex == _setLength - 1)
                         group = "B";
+                }
+                else
+                {
+                    if (position.Role.group.id == "A")
+                    {
+                        position.SetPositionIndex++;
+
+                        if (position.SetPositionIndex == _setLength - 1)
+                            group = $"{DancerGroup.INACTIVE_ID}-{position.Role.group.id}";
+                    }
+                    else if (position.Role.group.id == "B")
+                    {
+                        position.SetPositionIndex--;
+
+                        if (position.SetPositionIndex == 0)
+                            group = $"{DancerGroup.INACTIVE_ID}-{position.Role.group.id}";
+                    }
                 }
 
                 if (group != null)
@@ -261,10 +264,10 @@ public class DanceFormation : MonoBehaviour
     {
         position.SetRole(role);
 
-        string key = "";
-        if (role.group.id == "inactive")
+        string key;
+        if (role.group.id.StartsWith(DancerGroup.INACTIVE_ID))
         {
-            key = PawnModelDatabase.GetPresetKey(role.id, role.group.id, role.Variant);
+            key = PawnModelDatabase.GetPresetKey(role.id, DancerGroup.INACTIVE_ID, role.Variant);
         }
         else
         {

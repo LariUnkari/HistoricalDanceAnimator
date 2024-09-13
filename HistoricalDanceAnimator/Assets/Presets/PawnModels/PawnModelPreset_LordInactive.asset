@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PawnModelPreset_LordInactive
   m_EditorClassIdentifier: 
   role: Lord
-  group: inactive
+  group: Inactive
   variant: 
   foregroundColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundColor: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
