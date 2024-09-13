@@ -37,9 +37,19 @@ public class DanceActionTransitions
         return hasPositionTransitions;
     }
 
+    public bool IsTransitioningPosition()
+    {
+        return isTransitioningPosition;
+    }
+
     public bool HasRotationTransitions()
     {
         return hasRotationTransitions;
+    }
+
+    public bool IsTransitioningRotation()
+    {
+        return isTransitioningRotation;
     }
 
     public void AddTransition(DanceActionPositionTransition transition)
@@ -87,7 +97,7 @@ public class DanceActionTransitions
             {
                 // Transition ended
                 if (doDebug)
-                    Debug.Log($"PositionTransition[{i}] ended at t:{actionT:F3}>={transition.endTime:F3}, vector={transition.vector}");
+                    Debug.Log($"F({Time.frameCount}): PositionTransition[{i}] ended at t:{actionT:F3}>={transition.endTime:F3}, vector={transition.vector}");
 
                 positionTransitionT = 1f;
                 positionOffset = positionTo;
@@ -98,7 +108,7 @@ public class DanceActionTransitions
             {
                 // New transition starting
                 if (doDebug)
-                    Debug.Log($"PositionTransition[{i}] starting at t:{actionT:F3}>={transition.time:F3}, vector={transition.vector}");
+                    Debug.Log($"F({Time.frameCount}): PositionTransition[{i}] starting at t:{actionT:F3}>={transition.time:F3}, vector={transition.vector}");
 
                 isTransitioningPosition = true;
                 positionTransitionIndex = i;
@@ -130,7 +140,7 @@ public class DanceActionTransitions
             {
                 // Transition ended
                 if (doDebug)
-                    Debug.Log($"RotationTransition[{i}] ending at t:{actionT:F3}>={transition.endTime:F3}, direction={transition.direction}, amount={transition.amount}");
+                    Debug.Log($"F({Time.frameCount}): RotationTransition[{i}] ending at t:{actionT:F3}>={transition.endTime:F3}, direction={transition.direction}, amount={transition.amount}");
 
                 rotationTransitionT = 1f;
                 rotationOffset = rotationTo;
@@ -141,7 +151,7 @@ public class DanceActionTransitions
             {
                 // New transition starting
                 if (doDebug)
-                    Debug.Log($"RotationTransition[{i}] starting at t:{actionT:F3}>={transition.time:F3}, direction={transition.direction}, amount={transition.amount}");
+                    Debug.Log($"F({Time.frameCount}): RotationTransition[{i}] starting at t:{actionT:F3}>={transition.time:F3}, direction={transition.direction}, amount={transition.amount}");
 
                 isTransitioningRotation = true;
                 rotationTransitionIndex = i;

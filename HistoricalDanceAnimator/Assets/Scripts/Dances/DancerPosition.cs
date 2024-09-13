@@ -44,6 +44,7 @@ public class DancerPosition : MonoBehaviour
     private float _actionTimeScale;
 
     [HideInInspector] private Vector3 _dancerLocalPosition;
+    [HideInInspector] private Vector3 _dancerWorldPosition;
     [HideInInspector] private Vector3 _lookDirection;
     [HideInInspector] private Quaternion _lookRotation;
     [HideInInspector] private DanceAction _currentDanceAction;
@@ -134,7 +135,7 @@ public class DancerPosition : MonoBehaviour
                     {
                         float remainingT = 1f - _actionT;
                         float remainingTime = _actionEndTime - _actionCurrentTime;
-                        Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Interrupting current dance action " +
+                        Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Interrupting current dance action " +
                                   $"'{_currentDanceAction.actionName}' at t={_actionT:F3} time={_actionCurrentTime:F3}s, remainingT={remainingT:F3} remainingTime={remainingTime:F3}s");
                     }
 
@@ -156,6 +157,11 @@ public class DancerPosition : MonoBehaviour
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasTransitions())
         {
+            if (_currentDanceAction.transitions.IsTransitioningPosition() && _doDebugTransitions)
+                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying position transition of offset={_currentDanceAction.transitions.PositionOffset} at t={_actionT}");
+            if (_currentDanceAction.transitions.IsTransitioningRotation() && _doDebugTransitions)
+                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying rotation transition of angle={_currentDanceAction.transitions.RotationOffset} at t={_actionT}");
+
             _currentDanceAction.transitions.OnDanceUpdate(_actionT, _doDebug);
         }
     }
@@ -176,7 +182,7 @@ public class DancerPosition : MonoBehaviour
 
         if (_doDebug)
         {
-            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
+            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
                 $", movement: {danceAction.movement}, duration={danceAction.duration:F3}, beatDuration={beatDuration:F3}");
         }
 
@@ -193,7 +199,7 @@ public class DancerPosition : MonoBehaviour
 
         if (_doDebug)
         {
-            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}',\n" +
+            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}',\n" +
                 $"movement: {danceAction.movement}, facing: {danceAction.startFacing}, animation: '{danceAction.animationClip.name}', animationDuration={danceAction.animationDuration}\n" +
                 $"Action startTime={_actionStartTime:F3}, endTime={_actionEndTime:F3}, duration={_actionDuration:F3}, " +
                 $"beatLength={danceAction.duration}, beatDuration={beatDuration:F3}, timeScale={_actionTimeScale:F3}");
@@ -237,7 +243,7 @@ public class DancerPosition : MonoBehaviour
     private void OnDanceActionCompleted(DanceAction danceAction)
     {
         if (_doDebug)
-            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: '{danceAction.movement}'");
+            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: '{danceAction.movement}'");
 
         if (danceAction.transitions != null)
             danceAction.transitions.OnDanceUpdate(1f, _doDebug);
@@ -246,7 +252,7 @@ public class DancerPosition : MonoBehaviour
         transform.rotation = GetRotation();
 
         if (_doDebug)
-            Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Action ended, position={transform.position}, rotation={transform.rotation.eulerAngles}");
+            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Action ended, position={transform.position}, rotation={transform.rotation.eulerAngles}");
 
         _dancerLocalPosition = Vector3.zero;
 
@@ -274,19 +280,12 @@ public class DancerPosition : MonoBehaviour
 
         if (_currentDanceAction.movement != null && _currentDanceAction.movement.directions != null && _currentDanceAction.movement.directions.Length > 0)
         {
-            return transform.TransformPoint(
-                  _currentDanceAction.movement.cross * _dancerLocalPosition.x +
-                  _currentDanceAction.movement.vector * _dancerLocalPosition.y
-              );
+            _dancerLocalPosition.x *= _currentDanceAction.movement.cross.magnitude;
+            _dancerLocalPosition.y *= _currentDanceAction.movement.vector.magnitude;
         }
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasPositionTransitions())
-        {
-            if (_doDebugTransitions)
-                Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying position transition of offset={_currentDanceAction.transitions.PositionOffset} at t={_actionT}");
-
-            return transform.TransformPoint(_currentDanceAction.transitions.PositionOffset + _dancerLocalPosition);
-        }
+            _dancerLocalPosition += _currentDanceAction.transitions.PositionOffset;
 
         return transform.TransformPoint(_dancerLocalPosition);
     }
@@ -312,12 +311,7 @@ public class DancerPosition : MonoBehaviour
     public Vector3 GetDirection()
     {
         if (_currentDanceAction != null && _currentDanceAction.transitions != null && _currentDanceAction.transitions.HasRotationTransitions())
-        {
-            if (_doDebugTransitions)
-                Debug.Log($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying rotation transition of angle={_currentDanceAction.transitions.RotationOffset} at t={_actionT}");
-
             return Quaternion.AngleAxis(_currentDanceAction.transitions.RotationOffset, Vector3.forward) * _dancer.up;
-        }
 
         return _dancer.up;
     }

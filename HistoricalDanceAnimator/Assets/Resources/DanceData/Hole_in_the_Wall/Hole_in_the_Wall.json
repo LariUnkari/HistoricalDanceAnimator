@@ -2,7 +2,7 @@
     "danceName": "Hole in the Wall",
     "danceFamily": "ECD",
     "danceSet": { "form": "Line", "pattern": "Longways",
-         "size": { "type": "Minor", "countDefault": 3, "countMin": 2, "countMax": 4, "separation": 3.0 },
+         "size": { "type": "Couple", "countDefault": 3, "countMin": 2, "countMax": 4, "separation": 3.0 },
          "minor": { "type": "Duple", "groups": [ "A", "B" ] }
     },
     "danceProgression": { "type": "Line-AB", "repeats": 4, "lengthBeats": 48 },
@@ -49,7 +49,7 @@
                         { "group": "A", "role": "Lord" }
                     ],
                     "action": "CastOutLeft",
-                    "variant": "TwoPlaces-LeadBack",
+                    "variant": "WideTwoPlaces-LeadBack",
                     "duration": 12,
                     "startFacing": "right"
                 },
@@ -59,7 +59,7 @@
                         { "group": "A", "role": "Lady" }
                     ],
                     "action": "CastOutRight",
-                    "variant": "TwoPlaces-LeadBack",
+                    "variant": "WideTwoPlaces-LeadBack",
                     "duration": 12,
                     "startFacing": "left"
                 },
@@ -69,7 +69,7 @@
                         { "group": "B", "role": "Lord" }
                     ],
                     "action": "CastOutRight",
-                    "variant": "TwoPlaces-LeadBack",
+                    "variant": "WideTwoPlaces-LeadBack",
                     "duration": 12,
                     "startFacing": "right"
                 },
@@ -79,11 +79,11 @@
                         { "group": "B", "role": "Lady" }
                     ],
                     "action": "CastOutLeft",
-                    "variant": "TwoPlaces-LeadBack",
+                    "variant": "WideTwoPlaces-LeadBack",
                     "duration": 12,
                     "startFacing": "left",
                     "rotationTransitions": [
-                        { "time": 0.9375, "duration": 0.0625, "direction": "cw", "amount": 45 }
+                        { "time": 0.95, "duration": 0.05, "direction": "cw", "amount": 45 }
                     ]
                 },
                 {
@@ -96,16 +96,22 @@
                     "duration": 12,
                     "startFacing": "right",
                     "rotationTransitions": [
-                        { "time": 0.9375, "duration": 0.0625, "direction": "cw", "amount": 45 }
+                        { "time": 0.95, "duration": 0.05, "direction": "cw", "amount": 45 }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "part": "Part B",
+            "time": 24,
+            "actions": [
                 {
-                    "time": 24,
+                    "time": 0,
                     "dancers": [
                         { "group": "A", "role": "Lord" }
                     ],
                     "action": "ChangePlacesLeft",
-                    "variant": "TurnDouble",
+                    "variant": "TurnApproachClose",
                     "duration": 6,
                     "startFacing": "downright",
                     "movements": [
@@ -114,12 +120,12 @@
                     ]
                 },
                 {
-                    "time": 24,
+                    "time": 0,
                     "dancers": [
                         { "group": "B", "role": "Lady" }
                     ],
                     "action": "ChangePlacesLeft",
-                    "variant": "TurnDouble",
+                    "variant": "TurnApproachClose",
                     "duration": 6,
                     "startFacing": "upleft",
                     "movements": [
@@ -128,7 +134,7 @@
                     ]
                 },
                 {
-                    "time": 24,
+                    "time": 0,
                     "dancers": [
                         { "group": "A", "role": "Lady" }
                     ],
@@ -141,7 +147,7 @@
                     ]
                 },
                 {
-                    "time": 24,
+                    "time": 0,
                     "dancers": [
                         { "group": "B", "role": "Lord" }
                     ],
@@ -154,12 +160,12 @@
                     ]
                 },
                 {
-                    "time": 30,
+                    "time": 6,
                     "dancers": [
                         { "group": "A", "role": "Lady" }
                     ],
                     "action": "ChangePlacesLeft",
-                    "variant": "TurnDouble",
+                    "variant": "TurnApproachClose",
                     "duration": 6,
                     "startFacing": "downleft",
                     "movements": [
@@ -168,12 +174,12 @@
                     ]
                 },
                 {
-                    "time": 30,
+                    "time": 6,
                     "dancers": [
                         { "group": "B", "role": "Lord" }
                     ],
                     "action": "ChangePlacesLeft",
-                    "variant": "TurnDouble",
+                    "variant": "TurnApproachClose",
                     "duration": 6,
                     "startFacing": "upright",
                     "movements": [
@@ -182,7 +188,7 @@
                     ]
                 },
                 {
-                    "time": 36,
+                    "time": 12,
                     "dancers": [
                         { "group": "A", "role": "Lord" }
                     ],
@@ -205,7 +211,7 @@
                     ]
                 },
                 {
-                    "time": 36,
+                    "time": 12,
                     "dancers": [
                         { "group": "A", "role": "Lady" }
                     ],
@@ -228,7 +234,7 @@
                     ]
                 },
                 {
-                    "time": 36,
+                    "time": 12,
                     "dancers": [
                         { "group": "B", "role": "Lord" }
                     ],
@@ -240,10 +246,6 @@
                         { "time": 0.0, "duration": 0.25, "vectors": [
                             { "direction": "forwardleft", "distance": 0.25 },
                             { "direction": "forwardright", "distance": 0.25 }
-                        ]},
-                        { "time": 0.75, "duration": 0.25, "vectors": [
-                            { "direction": "forwardleft", "distance": 0.25 },
-                            { "direction": "forwardright", "distance": 0.25 }
                         ]}
                     ],
                     "rotationTransitions": [
@@ -251,7 +253,7 @@
                     ]
                 },
                 {
-                    "time": 36,
+                    "time": 12,
                     "dancers": [
                         { "group": "B", "role": "Lady" }
                     ],
@@ -263,10 +265,6 @@
                         { "time": 0.0, "duration": 0.25, "vectors": [
                             { "direction": "forwardleft", "distance": 0.25 },
                             { "direction": "forwardright", "distance": 0.25 }
-                        ]},
-                        { "time": 0.75, "duration": 0.25, "vectors": [
-                            { "direction": "forwardleft", "distance": 0.25 },
-                            { "direction": "forwardright", "distance": 0.25 }
                         ]}
                     ],
                     "rotationTransitions": [
@@ -274,7 +272,7 @@
                     ]
                 },
                 {
-                    "time": 42,
+                    "time": 18,
                     "dancers": [
                         { "group": "A", "role": "Lord" }
                     ],
@@ -286,7 +284,7 @@
                     ]
                 },
                 {
-                    "time": 42,
+                    "time": 18,
                     "dancers": [
                         { "group": "A", "role": "Lady" }
                     ],
@@ -298,33 +296,43 @@
                     ]
                 },
                 {
-                    "time": 42,
+                    "time": 18,
                     "dancers": [
                         { "group": "B", "role": "Lord" }
                     ],
-                    "action": "Double",
+                    "action": "Fleuret",
                     "duration": 6,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "forward", "distance": 1.5 }
+                        { "direction": "forward", "distance": 1.25 }
+                    ],
+                    "positionTransitions": [
+                        { "time": 0.875, "duration": 0.125, "vectors": [
+                            { "direction": "left", "distance": 0.25 }
+                        ]}
                     ],
                     "rotationTransitions": [
-                        { "time": 0.875, "duration": 0.125, "direction": "cw", "amount": 90 }
+                        { "time": 0.75, "duration": 0.25, "direction": "cw", "amount": 90 }
                     ]
                 },
                 {
-                    "time": 42,
+                    "time": 18,
                     "dancers": [
                         { "group": "B", "role": "Lady" }
                     ],
-                    "action": "Double",
+                    "action": "Fleuret",
                     "duration": 6,
                     "startFacing": "uphall",
                     "movements": [
-                        { "direction": "forward", "distance": 1.5 }
+                        { "direction": "forward", "distance": 1.25 }
+                    ],
+                    "positionTransitions": [
+                        { "time": 0.875, "duration": 0.125, "vectors": [
+                            { "direction": "right", "distance": 0.25 }
+                        ]}
                     ],
                     "rotationTransitions": [
-                        { "time": 0.875, "duration": 0.125, "direction": "ccw", "amount": 90 }
+                        { "time": 0.75, "duration": 0.25, "direction": "ccw", "amount": 90 }
                     ]
                 }
             ]

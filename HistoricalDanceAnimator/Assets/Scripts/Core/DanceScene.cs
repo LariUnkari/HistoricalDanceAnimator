@@ -185,7 +185,7 @@ public class DanceScene : BaseScene
                 _bpmChangeTime = _danceTime - _beatTime;
                 _bpmChangeBeatIndex = _currentBeatIndex;
                 _beatDuration = 60f / _currentBPM;
-                Debug.Log($"BPM Changed to {_currentBPM:F2}, beat duration: {_beatDuration:F3}");
+                Debug.Log($"F({Time.frameCount}): BPM Changed to {_currentBPM:F2}, beat duration: {_beatDuration:F3}");
             }
 
             _currentDanceBeatIndex = _danceData.danceLength > 0 ? _currentBeatIndex % _danceData.danceLength : _currentBeatIndex;
@@ -205,10 +205,10 @@ public class DanceScene : BaseScene
             return;
         }
 
+        _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _currentDanceRepeatIndex, _beatTime, _beatT, _beatDuration);
+
         if (_currentDanceRepeatIndex > _previousDanceRepeatIndex)
             OnDanceRepeat();
-
-        _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _currentDanceRepeatIndex, _beatTime, _beatT, _beatDuration);
 
         _previousBeatIndex = _currentBeatIndex;
         _previousDanceBeatIndex = _currentDanceBeatIndex;
@@ -267,12 +267,12 @@ public class DanceScene : BaseScene
                     DancerRole role;
                     if (_danceData.TryGetRole(key, out role))
                     {
-                        Debug.Log($"Switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {role.key}");
+                        Debug.Log($"F({Time.frameCount}): Switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {role.key}");
                         ChangeDancerRole(position, role);
                     }
                     else
                     {
-                        Debug.LogError($"Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {key}!");
+                        Debug.LogError($"F({Time.frameCount}): Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {key}!");
                     }
                 }
             }
@@ -298,7 +298,7 @@ public class DanceScene : BaseScene
         if (PawnModelDatabase.GetInstance().TryGetPreset(key, out preset))
             position.Pawn.model.SetVisualsFromPreset(preset);
         else
-            Debug.LogError($"Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to {key} visuals!");
+            Debug.LogError($"F({Time.frameCount}): Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to {key} visuals!");
     }
 
     public void EndDance()

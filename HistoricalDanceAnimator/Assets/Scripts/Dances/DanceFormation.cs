@@ -197,11 +197,11 @@ public class DanceFormation : MonoBehaviour
             if (_dancePartsOnBeat.TryGetValue(_beatIndex, out part))
             {
                 _currentPart = part;
-                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3}, moving to part {_currentPart.name}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
+                Debug.Log($"F({Time.frameCount}): Dance progressed to beat {beatIndex} at time {danceTime:F3}, moving to part {_currentPart.name}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
             }
             else
             {
-                Debug.Log($"Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {(_currentPart != null ? _currentPart.name : "NULL")}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
+                Debug.Log($"F({Time.frameCount}): Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {(_currentPart != null ? _currentPart.name : "NULL")}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
             }
         }
 
