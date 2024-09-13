@@ -262,8 +262,9 @@ public class DancerPosition : MonoBehaviour
 
         if (_currentDanceAction.movement != null && _currentDanceAction.movement.directions != null && _currentDanceAction.movement.directions.Length > 0)
         {
-            _dancerLocalPosition.x *= _currentDanceAction.movement.cross.magnitude;
-            _dancerLocalPosition.y *= _currentDanceAction.movement.vector.magnitude;
+            _dancerLocalPosition =
+                _dancerLocalPosition.x * _currentDanceAction.movement.cross +
+                _dancerLocalPosition.y * _currentDanceAction.movement.vector;
         }
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasPositionTransitions())
