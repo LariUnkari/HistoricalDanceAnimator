@@ -65,9 +65,9 @@ public class DanceScene : BaseScene
             return;
 
         if (_musicSource.isPlaying)
-            UpdateDanceRoutine();
+            UpdateDance();
         else if (!_isPaused)
-            EndDance();
+            StopDance();
     }
 
     protected override void OnInitComplete()
@@ -102,21 +102,17 @@ public class DanceScene : BaseScene
         Debug.LogError("No dance loaded!");
     }
 
-    public void StartDance()
+    public void BeginDance()
     {
+        Debug.LogWarning("Dance begins!");
+
         _isPaused = false;
         _hasMusicStarted = true;
         _danceTime = 0f;
+
         _musicSource.clip = _danceData.music;
+        _danceMusicDuration = _musicSource.clip.length - _danceData.firstBeatTime;
         _musicSource.Play();
-        _currentBPM = _danceData.bpmChanges.initialBPM;
-
-        BeginDanceRoutine();
-    }
-
-    private void BeginDanceRoutine()
-    {
-        Debug.Log("DanceRoutine begins!");
 
         _currentBeatIndex = -1;
         _previousBeatIndex = -1;
@@ -124,6 +120,7 @@ public class DanceScene : BaseScene
         _previousDanceBeatIndex = -1;
         _currentDanceRepeatIndex = 0;
 
+        _currentBPM = _danceData.bpmChanges.initialBPM;
         _bpmChangeBeatIndex = 0;
         _bpmChangeTime = 0f;
         _bpmChangeSinceBeats = 0;
@@ -134,8 +131,8 @@ public class DanceScene : BaseScene
         _beatT = _beatTime / _beatDuration;
 
         Debug.Log($"First beat time is ({_danceData.firstBeatTime:F3}s)! Beat duration is {_beatDuration:F3} DanceTime {_danceTime:F3}s");
-        _danceMusicDuration = _musicSource.clip.length - _danceData.firstBeatTime;
-        _formation.BeginDance();
+
+        _formation.OnDanceStarted();
     }
 
     public void Play()
@@ -152,7 +149,30 @@ public class DanceScene : BaseScene
         _formation.OnPause();
     }
 
-    private void UpdateDanceTime()
+    private void UpdateDance()
+    {
+        UpdateTime();
+
+        if (_danceData.danceRepeats > 0 && _currentDanceBeatIndex < _previousDanceBeatIndex)
+            _currentDanceRepeatIndex++;
+
+        if (HasDanceEnded())
+        {
+            StopDance();
+            return;
+        }
+
+        if (_currentDanceRepeatIndex > _previousDanceRepeatIndex)
+            _formation.OnDanceRepeat(_currentDanceRepeatIndex, _danceData);
+
+        _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _beatTime, _beatDuration);
+
+        _previousBeatIndex = _currentBeatIndex;
+        _previousDanceBeatIndex = _currentDanceBeatIndex;
+        _previousDanceRepeatIndex = _currentDanceRepeatIndex;
+    }
+
+    private void UpdateTime()
     {
         _danceTime = _musicSource.time - _danceData.firstBeatTime;
 
@@ -174,6 +194,8 @@ public class DanceScene : BaseScene
 
         if (_currentBeatIndex > _previousBeatIndex)
         {
+            Debug.Log($"F({Time.frameCount}): Dance progressed to beat {_currentBeatIndex} at time {_danceTime:F3}, Current beat t={_beatT:F3}, time={_beatTime:F3}, duration={_beatDuration:F3}");
+
             if (_metronomeSource != null)
                 _metronomeSource.PlayOneShot(_metronomeSource.clip);
 
@@ -185,34 +207,14 @@ public class DanceScene : BaseScene
                 _bpmChangeTime = _danceTime - _beatTime;
                 _bpmChangeBeatIndex = _currentBeatIndex;
                 _beatDuration = 60f / _currentBPM;
+
                 Debug.Log($"F({Time.frameCount}): BPM Changed to {_currentBPM:F2}, beat duration: {_beatDuration:F3}");
             }
 
             _currentDanceBeatIndex = _danceData.danceLength > 0 ? _currentBeatIndex % _danceData.danceLength : _currentBeatIndex;
         }
-    }
 
-    private void UpdateDanceRoutine()
-    {
-        UpdateDanceTime();
-
-        if (_danceData.danceRepeats > 0 && _currentDanceBeatIndex < _previousDanceBeatIndex)
-            _currentDanceRepeatIndex++;
-
-        if (HasDanceEnded())
-        {
-            EndDance();
-            return;
-        }
-
-        _formation.DanceUpdate(_danceTime, _currentDanceBeatIndex, _currentDanceRepeatIndex, _beatTime, _beatT, _beatDuration);
-
-        if (_currentDanceRepeatIndex > _previousDanceRepeatIndex)
-            OnDanceRepeat();
-
-        _previousBeatIndex = _currentBeatIndex;
-        _previousDanceBeatIndex = _currentDanceBeatIndex;
-        _previousDanceRepeatIndex = _currentDanceRepeatIndex;
+        _formation.UpdateDanceTime(_danceTime);
     }
 
     private bool HasDanceEnded()
@@ -226,82 +228,7 @@ public class DanceScene : BaseScene
         return true;
     }
 
-    private void OnDanceRepeat()
-    {
-        string group;
-
-        foreach (DancerPosition position in _formation._dancerPositions)
-        {
-            position.OnDanceRepeat();
-
-            if (_danceData.danceProgression == DanceProgression.Line_AB)
-            {
-                group = null;
-
-                if (position.Role.group.id == "A")
-                {
-                    position.SetPositionIndex++;
-
-                    if (position.SetPositionIndex == _formation.SetLength - 1)
-                        group = "inactive";
-                }
-                else if (position.Role.group.id == "B")
-                {
-                    position.SetPositionIndex--;
-
-                    if (position.SetPositionIndex == 0)
-                        group = "inactive";
-                }
-                else if (position.Role.group.id == "inactive")
-                {
-                    if (position.SetPositionIndex == 0)
-                        group = "A";
-                    else if (position.SetPositionIndex == _formation.SetLength - 1)
-                        group = "B";
-                }
-
-                if (group != null)
-                {
-                    string key = DancerRole.GetRoleKey(group, position.Role.id);
-
-                    DancerRole role;
-                    if (_danceData.TryGetRole(key, out role))
-                    {
-                        Debug.Log($"F({Time.frameCount}): Switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {role.key}");
-                        ChangeDancerRole(position, role);
-                    }
-                    else
-                    {
-                        Debug.LogError($"F({Time.frameCount}): Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to role {key}!");
-                    }
-                }
-            }
-        }
-    }
-
-    private void ChangeDancerRole(DancerPosition position, DancerRole role)
-    {
-        position.SetRole(role);
-
-        string key = "";
-        if (role.group.id == "inactive")
-        {
-            key = PawnModelDatabase.GetPresetKey(role.id, role.group.id, role.Variant);
-        }
-        else
-        {
-            key = PawnModelDatabase.GetPresetKey(role.id, "", role.Variant);
-            position.Pawn.model.SetText(role.group.id);
-        }
-
-        PawnModelPreset preset;
-        if (PawnModelDatabase.GetInstance().TryGetPreset(key, out preset))
-            position.Pawn.model.SetVisualsFromPreset(preset);
-        else
-            Debug.LogError($"F({Time.frameCount}): Error in switching dancer {position.DancerIndex}/{_formation._dancerPositions.Length} at set position {position.SetPositionIndex}/{_formation.SetLength} role {position.Role.key} to {key} visuals!");
-    }
-
-    public void EndDance()
+    public void StopDance()
     {
         _isPaused = false;
         _hasMusicStarted = false;

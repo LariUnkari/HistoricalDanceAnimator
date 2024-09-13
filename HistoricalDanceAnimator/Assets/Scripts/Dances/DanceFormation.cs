@@ -168,45 +168,115 @@ public class DanceFormation : MonoBehaviour
         return pawn;
     }
 
-    public void BeginDance()
+    public void OnDanceStarted()
     {
         _beatIndex = -1;
 
         foreach (DancerPosition dancerPosition in _dancerPositions)
-            dancerPosition.OnDanceBegun();
+            dancerPosition.OnDanceStarted();
     }
 
-    private void OnDanceRepeat(int repeatIndex)
+    public void OnDanceRepeat(int repeatIndex, DanceData danceData)
     {
-        Debug.LogWarning($"Dance repeating for the {DanceUtility.GetOrdinalNumberString(repeatIndex)} time!");
-        _repeatIndex = repeatIndex;
+        Debug.LogWarning($"F({Time.frameCount}): Dance repeating for the {DanceUtility.GetOrdinalNumberString(repeatIndex)} time!");
+
         _beatIndex = -1;
+
+        string group;
+        foreach (DancerPosition position in _dancerPositions)
+        {
+            position.OnDanceStarted();
+
+            if (danceData.danceProgression == DanceProgression.Line_AB)
+            {
+                group = null;
+
+                if (position.Role.group.id == "A")
+                {
+                    position.SetPositionIndex++;
+
+                    if (position.SetPositionIndex == _setLength - 1)
+                        group = "inactive";
+                }
+                else if (position.Role.group.id == "B")
+                {
+                    position.SetPositionIndex--;
+
+                    if (position.SetPositionIndex == 0)
+                        group = "inactive";
+                }
+                else if (position.Role.group.id == "inactive")
+                {
+                    if (position.SetPositionIndex == 0)
+                        group = "A";
+                    else if (position.SetPositionIndex == _setLength - 1)
+                        group = "B";
+                }
+
+                if (group != null)
+                {
+                    string key = DancerRole.GetRoleKey(group, position.Role.id);
+
+                    DancerRole role;
+                    if (danceData.TryGetRole(key, out role))
+                    {
+                        Debug.Log($"F({Time.frameCount}): Switching dancer {position.DancerIndex}/{_dancerPositions.Length} at set position {position.SetPositionIndex}/{_setLength} role {position.Role.key} to role {role.key}");
+                        ChangeDancerRole(position, role);
+                    }
+                    else
+                    {
+                        Debug.LogError($"F({Time.frameCount}): Error in switching dancer {position.DancerIndex}/{_dancerPositions.Length} at set position {position.SetPositionIndex}/{_setLength} role {position.Role.key} to role {key}!");
+                    }
+                }
+            }
+        }
     }
 
-    public void DanceUpdate(float danceTime, int beatIndex, int repeatIndex, float beatTime, float beatT, float beatDuration)
+    public void UpdateDanceTime(float danceTime)
     {
-        if (repeatIndex > _repeatIndex)
-            OnDanceRepeat(repeatIndex);
+        foreach (DancerPosition dancerPosition in _dancerPositions)
+            dancerPosition.CheckDanceActionEnded(danceTime);
+    }
 
+    public void DanceUpdate(float danceTime, int beatIndex, float beatTime, float beatDuration)
+    {
         if (beatIndex > _beatIndex)
         {
-            //Debug.Break();
-            _beatIndex = beatIndex;
-
+            // TODO: Improve part logic to not require hitting a specific beat
             DancePart part;
-            if (_dancePartsOnBeat.TryGetValue(_beatIndex, out part))
+            if (_dancePartsOnBeat.TryGetValue(beatIndex, out part))
             {
                 _currentPart = part;
-                Debug.Log($"F({Time.frameCount}): Dance progressed to beat {beatIndex} at time {danceTime:F3}, moving to part {_currentPart.name}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
-            }
-            else
-            {
-                Debug.Log($"F({Time.frameCount}): Dance progressed to beat {beatIndex} at time {danceTime:F3} in part {(_currentPart != null ? _currentPart.name : "NULL")}. Current beat t={beatT:F3}, time={beatTime:F3}, duration={beatDuration:F3}");
+                Debug.Log($"F({Time.frameCount}): Dance progressed to part {_currentPart.name}");
             }
         }
 
         foreach (DancerPosition dancerPosition in _dancerPositions)
-            dancerPosition.DanceUpdate(danceTime, _beatIndex, beatTime, beatT, beatDuration);
+            dancerPosition.OnDanceupdate(danceTime, beatIndex, beatTime, beatDuration, beatIndex > _beatIndex);
+
+        _beatIndex = beatIndex;
+    }
+
+    private void ChangeDancerRole(DancerPosition position, DancerRole role)
+    {
+        position.SetRole(role);
+
+        string key = "";
+        if (role.group.id == "inactive")
+        {
+            key = PawnModelDatabase.GetPresetKey(role.id, role.group.id, role.Variant);
+        }
+        else
+        {
+            key = PawnModelDatabase.GetPresetKey(role.id, "", role.Variant);
+            position.Pawn.model.SetText(role.group.id);
+        }
+
+        PawnModelPreset preset;
+        if (PawnModelDatabase.GetInstance().TryGetPreset(key, out preset))
+            position.Pawn.model.SetVisualsFromPreset(preset);
+        else
+            Debug.LogError($"F({Time.frameCount}): Error in switching dancer {position.DancerIndex}/{_dancerPositions.Length} at set position {position.SetPositionIndex}/{_setLength} role {position.Role.key} to {key} visuals!");
     }
 
     public void EndDance()

@@ -31,11 +31,6 @@ public class DancerPosition : MonoBehaviour
 
     private GameObject _debugDancerPosition;
 
-    private int _beatIndex;
-    private float _beatT;
-    private float _beatTime;
-    private float _danceTime;
-
     private float _actionStartTime;
     private float _actionCurrentTime;
     private float _actionEndTime;
@@ -101,105 +96,101 @@ public class DancerPosition : MonoBehaviour
         _pawn = pawn;
     }
 
-    public void OnDanceBegun()
+    public bool IsActing()
     {
-        _beatIndex = -1;
-        OnDanceRepeat();
+        return _currentDanceAction != null;
     }
 
-    public void OnDanceRepeat()
+    public void OnResume()
+    {
+        foreach (AnimationState state in _animation)
+            state.speed = _actionTimeScale;
+    }
+
+    public void OnPause()
+    {
+        foreach (AnimationState state in _animation)
+            state.speed = 0f;
+    }
+
+    public void OnDanceStarted()
     {
         _role.ResetActionTransitions();
     }
 
-    public void DanceUpdate(float danceTime, int beatIndex, float beatTime, float beatT, float beatDuration)
+    private void UpdateActionTime(float danceTime)
     {
-        _beatT = beatT;
-        _beatTime = beatTime;
-        _danceTime = danceTime;
+        _actionCurrentTime = danceTime - _actionStartTime;
+        _actionT = _actionCurrentTime / _actionDuration;
+    }
 
-        if (_currentDanceAction != null)
-        {
-            UpdateDanceAction(_currentDanceAction, beatTime, beatT, beatDuration);
-        }
-
-        if (beatIndex != _beatIndex)
-        {
-            _beatIndex = beatIndex;
-
-            if (_role.TryGetAction(_beatIndex, out _nextDanceAction))
-            {
-                if (_currentDanceAction != null && _currentDanceAction != _nextDanceAction && _actionT < 1f)
-                {
-                    if (_doDebug)
-                    {
-                        float remainingT = 1f - _actionT;
-                        float remainingTime = _actionEndTime - _actionCurrentTime;
-                        Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Interrupting current dance action " +
-                                  $"'{_currentDanceAction.actionName}' at t={_actionT:F3} time={_actionCurrentTime:F3}s, remainingT={remainingT:F3} remainingTime={remainingTime:F3}s");
-                    }
-
-                    OnDanceActionCompleted(_currentDanceAction);
-                }
-
-                BeginDanceActionRoutine(_nextDanceAction, beatTime, beatT, beatDuration);
-            }
-            //else
-            //{
-            //    Debug.LogError($"{name}: Unable to get DanceAction at beat {_beatIndex}");
-            //}
-        }
-
+    public void CheckDanceActionEnded(float danceTime)
+    {
         if (_currentDanceAction == null)
             return;
+        
+        UpdateActionTime(danceTime);
 
-        UpdateDanceAction(_currentDanceAction, beatTime, beatT, beatDuration);
+        if (_actionT >= 1f || !_animation.isPlaying)
+            EndDanceAction(_currentDanceAction);
+    }
+
+    public void OnDanceupdate(float danceTime, int beatIndex, float beatTime, float beatDuration, bool checkActionStart)
+    {
+        if (checkActionStart)
+            CheckDanceActionStarted(danceTime, beatIndex, beatTime, beatDuration);
+
+        if (IsActing())
+            UpdateDanceAction(danceTime);
+    }
+
+    private void CheckDanceActionStarted(float danceTime, int beatIndex, float beatTime, float beatDuration)
+    {
+        if (!_role.TryGetAction(beatIndex, out _nextDanceAction))
+            return;
+
+        if (_currentDanceAction != null && _currentDanceAction != _nextDanceAction)
+        {
+            if (_doDebug)
+            {
+                float remainingT = 1f - _actionT;
+                float remainingTime = _actionEndTime - _actionCurrentTime;
+                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{beatIndex}] t={beatTime / beatDuration:F3} time={beatTime:F3}: Interrupting current dance action " +
+                    $"'{_currentDanceAction.actionName}' at t={_actionT:F3} time={_actionCurrentTime:F3}s, remainingT={remainingT:F3} remainingTime={remainingTime:F3}s");
+            }
+
+            EndDanceAction(_currentDanceAction);
+        }
+
+        BeginDanceAction(_nextDanceAction, danceTime, beatIndex, beatTime, beatDuration);
+    }
+
+    private void UpdateDanceAction(float danceTime)
+    {
+        UpdateActionTime(danceTime);
 
         if (_currentDanceAction.transitions != null && _currentDanceAction.transitions.HasTransitions())
         {
             if (_currentDanceAction.transitions.IsTransitioningPosition() && _doDebugTransitions)
-                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying position transition of offset={_currentDanceAction.transitions.PositionOffset} at t={_actionT}");
+                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Applying position transition of offset={_currentDanceAction.transitions.PositionOffset} at t={_actionT}");
             if (_currentDanceAction.transitions.IsTransitioningRotation() && _doDebugTransitions)
-                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Applying rotation transition of angle={_currentDanceAction.transitions.RotationOffset} at t={_actionT}");
+                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Applying rotation transition of angle={_currentDanceAction.transitions.RotationOffset} at t={_actionT}");
 
             _currentDanceAction.transitions.OnDanceUpdate(_actionT, _doDebug);
         }
     }
 
-    private void UpdateActionTime()
-    {
-        _actionCurrentTime = _danceTime - _actionStartTime;
-        _actionT = _actionCurrentTime / _actionDuration;
-    }
-
-    public void PlayDanceAction(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
-    {
-        if (danceAction == null)
-        {
-            Debug.LogError($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Can't play NULL dance action");
-            return;
-        }
-
-        if (_doDebug)
-        {
-            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Play dance action {danceAction.actionName}.{danceAction.variantName}'" +
-                $", movement: {danceAction.movement}, duration={danceAction.duration:F3}, beatDuration={beatDuration:F3}");
-        }
-
-        BeginDanceActionRoutine(danceAction, beatTime, beatT, beatDuration);
-    }
-
-    private void BeginDanceActionRoutine(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
+    public void BeginDanceAction(DanceAction danceAction, float danceTime, int beatIndex, float beatTime, float beatDuration)
     {
         _currentDanceAction = danceAction;
-        _actionStartTime = _danceTime - beatTime;
+        _actionStartTime = danceTime - beatTime;
         _actionEndTime = _actionStartTime + danceAction.duration * beatDuration;
         _actionDuration = _actionEndTime - _actionStartTime;
         _actionTimeScale = danceAction.animationDuration / (beatDuration * danceAction.duration);
 
         if (_doDebug)
         {
-            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}] t={beatT:F3} time={beatTime:F3}: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}',\n" +
+            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{beatIndex}] t={beatTime / beatDuration:F3} time={beatTime:F3}: Starting to play dance action {danceAction.actionName}.{danceAction.variantName}',\n" +
                 $"movement: {danceAction.movement}, facing: {danceAction.startFacing}, animation: '{danceAction.animationClip.name}', animationDuration={danceAction.animationDuration}\n" +
                 $"Action startTime={_actionStartTime:F3}, endTime={_actionEndTime:F3}, duration={_actionDuration:F3}, " +
                 $"beatLength={danceAction.duration}, beatDuration={beatDuration:F3}, timeScale={_actionTimeScale:F3}");
@@ -215,36 +206,24 @@ public class DancerPosition : MonoBehaviour
             state.speed = _actionTimeScale;
 
         transform.rotation = DanceUtility.GetRotationFromDirection(danceAction.startFacing);
+
         if (_doDebug)
-        {
             Debug.LogWarning($"Rotation from {danceAction.startFacing} resulted in euler angles: {transform.rotation.eulerAngles}");
-        }
-    }
-
-    private void UpdateDanceAction(DanceAction danceAction, float beatTime, float beatT, float beatDuration)
-    {
-        UpdateActionTime();
-
-        if (_actionT >= 1f || !_animation.isPlaying)
-            OnDanceActionCompleted(danceAction);
     }
 
     public void EndDanceAction()
     {
-        if (_currentDanceAction != null)
+        if (_currentDanceAction == null)
         {
-            _actionT = 1f;
-            OnDanceActionCompleted(_currentDanceAction);
+            Debug.LogError($"{_role.group.id}.{_role.id}: No dance action to end!");
+            return;
         }
-        else
-            Debug.LogWarning($"{_role.group.id}.{_role.id}: Beat[{_beatIndex}]: No dance action to end!");
+
+        EndDanceAction(_currentDanceAction);
     }
 
-    private void OnDanceActionCompleted(DanceAction danceAction)
+    private void EndDanceAction(DanceAction danceAction)
     {
-        if (_doDebug)
-            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: '{danceAction.movement}'");
-
         if (danceAction.transitions != null)
             danceAction.transitions.OnDanceUpdate(1f, _doDebug);
 
@@ -252,7 +231,10 @@ public class DancerPosition : MonoBehaviour
         transform.rotation = GetRotation();
 
         if (_doDebug)
-            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{_beatIndex}]: Action ended, position={transform.position}, rotation={transform.rotation.eulerAngles}");
+        {
+            Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Finished playing dance action '{danceAction.actionName}.{danceAction.variantName}', movement: '{danceAction.movement}'\n" +
+                  $"Action ended, position={transform.position}, rotation={transform.rotation.eulerAngles}");
+        }
 
         _dancerLocalPosition = Vector3.zero;
 
@@ -319,17 +301,5 @@ public class DancerPosition : MonoBehaviour
     public Vector3 GetScale()
     {
         return _dancer.localScale;
-    }
-
-    public void OnResume()
-    {
-        foreach (AnimationState state in _animation)
-            state.speed = _actionTimeScale;
-    }
-
-    public void OnPause()
-    {
-        foreach (AnimationState state in _animation)
-            state.speed = 0f;
     }
 }
