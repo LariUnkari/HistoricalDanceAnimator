@@ -10,20 +10,9 @@ public class DanceUI : MonoBehaviour
         if (_danceScene == null)
             return;
 
-        GUILayout.BeginArea(new Rect(10, 10, Screen.width - 20, 40));
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
+        GUILayout.BeginArea(new Rect(10, 10, 300, 80));
         GUILayout.Label(new GUIContent(_danceScene.DanceName));
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
         GUILayout.Label(new GUIContent(_danceScene.DancePart));
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-        GUILayout.EndArea();
-
-        GUILayout.BeginArea(new Rect(10, 60, 300, 80));
         GUILayout.BeginHorizontal();
         GUILayout.Label(new GUIContent("Time:"), GUILayout.Width(36f));
         GUILayout.Label(new GUIContent(GetDanceSignString()), GUILayout.Width(8f));
@@ -67,7 +56,7 @@ public class DanceUI : MonoBehaviour
     {
         if (!_danceScene.HasStarted)
         {
-            _danceScene.StartDance();
+            _danceScene.BeginDance();
             return;
         }
 

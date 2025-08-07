@@ -5,13 +5,16 @@ public class DanceAnimation : MonoBehaviour
 {
     public DancePreset m_dancePreset;
 
-    public Animator m_animator;
+    public Animator[] m_animators;
     public AudioSource m_audioSource;
     
 	void Start()
     {
-        if (m_animator != null)
-            m_animator.enabled = false;
+        if (m_animators.Length > 0)
+        {
+            foreach (Animator anim in m_animators)
+                anim.enabled = false;
+        }
 
         if (m_audioSource != null && m_audioSource.playOnAwake)
             m_audioSource.Stop();
@@ -28,11 +31,10 @@ public class DanceAnimation : MonoBehaviour
         if (m_dancePreset == null)
             return;
 
-        if (m_animator != null)
+        if (m_animators.Length > 0)
         {
-            m_animator.runtimeAnimatorController = m_dancePreset.animatorController;
-            m_animator.speed = m_dancePreset.songBPM / (60f * (m_dancePreset.animationBPS > 0f ? m_dancePreset.animationBPS : 1f));
-            m_animator.enabled = true;
+            foreach (Animator anim in m_animators)
+                StartAnimator(anim);
         }
 
         if (m_audioSource != null)
@@ -44,5 +46,12 @@ public class DanceAnimation : MonoBehaviour
 
             m_audioSource.Play();
         }
+    }
+
+    private void StartAnimator(Animator anim)
+    {
+        anim.runtimeAnimatorController = m_dancePreset.animatorController;
+        anim.speed = m_dancePreset.songBPM / (60f * (m_dancePreset.animationBPS > 0f ? m_dancePreset.animationBPS : 1f));
+        anim.enabled = true;
     }
 }

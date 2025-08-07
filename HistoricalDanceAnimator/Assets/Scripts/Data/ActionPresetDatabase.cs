@@ -39,6 +39,17 @@ public class ActionPresetDatabase : ScriptableObject
 
     public static string GetPresetKey(string family, string action, string variant)
     {
+        if (family == null)
+        {
+            Debug.LogWarning($"Action '{action}' family is NULL!");
+            family = "";
+        }
+        if (variant == null)
+        {
+            Debug.LogWarning($"Action '{action}' variant is NULL!");
+            variant = "";
+        }
+
         string key = action;
 
         if (family.Length > 0) key = $"{family}-{key}";

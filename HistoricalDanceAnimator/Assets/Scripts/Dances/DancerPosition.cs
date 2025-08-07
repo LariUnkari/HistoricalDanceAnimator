@@ -138,31 +138,38 @@ public class DancerPosition : MonoBehaviour
     public void OnDanceupdate(float danceTime, int beatIndex, float beatTime, float beatDuration, bool checkActionStart)
     {
         if (checkActionStart)
-            CheckDanceActionStarted(danceTime, beatIndex, beatTime, beatDuration);
+        {
+            if (CheckDanceActionStarted(beatIndex, out _nextDanceAction))
+            {
+                if (CheckDanceActionEnded())
+                {
+                    if (_doDebug)
+                    {
+                        float remainingT = 1f - _actionT;
+                        float remainingTime = _actionEndTime - _actionCurrentTime;
+                        Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{beatIndex}] t={beatTime / beatDuration:F3} time={beatTime:F3}: Interrupting current dance action " +
+                            $"'{_currentDanceAction.actionName}' at t={_actionT:F3} time={_actionCurrentTime:F3}s, remainingT={remainingT:F3} remainingTime={remainingTime:F3}s");
+                    }
+
+                    EndDanceAction(_currentDanceAction);
+                }
+
+                BeginDanceAction(_nextDanceAction, danceTime, beatIndex, beatTime, beatDuration);
+            }
+        }
 
         if (IsActing())
             UpdateDanceAction(danceTime);
     }
 
-    private void CheckDanceActionStarted(float danceTime, int beatIndex, float beatTime, float beatDuration)
+    private bool CheckDanceActionStarted(int beatIndex, out DanceAction nextDanceAction)
     {
-        if (!_role.TryGetAction(beatIndex, out _nextDanceAction))
-            return;
+        return _role.TryGetAction(beatIndex, out nextDanceAction) && nextDanceAction != _currentDanceAction;
+    }
 
-        if (_currentDanceAction != null && _currentDanceAction != _nextDanceAction)
-        {
-            if (_doDebug)
-            {
-                float remainingT = 1f - _actionT;
-                float remainingTime = _actionEndTime - _actionCurrentTime;
-                Debug.Log($"F({Time.frameCount}): {_role.group.id}.{_role.id}: Beat[{beatIndex}] t={beatTime / beatDuration:F3} time={beatTime:F3}: Interrupting current dance action " +
-                    $"'{_currentDanceAction.actionName}' at t={_actionT:F3} time={_actionCurrentTime:F3}s, remainingT={remainingT:F3} remainingTime={remainingTime:F3}s");
-            }
-
-            EndDanceAction(_currentDanceAction);
-        }
-
-        BeginDanceAction(_nextDanceAction, danceTime, beatIndex, beatTime, beatDuration);
+    private bool CheckDanceActionEnded()
+    {
+        return _currentDanceAction != null && _currentDanceAction != _nextDanceAction;
     }
 
     private void UpdateDanceAction(float danceTime)

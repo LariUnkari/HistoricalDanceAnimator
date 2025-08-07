@@ -40,6 +40,9 @@ public class DancerRole
     {
         actionsOnBeat.Add(beatIndex, danceAction);
 
+        for (int i = 1; i < danceAction.duration; i++)
+            actionsOnBeat.Add(beatIndex + i, danceAction);
+
         if (!actionsPerId.ContainsKey(danceAction.key))
             actionsPerId.Add(danceAction.key, danceAction);
     }

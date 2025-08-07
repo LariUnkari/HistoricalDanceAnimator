@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New DancePreset")]
+[CreateAssetMenu(fileName = "New DancePreset", menuName = "ScriptableObjects/DancePreset", order = 1)]
 public class DancePreset : ScriptableObject
 {
     [Tooltip("Audio clip of the music")]
@@ -25,5 +25,5 @@ public class DancePreset : ScriptableObject
     /// <summary>
     /// Animation speed, beats per second of animation
     /// </summary>
-    public float animationBPS = 4f;
+    public float animationBPS = 4f; 
 }
