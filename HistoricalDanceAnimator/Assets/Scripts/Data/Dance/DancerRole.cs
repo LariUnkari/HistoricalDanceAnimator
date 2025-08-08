@@ -47,6 +47,11 @@ public class DancerRole
             actionsPerId.Add(danceAction.key, danceAction);
     }
 
+    public ICollection<DanceAction> GetActions()
+    {
+        return actionsOnBeat.Values;
+    }
+
     public bool TryGetAction(int beatIndex, out DanceAction danceAction)
     {
         return actionsOnBeat.TryGetValue(beatIndex, out danceAction);

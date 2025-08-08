@@ -93,8 +93,8 @@ public class DanceScene : BaseScene
     private void OnDanceLoadComplete(DanceData danceData)
     {
         Debug.Log($"Dance loaded: '{danceData.danceName}'");
-        _danceData = danceData;
         _formation.SetFormation(danceData, _debugDancerPositionPrefab);
+        _danceData = danceData;
     }
 
     private void OnDanceLoadError(string message)

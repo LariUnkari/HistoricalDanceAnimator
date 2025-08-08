@@ -156,6 +156,7 @@ public class DataLoader : MonoBehaviour
             Debug.LogWarning($"No music found for '{jsonData.danceName}' at '{jsonData.musicPath}'");
         }
 
+        PrepareData(danceData);
 
         if (onCompletionDelegate != null)
             onCompletionDelegate.Invoke(danceData);
@@ -176,6 +177,21 @@ public class DataLoader : MonoBehaviour
         else
         {
             Debug.LogWarning($"Unable to load music at '{audioPayload.path}'");
+        }
+    }
+
+    public void PrepareData(DanceData danceData)
+    {
+        //Vector3 position, direction;
+
+        foreach (DancerRole role in danceData.GetRoles())
+        {
+            foreach (DanceAction action in role.GetActions())
+            {
+                // TODO: calculate the position at the end of each action, saving it in each next action.
+                // This way actions start from a known position, and the position can be calculated during it.
+                //action.
+            }
         }
     }
 
@@ -220,6 +236,8 @@ public class DataLoader : MonoBehaviour
 
                 Debug.LogWarning($"Unable to load music at '{jsonData.musicPath}'");
             }
+
+            www.Dispose();
         }
     }
 

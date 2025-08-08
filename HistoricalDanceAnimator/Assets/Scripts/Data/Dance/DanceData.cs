@@ -64,6 +64,11 @@ public class DanceData
         return groupDictionary.TryGetValue(groupID, out dancerGroup);
     }
 
+    public ICollection<DancerRole> GetRoles()
+    {
+        return roleDictionary.Values;
+    }
+
     public bool TryGetRole(string key, out DancerRole dancerRole)
     {
         return roleDictionary.TryGetValue(key, out dancerRole);
