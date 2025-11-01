@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14934988a269a2f41a504e94aeb0def4, type: 3}
+  m_Name: Dance_Pentti
+  m_EditorClassIdentifier: 
+  songAudioClip: {fileID: 8300000, guid: bb89a0188691159449cf9c60fb37fe2e, type: 3}
+  songBPM: 104
+  silenceInBeginning: 7
+  animatorController: {fileID: 0}
+  animationBPS: 4
+  danceParts:
+  - time: 30
+    animatorStateName: Chorus1A
+  - time: 48.5
+    animatorStateName: Chorus1B
+  - time: 71.6
+    animatorStateName: Verse2
+  - time: 82
+    animatorStateName: Chorus2A
+  - time: 101.5
+    animatorStateName: Chorus2B
+  - time: 120
+    animatorStateName: FluteChaos
+  - time: 138.7
+    animatorStateName: Slow

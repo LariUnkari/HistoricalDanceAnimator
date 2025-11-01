@@ -1,10 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New DancePreset", menuName = "ScriptableObjects/DancePreset", order = 1)]
 public class DancePreset : ScriptableObject
 {
+    [System.Serializable]
+    public class Part
+    {
+        public float time;
+        public string animatorStateName;
+    }
+
     [Tooltip("Audio clip of the music")]
     /// <summary>
     /// Audio clip of the music
@@ -25,5 +30,10 @@ public class DancePreset : ScriptableObject
     /// <summary>
     /// Animation speed, beats per second of animation
     /// </summary>
-    public float animationBPS = 4f; 
+    public float animationBPS = 4f;
+    /// <summary>
+    /// Points in time and animator state names defining
+    /// different parts of the song and dance choreography
+    /// </summary>
+    public Part[] danceParts;
 }
